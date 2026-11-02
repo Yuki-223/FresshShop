@@ -1,0 +1,87 @@
+"use client"
+
+import { ShoppingBasket } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { CartLineItem } from "@/components/cart/cart-line-item"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { useHydrated } from "@/hooks/use-hydrated"
+import { formatPrice } from "@/lib/format"
+import { computeTotals, useCart } from "@/lib/store/cart"
+
+/** Header cart icon with counter badge; opens the shopping cart drawer. */
+export function CartButton() {
+  const hydrated = useHydrated()
+  const count = useCart((s) => s.items.reduce((n, i) => n + i.quantity, 0))
+  const setOpen = useCart((s) => s.setOpen)
+  return (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      className="relative grid size-10 place-items-center rounded-lg text-ink hover:bg-surface"
+      aria-label={`Open cart${hydrated ? `, ${count} items` : ""}`}
+    >
+      <ShoppingBasket className="size-6" strokeWidth={1.75} />
+      {hydrated && count > 0 && (
+        <span className="absolute bottom-1 left-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-hot px-1 font-heading text-[10px] font-bold text-white">
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </button>
+  )
+}
+
+export function CartDrawer() {
+  const router = useRouter()
+  const { items, isOpen, setOpen, promoCode } = useCart()
+  const hydrated = useHydrated()
+  const totals = computeTotals(items, promoCode)
+  const close = () => setOpen(false)
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setOpen}>
+      <SheetContent className="w-[400px] gap-0 p-0 data-[side=right]:sm:max-w-[400px]">
+        <SheetHeader className="px-6 pt-8 pb-2">
+          <SheetTitle className="font-heading text-2xl font-semibold text-ink">Shopping cart</SheetTitle>
+          <SheetDescription className="sr-only">Items in your shopping cart</SheetDescription>
+        </SheetHeader>
+
+        {hydrated && items.length > 0 ? (
+          <ScrollArea className="min-h-0 flex-1 px-6">
+            <div className="divide-y divide-surface-2">
+              {items.map((item) => (
+                <CartLineItem key={item.productId} item={item} onNavigate={close} />
+              ))}
+            </div>
+          </ScrollArea>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+            <ShoppingBasket className="size-12 text-line" strokeWidth={1.25} />
+            <p className="font-heading font-semibold text-ink">Your cart is empty</p>
+            <p className="text-sm text-ink-muted">Find something fresh and tasty in our shop.</p>
+          </div>
+        )}
+
+        <div className="px-6 pb-6">
+          <p className="font-heading text-xs font-semibold text-ink">Subtotal</p>
+          <p className="font-heading text-2xl font-semibold text-ink">{formatPrice(hydrated ? totals.subtotal : 0)}</p>
+        </div>
+        <SheetFooter className="flex-row items-center justify-between border-t border-surface-2 px-6 py-5">
+          <Button variant="link" onClick={close}>
+            Continue shopping
+          </Button>
+          <Button
+            disabled={!hydrated || items.length === 0}
+            onClick={() => {
+              close()
+              router.push("/checkout")
+            }}
+          >
+            Go to Checkout
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  )
+}
