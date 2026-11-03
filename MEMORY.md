@@ -155,7 +155,18 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 - **坑**：Store API 的 fields 如果写成"只要这几个字段"（例如 `handle,title,…`），就拿不到 `variants.metadata`。要用 `+metadata,*variants,…` 这种写法。
 - **坑**：后端开发模式会监视文件，改 `backend/` 里的文件（包括 package.json 和 scripts）会自动重启，大约 10 秒内调用接口会连不上。
 
-下一步：第 3 件，给后端加评论功能。
+**第 3 件已完成（2026-11-03）**：评论模块放在 `backend/src/modules/review`。
+- 模型 `review` 的字段：`id`（前缀 rev）、`product_id`、`author_name`、`location`、`rating`（1–5）、`title`、`content`、`source`（collected 或 customer）、`status`（approved、pending 或 rejected）、`published_at`。在 `product_id` 和 `status` 上建了索引。
+- 模块在 `medusa-config.ts` 的 `modules` 里注册。迁移文件 `src/modules/review/migrations/Migration20261103123008.ts` 已提交，`pnpm setup:local` 会自动执行。
+- 接口：
+  - `GET /store/reviews?product_id=` 返回评论列表和 `summary`。
+  - `POST /store/reviews` 由 zod 校验，在 `src/api/store/reviews/validators.ts` 里，并在 middlewares 里注册。这个演示里评论自动通过审核。
+  - `GET /admin/reviews` 需要管理员登录。
+- 评分汇总在 `src/lib/review-summary.ts`：采集到的 `metadata.rating`（已经包含采集到的评论）加上 customer 来源、已通过审核的评论，合并重新计算。
+- 测试 7 项全部通过：Adreset 原本 4.86 分、14 条，提交一条 5 星后变成 4.87 分、15 条；6 星返回 400；不存在的商品返回 404；后台不登录返回 401。测试评论已经用 SQL 删掉。
+- zod 用 `import { z } from "@medusajs/framework/zod"`。新模块要先运行 `pnpm exec medusa db:generate review`，再运行 `db:migrate`。
+
+下一步：第 4 件，放入已有的评价数据（40 条评论原文）。
 
 ## 可能的下一步（还没做）
 
