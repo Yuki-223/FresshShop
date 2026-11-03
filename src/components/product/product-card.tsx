@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { PlaceholderImage } from "@/components/common/placeholder-image"
 import { DiscountBadge, Price } from "@/components/product/price"
 import { BuyNowButton } from "@/components/product/product-actions"

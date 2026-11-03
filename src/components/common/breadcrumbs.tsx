@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { Fragment } from "react"
 import {
   Breadcrumb,
@@ -8,19 +7,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { Link } from "@/i18n/navigation"
+import { getI18n } from "@/i18n/server"
 
 export interface Crumb {
   label: string
   href?: string
 }
 
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
-  const all: Crumb[] = [{ label: "Homepage", href: "/" }, ...items]
+export async function Breadcrumbs({ items }: { items: Crumb[] }) {
+  const { t } = await getI18n()
+  const all: Crumb[] = [{ label: t("common.homepage"), href: "/" }, ...items]
   return (
     <Breadcrumb className="py-4">
       <BreadcrumbList className="gap-1.5 text-xs sm:gap-1.5">
         {all.map((c, i) => (
-          <Fragment key={c.label}>
+          <Fragment key={`${i}-${c.label}`}>
             {i > 0 && <BreadcrumbSeparator className="text-ink-muted">/</BreadcrumbSeparator>}
             <BreadcrumbItem>
               {c.href && i < all.length - 1 ? (

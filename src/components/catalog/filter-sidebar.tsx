@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useState } from "react"
 import { CountPill } from "@/components/common/pills"
 import { Rating } from "@/components/product/rating"
@@ -10,10 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { useQueryState } from "@/hooks/use-query-state"
+import { useI18n } from "@/i18n/client"
+import { Link } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 
 interface Facet {
   value: string
+  label: string
   count: number
 }
 
@@ -26,17 +28,7 @@ function FilterGroup({ title, children }: { title: string; children: React.React
   )
 }
 
-function CheckRow({
-  id,
-  checked,
-  onChange,
-  children,
-}: {
-  id: string
-  checked: boolean
-  onChange: () => void
-  children: React.ReactNode
-}) {
+function CheckRow({ id, checked, onChange, children }: { id: string; checked: boolean; onChange: () => void; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-3">
       <Checkbox id={id} checked={checked} onCheckedChange={onChange} className="size-[18px] rounded-[4px] bg-surface" />
@@ -47,12 +39,15 @@ function CheckRow({
   )
 }
 
+/** Price bounds are in the display currency of the current locale (¥ or USD). */
 function PriceFilter({ min, max, bounds }: { min?: number; max?: number; bounds: { min: number; max: number } }) {
+  const { t, fmt } = useI18n()
   const { set } = useQueryState()
   const [range, setRange] = useState<[number, number]>([min ?? bounds.min, max ?? bounds.max])
+  const labels = [t("catalog.min"), t("catalog.max")]
 
   return (
-    <FilterGroup title="Price">
+    <FilterGroup title={t("catalog.price")}>
       <Slider
         min={bounds.min}
         max={bounds.max}
@@ -60,16 +55,16 @@ function PriceFilter({ min, max, bounds }: { min?: number; max?: number; bounds:
         value={range}
         onValueChange={(v) => setRange(v as [number, number])}
         className="[&_[data-slot=slider-range]]:bg-brand [&_[data-slot=slider-thumb]]:size-4 [&_[data-slot=slider-thumb]]:border-line"
-        aria-label="Price range"
+        aria-label={t("catalog.priceRange")}
       />
       <div className="mt-6 flex items-end gap-3">
-        {(["Min", "Max"] as const).map((label, i) => (
+        {labels.map((label, i) => (
           <div key={label} className="flex-1">
-            <Label htmlFor={`price-${label}`} className="mb-1 font-heading text-xs font-semibold text-ink">
-              {label}
+            <Label htmlFor={`price-${i}`} className="mb-1 font-heading text-xs font-semibold text-ink">
+              {label} <span className="font-normal text-ink-muted">({fmt.currency})</span>
             </Label>
             <Input
-              id={`price-${label}`}
+              id={`price-${i}`}
               type="number"
               inputMode="decimal"
               min={bounds.min}
@@ -93,7 +88,7 @@ function PriceFilter({ min, max, bounds }: { min?: number; max?: number; bounds:
             })
           }
         >
-          Apply
+          {t("catalog.apply")}
         </Button>
         <Button
           variant="link"
@@ -103,7 +98,7 @@ function PriceFilter({ min, max, bounds }: { min?: number; max?: number; bounds:
             set({ min: null, max: null })
           }}
         >
-          Reset
+          {t("catalog.reset")}
         </Button>
       </div>
     </FilterGroup>
@@ -121,6 +116,7 @@ export function FilterSidebar({
   brands: Facet[]
   priceBounds: { min: number; max: number }
 }) {
+  const { t } = useI18n()
   const { params, toggleInList } = useQueryState()
   const activeSub = params.get("sub")
   const selectedBrands = params.getAll("brand")
@@ -131,7 +127,7 @@ export function FilterSidebar({
   return (
     <aside>
       {subcategories.length > 0 && (
-        <FilterGroup title="Categories">
+        <FilterGroup title={t("catalog.categories")}>
           <ul className="space-y-2">
             {subcategories.map((s) => {
               const active = activeSub === s.value
@@ -146,7 +142,7 @@ export function FilterSidebar({
                     scroll={false}
                     className={cn("flex items-center justify-between text-sm text-ink hover:text-brand", active && "font-semibold text-brand")}
                   >
-                    {s.value}
+                    {s.label}
                     <CountPill>{s.count}</CountPill>
                   </Link>
                 </li>
@@ -156,42 +152,27 @@ export function FilterSidebar({
         </FilterGroup>
       )}
 
-      <FilterGroup title="Brands">
+      <FilterGroup title={t("catalog.brands")}>
         <div className="space-y-3">
           {brands.map((b) => (
-            <CheckRow
-              key={b.value}
-              id={`brand-${b.value}`}
-              checked={selectedBrands.includes(b.value)}
-              onChange={() => toggleInList("brand", b.value)}
-            >
-              {b.value} <span className="text-ink-muted">({b.count})</span>
+            <CheckRow key={b.value} id={`brand-${b.value}`} checked={selectedBrands.includes(b.value)} onChange={() => toggleInList("brand", b.value)}>
+              {b.label} <span className="text-ink-muted">({b.count})</span>
             </CheckRow>
           ))}
         </div>
       </FilterGroup>
 
-      <FilterGroup title="Rating">
+      <FilterGroup title={t("catalog.rating")}>
         <div className="space-y-3">
           {[5, 4, 3, 2, 1].map((r) => (
-            <CheckRow
-              key={r}
-              id={`rating-${r}`}
-              checked={selectedRatings.includes(String(r))}
-              onChange={() => toggleInList("rating", String(r))}
-            >
+            <CheckRow key={r} id={`rating-${r}`} checked={selectedRatings.includes(String(r))} onChange={() => toggleInList("rating", String(r))}>
               <Rating value={r} tone="gold" />
             </CheckRow>
           ))}
         </div>
       </FilterGroup>
 
-      <PriceFilter
-        key={`${min}-${max}`}
-        min={min ? Number(min) : undefined}
-        max={max ? Number(max) : undefined}
-        bounds={priceBounds}
-      />
+      <PriceFilter key={`${min}-${max}`} min={min ? Number(min) : undefined} max={max ? Number(max) : undefined} bounds={priceBounds} />
     </aside>
   )
 }

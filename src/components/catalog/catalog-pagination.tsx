@@ -1,10 +1,11 @@
 "use client"
 
-import Link from "next/link"
 import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CountPill } from "@/components/common/pills"
 import { useQueryState } from "@/hooks/use-query-state"
+import { useT } from "@/i18n/client"
+import { Link, usePathname } from "@/i18n/navigation"
 import { PAGE_SIZE } from "@/lib/search-params"
 import { cn } from "@/lib/utils"
 
@@ -20,6 +21,8 @@ export function CatalogPagination({
   pageSize: number
   total: number
 }) {
+  const t = useT()
+  const pathname = usePathname()
   const { params, set, isPending } = useQueryState()
   const hrefFor = (p: number) => {
     const next = new URLSearchParams(params.toString())
@@ -27,15 +30,15 @@ export function CatalogPagination({
     if (p === 1) next.delete("page")
     else next.set("page", String(p))
     const qs = next.toString()
-    return qs ? `?${qs}` : "?"
+    return `${pathname}${qs ? `?${qs}` : ""}`
   }
   const shown = Math.min(total, page * pageSize)
   const canShowMore = shown < total
 
   return (
     <div className="mt-16 grid grid-cols-3 items-center">
-      <nav aria-label="Pagination" className="flex items-center gap-2 text-xs">
-        <span className="text-ink-muted">Page:</span>
+      <nav aria-label={t("catalog.pagination")} className="flex items-center gap-2 text-xs">
+        <span className="text-ink-muted">{t("catalog.page")}</span>
         {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
           <Link
             key={p}
@@ -56,13 +59,13 @@ export function CatalogPagination({
               set({ page: null, per: String(Math.min(60, shown + PAGE_SIZE)) }, { resetPage: false })
             }
           >
-            {isPending ? "Loading…" : "Show more products"}
+            {isPending ? `${t("common.loading")}…` : t("catalog.showMore")}
             <ChevronDown className="size-4" />
           </Button>
         )}
       </div>
       <p className="flex items-center justify-end gap-1.5 text-xs text-ink-muted">
-        <CountPill>{total}</CountPill> Products
+        <CountPill>{total}</CountPill> {t("catalog.productsLabel")}
       </p>
     </div>
   )

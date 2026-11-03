@@ -1,15 +1,16 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { PlaceholderImage } from "@/components/common/placeholder-image"
 import { SoftBadge } from "@/components/common/pills"
-import { formatDate } from "@/lib/format"
+import { getI18n } from "@/i18n/server"
 import { cn } from "@/lib/utils"
 import type { BlogPost } from "@/types"
 
-function Meta({ post, className }: { post: BlogPost; className?: string }) {
+async function Meta({ post, className }: { post: BlogPost; className?: string }) {
+  const { fmt } = await getI18n()
   return (
     <p className={cn("flex items-center gap-4 text-xs", className)}>
       <span>{post.author}</span>
-      <span>{formatDate(post.date)}</span>
+      <span>{fmt.date(post.date)}</span>
     </p>
   )
 }
@@ -19,7 +20,7 @@ export function BlogFeatureCard({ post, className }: { post: BlogPost; className
   return (
     <Link href={`/blog/${post.slug}`} className={cn("group relative block overflow-hidden rounded-xl", className)}>
       <PlaceholderImage className="absolute inset-0 rounded-none bg-surface transition-transform duration-500 group-hover:scale-[1.02]" />
-      <SoftBadge className="absolute top-6 left-6">{post.tag}</SoftBadge>
+      <SoftBadge className="absolute top-6 left-6">{post.tagLabel}</SoftBadge>
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-b from-transparent via-ink/80 to-ink px-8 pt-20 pb-6 text-white">
         <h3 className="text-[22px] leading-snug font-medium">{post.title}</h3>
         <div className="mt-4 flex items-center gap-3">
@@ -38,7 +39,7 @@ export function BlogCard({ post, className }: { post: BlogPost; className?: stri
       <Link href={`/blog/${post.slug}`} tabIndex={-1} aria-hidden>
         <PlaceholderImage className="aspect-[3/2] transition-opacity group-hover:opacity-80" />
       </Link>
-      <SoftBadge className="mt-4 w-fit">{post.tag}</SoftBadge>
+      <SoftBadge className="mt-4 w-fit">{post.tagLabel}</SoftBadge>
       <h3 className="mt-3 text-lg leading-snug font-semibold text-ink">
         <Link href={`/blog/${post.slug}`} className="hover:text-brand">
           {post.title}

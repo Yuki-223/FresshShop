@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import type { VariantProps } from "class-variance-authority"
 import type { ComponentProps } from "react"
 import { buttonVariants } from "@/components/ui/button"

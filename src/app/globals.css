@@ -7,8 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-open-sans);
-  --font-heading: var(--font-poppins);
+  /* Latin glyphs from Open Sans / Poppins, Chinese glyphs fall back to Noto Sans SC */
+  --font-sans: var(--font-open-sans), var(--font-noto-sc), sans-serif;
+  --font-heading: var(--font-poppins), var(--font-noto-sc), sans-serif;
 
   /* Freshnesecom design tokens */
   --color-brand: var(--brand);
@@ -124,6 +125,12 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
+  }
+  /* Chinese text needs more air between lines */
+  :lang(zh) p,
+  :lang(zh) li,
+  :lang(zh) blockquote {
+    line-height: 1.75;
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useT } from "@/i18n/client"
 import { cn } from "@/lib/utils"
 
 export function CheckoutSection({
@@ -18,6 +19,7 @@ export function CheckoutSection({
   total?: number
   children: ReactNode
 }) {
+  const t = useT()
   return (
     <section className="pb-16" aria-labelledby={`step-${step}`}>
       <h2 id={`step-${step}`} className="text-[22px] font-semibold text-ink">
@@ -25,9 +27,7 @@ export function CheckoutSection({
       </h2>
       <div className="mb-8 flex items-center justify-between text-xs text-ink-muted">
         <p>{subtitle}</p>
-        <p>
-          Step {step} of {total}
-        </p>
+        <p>{t("checkout.stepOf", { step, total })}</p>
       </div>
       {children}
     </section>
@@ -112,7 +112,7 @@ export function OptionRow({
 }
 
 /** Simple text wordmarks for carriers / payment providers (no third-party assets). */
-export function Wordmark({ name }: { name: "fedex" | "dhl" | "visa" | "paypal" | "bitcoin" }) {
+export function Wordmark({ name }: { name: string }) {
   switch (name) {
     case "fedex":
       return (
@@ -123,7 +123,11 @@ export function Wordmark({ name }: { name: "fedex" | "dhl" | "visa" | "paypal" |
       )
     case "dhl":
       return <span className="font-heading text-lg font-extrabold italic tracking-tighter text-[#d40511]">DHL</span>
-    case "visa":
+    case "sf":
+      return <span className="font-heading text-base font-bold tracking-wide text-ink">顺丰速运</span>
+    case "jd":
+      return <span className="font-heading text-base font-bold text-[#e1251b]">京东物流</span>
+    case "card":
       return (
         <span className="flex items-center gap-2">
           <span className="font-heading text-lg font-extrabold italic text-[#1a1f71]">VISA</span>
@@ -142,5 +146,18 @@ export function Wordmark({ name }: { name: "fedex" | "dhl" | "visa" | "paypal" |
       )
     case "bitcoin":
       return <span className="font-heading text-lg font-bold italic text-[#f7931a]">₿itcoin</span>
+    case "alipay":
+      return <span className="font-heading text-base font-bold text-[#1677ff]">支付宝</span>
+    case "wechat":
+      return <span className="font-heading text-base font-bold text-[#07c160]">微信支付</span>
+    case "unionpay":
+      return (
+        <span className="flex items-center gap-1 font-heading text-base font-bold">
+          <span className="rounded-sm bg-[#e21836] px-1 text-white">银</span>
+          <span className="rounded-sm bg-[#00447c] px-1 text-white">联</span>
+        </span>
+      )
+    default:
+      return null
   }
 }

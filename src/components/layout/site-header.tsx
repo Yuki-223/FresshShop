@@ -1,21 +1,24 @@
-import Link from "next/link"
 import { Suspense } from "react"
 import { UserRound } from "lucide-react"
 import { CartButton } from "@/components/cart/cart-drawer"
+import { LanguageSwitcher, LanguageSwitcherFallback } from "@/components/layout/language-switcher"
 import { MainNav, MainNavBase } from "@/components/layout/main-nav"
 import { SearchBar } from "@/components/layout/search-bar"
+import { Link } from "@/i18n/navigation"
+import { getI18n } from "@/i18n/server"
 import { listCategories } from "@/lib/api"
 
-function TopBar() {
+async function TopBar() {
+  const { t, locale } = await getI18n()
   return (
     <div className="container-page">
       <div className="flex h-11 items-center justify-between border-b border-surface-2 text-xs">
         <div className="flex items-center gap-10">
           <a href="#chat" className="text-brand hover:underline">
-            Chat with us
+            {t("header.chatWithUs")}
           </a>
-          <a href="tel:+420336775664" className="text-ink">
-            +420 336 775 664
+          <a href={locale === "zh" ? "tel:4008001234" : "tel:+420336775664"} className="text-ink">
+            {locale === "zh" ? "400-800-1234" : "+420 336 775 664"}
           </a>
           <a href="mailto:info@freshnesecom.com" className="text-ink">
             info@freshnesecom.com
@@ -23,14 +26,17 @@ function TopBar() {
         </div>
         <div className="flex items-center gap-10 text-brand">
           <Link href="/blog" className="hover:underline">
-            Blog
+            {t("header.blog")}
           </Link>
           <Link href="/about" className="hover:underline">
-            About Us
+            {t("header.aboutUs")}
           </Link>
           <Link href="/careers" className="hover:underline">
-            Careers
+            {t("header.careers")}
           </Link>
+          <Suspense fallback={<LanguageSwitcherFallback />}>
+            <LanguageSwitcher />
+          </Suspense>
         </div>
       </div>
     </div>
@@ -46,7 +52,8 @@ export function Logo() {
 }
 
 export async function SiteHeader() {
-  const categories = await listCategories()
+  const { t, locale } = await getI18n()
+  const categories = await listCategories(locale)
   return (
     <header>
       <TopBar />
@@ -56,7 +63,7 @@ export async function SiteHeader() {
           <SearchBar categories={categories} />
         </Suspense>
         <div className="flex items-center gap-8">
-          <Link href="/account" aria-label="Account" className="grid size-10 place-items-center rounded-lg text-ink hover:bg-surface">
+          <Link href="/account" aria-label={t("header.account")} className="grid size-10 place-items-center rounded-lg text-ink hover:bg-surface">
             <UserRound className="size-6" strokeWidth={1.75} />
           </Link>
           <CartButton />

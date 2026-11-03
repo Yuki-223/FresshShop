@@ -3,9 +3,8 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { CartLineItem } from "@/components/cart/cart-line-item"
-import { formatLongDate, formatPrice } from "@/lib/format"
-import { TAX_RATE, type CartTotals } from "@/lib/store/cart"
-import { useCart } from "@/lib/store/cart"
+import { useI18n } from "@/i18n/client"
+import { type CartTotals, useCart } from "@/lib/store/cart"
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -22,7 +21,9 @@ export function guaranteedDeliveryDate(days = 3) {
   return d.toISOString()
 }
 
-export function OrderSummary({ totals }: { totals: CartTotals }) {
+/** All amounts in `totals` are already in the display currency. */
+export function OrderSummary({ totals, deliveryDays }: { totals: CartTotals; deliveryDays?: number }) {
+  const { t, fmt } = useI18n()
   const items = useCart((s) => s.items)
   const promoCode = useCart((s) => s.promoCode)
   const applyPromo = useCart((s) => s.applyPromo)
@@ -30,8 +31,8 @@ export function OrderSummary({ totals }: { totals: CartTotals }) {
 
   return (
     <aside className="sticky top-6 rounded-xl border border-line p-6">
-      <h2 className="text-[22px] font-semibold text-ink">Order Summary</h2>
-      <p className="text-xs text-ink-muted">Price can change depending on shipping method and taxes of your state.</p>
+      <h2 className="text-[22px] font-semibold text-ink">{t("checkout.orderSummary")}</h2>
+      <p className="text-xs text-ink-muted">{t("checkout.orderSummarySub")}</p>
 
       <div className="divide-y divide-surface-2 border-b border-surface-2">
         {items.map((item) => (
@@ -40,10 +41,10 @@ export function OrderSummary({ totals }: { totals: CartTotals }) {
       </div>
 
       <div className="mt-6 space-y-3">
-        <Row label="Subtotal" value={formatPrice(totals.subtotal)} />
-        {totals.discount > 0 && <Row label={`Promo ${promoCode}`} value={`− ${formatPrice(totals.discount)}`} />}
-        <Row label="Tax" value={`${Math.round(TAX_RATE * 100)}% ${formatPrice(totals.tax)}`} />
-        <Row label="Shipping" value={formatPrice(totals.shipping)} />
+        <Row label={t("checkout.subtotal")} value={fmt.amount(totals.subtotal)} />
+        {totals.discount > 0 && <Row label={t("checkout.promo", { code: promoCode ?? "" })} value={`− ${fmt.amount(totals.discount)}`} />}
+        <Row label={`${t("checkout.tax")} (${Math.round(totals.taxRate * 100)}%)`} value={fmt.amount(totals.tax)} />
+        <Row label={t("checkout.shipping")} value={fmt.amount(totals.shipping)} />
       </div>
 
       <form
@@ -51,29 +52,29 @@ export function OrderSummary({ totals }: { totals: CartTotals }) {
         onSubmit={(e) => {
           e.preventDefault()
           if (applyPromo(code)) {
-            toast.success("Promo code applied")
+            toast.success(t("checkout.promoSuccess"))
             setCode("")
-          } else toast.error("This promo code is not valid. Try FRESH10.")
+          } else toast.error(t("checkout.promoInvalid"))
         }}
       >
         <input
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder={promoCode ? `Applied: ${promoCode}` : "Apply promo code"}
-          aria-label="Promo code"
+          placeholder={promoCode ? t("checkout.promoApplied", { code: promoCode }) : t("checkout.promoPlaceholder")}
+          aria-label={t("checkout.promoLabel")}
           className="h-full min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-ink-muted"
         />
         <button type="submit" className="font-heading text-sm font-bold text-ink hover:text-brand">
-          Apply now
+          {t("checkout.applyNow")}
         </button>
       </form>
 
-      <div className="mt-8 flex items-end justify-between">
+      <div className="mt-8 flex items-end justify-between gap-4">
         <div>
-          <p className="font-heading text-xs font-semibold text-ink">Total Order</p>
-          <p className="text-xs text-brand">Guaranteed delivery day: {formatLongDate(guaranteedDeliveryDate())}</p>
+          <p className="font-heading text-xs font-semibold text-ink">{t("checkout.totalOrder")}</p>
+          <p className="text-xs text-brand">{t("checkout.guaranteedDelivery", { date: fmt.longDate(guaranteedDeliveryDate(deliveryDays)) })}</p>
         </div>
-        <p className="font-heading text-2xl font-semibold text-brand">{formatPrice(totals.total)}</p>
+        <p className="font-heading text-2xl font-semibold whitespace-nowrap text-brand">{fmt.amount(totals.total)}</p>
       </div>
     </aside>
   )

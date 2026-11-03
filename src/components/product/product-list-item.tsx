@@ -1,10 +1,11 @@
-import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import { ButtonLink } from "@/components/common/button-link"
 import { PlaceholderImage } from "@/components/common/placeholder-image"
 import { DiscountBadge, Price } from "@/components/product/price"
 import { WishlistButton } from "@/components/product/product-actions"
 import { Rating } from "@/components/product/rating"
+import { Link } from "@/i18n/navigation"
+import { getI18n } from "@/i18n/server"
 import type { Product } from "@/types"
 
 export function SpecList({ rows, className }: { rows: [label: string, value: React.ReactNode][]; className?: string }) {
@@ -21,7 +22,8 @@ export function SpecList({ rows, className }: { rows: [label: string, value: Rea
 }
 
 /** Horizontal product row used by the category page "List view". */
-export function ProductListItem({ product }: { product: Product }) {
+export async function ProductListItem({ product }: { product: Product }) {
+  const { t } = await getI18n()
   const href = `/product/${product.slug}`
   return (
     <article className="grid grid-cols-[270px_1fr_auto] overflow-hidden rounded-xl border border-line bg-card transition-shadow hover:shadow-md">
@@ -41,21 +43,21 @@ export function ProductListItem({ product }: { product: Product }) {
         <SpecList
           className="mt-6 grid grid-cols-[110px_1fr] gap-y-3 text-sm"
           rows={[
-            ["Freshness", <>New <span className="text-ink-muted">(Extra fresh)</span></>],
-            ["Farm", <span key="f" className="text-ink-soft">{product.farm}</span>],
-            ["Delivery", <span key="d" className="text-ink-soft">{product.deliveryArea}</span>],
-            ["Stock", product.stock > 0 ? `${product.stock} pcs` : "Out of stock"],
+            [t("product.freshness"), <>{t("product.freshnessNew")} <span className="text-ink-muted">{t("product.extraFresh")}</span></>],
+            [t("product.farm"), <span key="f" className="text-ink-soft">{product.farm}</span>],
+            [t("product.delivery"), <span key="d" className="text-ink-soft">{product.deliveryArea}</span>],
+            [t("product.stock"), product.stock > 0 ? t("product.stockPcs", { count: product.stock }) : t("product.outOfStock")],
           ]}
         />
       </div>
       <div className="flex w-[200px] flex-col py-8 pr-6">
         <Price price={product.price} oldPrice={product.oldPrice} />
         <div className="mt-4 text-xs">
-          <p className="font-heading font-semibold text-ink-muted">{product.freeShipping ? "Free Shipping" : "Paid Shipping"}</p>
-          <p className="text-ink-muted">Delivery in {product.deliveryDays} day{product.deliveryDays > 1 ? "s" : ""}</p>
+          <p className="font-heading font-semibold text-ink-muted">{product.freeShipping ? t("product.freeShipping") : t("product.paidShipping")}</p>
+          <p className="text-ink-muted">{t.plural("product.deliveryIn", product.deliveryDays)}</p>
         </div>
         <ButtonLink href={href} className="mt-6">
-          Product Detail
+          {t("product.productDetail")}
           <ChevronRight className="size-4" />
         </ButtonLink>
         <WishlistButton productId={product.id} className="mt-3" />

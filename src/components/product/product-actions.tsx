@@ -4,28 +4,31 @@ import { Heart, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { useHydrated } from "@/hooks/use-hydrated"
+import { useI18n } from "@/i18n/client"
 import { useCart } from "@/lib/store/cart"
 import { useCompare, useWishlist } from "@/lib/store/wishlist"
 import { cn } from "@/lib/utils"
 import type { ProductSnapshot, Unit } from "@/types"
 
 export function useAddToCart() {
+  const { t, locale } = useI18n()
   const add = useCart((s) => s.add)
   const setOpen = useCart((s) => s.setOpen)
   return (product: ProductSnapshot, quantity = 1, unit?: Unit) => {
     add(product, quantity, unit)
-    toast.success(`${product.title} added to cart`, {
-      action: { label: "View cart", onClick: () => setOpen(true) },
+    toast.success(t("product.addedToCart", { title: product.title[locale] }), {
+      action: { label: t("product.viewCart"), onClick: () => setOpen(true) },
     })
   }
 }
 
 /** Compact "Buy now" button used on every product card. */
 export function BuyNowButton({ product, className }: { product: ProductSnapshot; className?: string }) {
+  const { t } = useI18n()
   const addToCart = useAddToCart()
   return (
     <Button size="sm" className={className} onClick={() => addToCart(product)}>
-      Buy now
+      {t("product.buyNow")}
     </Button>
   )
 }
@@ -41,26 +44,29 @@ export function AddToCartButton({
   unit: Unit
   disabled?: boolean
 }) {
+  const { t } = useI18n()
   const addToCart = useAddToCart()
   return (
     <Button disabled={disabled} onClick={() => addToCart(product, quantity, unit)}>
       <Plus className="size-4" strokeWidth={3} />
-      {disabled ? "Out of stock" : "Add to cart"}
+      {disabled ? t("product.outOfStock") : t("product.addToCart")}
     </Button>
   )
 }
 
 export function WishlistButton({
   productId,
-  label = "Add to wish list",
+  large,
   className,
   variant = "soft",
 }: {
   productId: string
-  label?: string
+  /** use the longer "Add to my wish list" label */
+  large?: boolean
   className?: string
   variant?: "soft" | "ghost"
 }) {
+  const { t } = useI18n()
   const hydrated = useHydrated()
   const active = useWishlist((s) => s.ids.includes(productId)) && hydrated
   const toggle = useWishlist((s) => s.toggle)
@@ -70,15 +76,16 @@ export function WishlistButton({
       size="sm"
       aria-pressed={active}
       className={className}
-      onClick={() => toast(toggle(productId) ? "Added to wish list" : "Removed from wish list")}
+      onClick={() => toast(toggle(productId) ? t("product.addedToWishlist") : t("product.removedFromWishlist"))}
     >
       <Heart className={cn("size-4", active ? "fill-hot text-hot" : variant === "ghost" ? "text-hot" : "")} />
-      {active ? "In wish list" : label}
+      {active ? t("product.inWishlist") : large ? t("product.addToMyWishlist") : t("product.addToWishlist")}
     </Button>
   )
 }
 
 export function CompareButton({ productId, className }: { productId: string; className?: string }) {
+  const { t } = useI18n()
   const hydrated = useHydrated()
   const active = useCompare((s) => s.ids.includes(productId)) && hydrated
   const toggle = useCompare((s) => s.toggle)
@@ -88,10 +95,10 @@ export function CompareButton({ productId, className }: { productId: string; cla
       size="sm"
       aria-pressed={active}
       className={className}
-      onClick={() => toast(toggle(productId) ? "Added to compare" : "Removed from compare")}
+      onClick={() => toast(toggle(productId) ? t("product.addedToCompare") : t("product.removedFromCompare"))}
     >
       <CompareIcon className="size-4 text-hot" />
-      {active ? "Comparing" : "Compare"}
+      {active ? t("product.comparing") : t("product.compare")}
     </Button>
   )
 }

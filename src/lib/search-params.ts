@@ -1,13 +1,14 @@
+import type { MessageKey } from "@/i18n/dictionary"
 import type { ProductQuery, SortKey } from "@/types"
 
 export type RawSearchParams = Record<string, string | string[] | undefined>
 
-export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
-  { value: "popular", label: "Most popular" },
-  { value: "newest", label: "Newest" },
-  { value: "price-asc", label: "Price: low to high" },
-  { value: "price-desc", label: "Price: high to low" },
-  { value: "rating", label: "Top rated" },
+export const SORT_OPTIONS: { value: SortKey; label: MessageKey }[] = [
+  { value: "popular", label: "catalog.sortPopular" },
+  { value: "newest", label: "catalog.sortNewest" },
+  { value: "price-asc", label: "catalog.sortPriceAsc" },
+  { value: "price-desc", label: "catalog.sortPriceDesc" },
+  { value: "rating", label: "catalog.sortRating" },
 ]
 
 export type ViewMode = "grid" | "list"

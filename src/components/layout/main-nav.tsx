@@ -1,8 +1,6 @@
 "use client"
 
-import Link from "next/link"
 import { ChevronDown } from "lucide-react"
-import { usePathname } from "next/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useT } from "@/i18n/client"
+import { Link, usePathname } from "@/i18n/navigation"
 import { cn } from "@/lib/utils"
 import type { Category } from "@/types"
 
@@ -20,8 +20,9 @@ export function MainNav({ categories }: { categories: Category[] }) {
 
 /** Pathname-agnostic version — used as the static-shell fallback. */
 export function MainNavBase({ categories, pathname }: { categories: Category[]; pathname: string | null }) {
+  const t = useT()
   return (
-    <nav aria-label="Categories" className="bg-surface">
+    <nav aria-label={t("header.categoriesNav")} className="bg-surface">
       <ul className="container-page flex h-[52px] items-center gap-10">
         {categories.map((c) => {
           const active = pathname === `/category/${c.slug}`
@@ -41,12 +42,12 @@ export function MainNavBase({ categories, pathname }: { categories: Category[]; 
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="min-w-48">
                   <DropdownMenuItem render={<Link href={`/category/${c.slug}`} />} className="font-heading font-semibold">
-                    All {c.name.toLowerCase()}
+                    {t("header.allOf", { name: c.name })}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {c.subcategories.map((sub) => (
-                    <DropdownMenuItem key={sub} render={<Link href={`/category/${c.slug}?sub=${encodeURIComponent(sub)}`} />}>
-                      {sub}
+                    <DropdownMenuItem key={sub.value} render={<Link href={`/category/${c.slug}?sub=${encodeURIComponent(sub.value)}`} />}>
+                      {sub.label}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>

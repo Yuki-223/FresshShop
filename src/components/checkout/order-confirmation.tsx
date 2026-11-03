@@ -4,18 +4,8 @@ import { CircleCheck } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 import { useSyncExternalStore } from "react"
 import { ButtonLink } from "@/components/common/button-link"
-import { LAST_ORDER_KEY } from "@/components/checkout/checkout-form"
-import { formatLongDate, formatPrice } from "@/lib/format"
-
-interface StoredOrder {
-  id: string
-  email: string
-  name: string
-  total: number
-  items: number
-  shippingMethod: string
-  deliveryDate: string
-}
+import { LAST_ORDER_KEY, type StoredOrder } from "@/components/checkout/checkout-form"
+import { useI18n } from "@/i18n/client"
 
 function readOrder(): string | null {
   try {
@@ -26,6 +16,7 @@ function readOrder(): string | null {
 }
 
 export function OrderConfirmation() {
+  const { t, fmt } = useI18n()
   const orderId = useSearchParams().get("order")
   const raw = useSyncExternalStore(
     () => () => {},
@@ -38,30 +29,30 @@ export function OrderConfirmation() {
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center text-center">
       <CircleCheck className="size-16 text-brand" strokeWidth={1.5} />
-      <h1 className="mt-6 text-[32px] font-semibold text-ink">Thank you for your order!</h1>
+      <h1 className="mt-6 text-[32px] font-semibold text-ink">{t("success.title")}</h1>
       {orderId && (
         <p className="mt-2 text-sm text-ink-muted">
-          Order number <span className="font-heading font-semibold text-ink">{orderId}</span>
+          {t("success.orderNumber")} <span className="font-heading font-semibold text-ink">{orderId}</span>
         </p>
       )}
       {match && (
         <dl className="mt-10 grid w-full grid-cols-2 gap-y-3 rounded-xl border border-line p-6 text-left text-sm">
-          <dt className="text-ink-muted">Name</dt>
+          <dt className="text-ink-muted">{t("success.name")}</dt>
           <dd className="text-right text-ink">{match.name}</dd>
-          <dt className="text-ink-muted">Confirmation sent to</dt>
+          <dt className="text-ink-muted">{t("success.sentTo")}</dt>
           <dd className="text-right text-ink">{match.email}</dd>
-          <dt className="text-ink-muted">Items</dt>
+          <dt className="text-ink-muted">{t("success.items")}</dt>
           <dd className="text-right text-ink">{match.items}</dd>
-          <dt className="text-ink-muted">Delivery</dt>
+          <dt className="text-ink-muted">{t("success.delivery")}</dt>
           <dd className="text-right text-ink">
-            {match.shippingMethod.toUpperCase()} · {formatLongDate(match.deliveryDate)}
+            {match.carrier} · {fmt.longDate(match.deliveryDate)}
           </dd>
-          <dt className="font-heading font-semibold text-ink">Total paid</dt>
-          <dd className="text-right font-heading text-lg font-semibold text-brand">{formatPrice(match.total)}</dd>
+          <dt className="font-heading font-semibold text-ink">{t("success.totalPaid")}</dt>
+          <dd className="text-right font-heading text-lg font-semibold text-brand">{match.total}</dd>
         </dl>
       )}
       <ButtonLink href="/" className="mt-10">
-        Continue shopping
+        {t("success.continue")}
       </ButtonLink>
     </div>
   )
