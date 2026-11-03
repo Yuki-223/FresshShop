@@ -13,7 +13,27 @@ cd backend
 pnpm install
 pnpm setup:local   # embedded PostgreSQL in .local/, migrations, admin user
 pnpm start:local   # PostgreSQL + Medusa → http://localhost:9000/app
+
+# in a second terminal, with the backend running:
+pnpm import:metagenics                    # 229 products (add --sample for 3)
+node scripts/verify-metagenics.mjs        # checks everything through the Store API
 ```
+
+## Metagenics data
+
+`scripts/import-metagenics.mjs` reads the storefront's `../src/lib/data/metagenics/catalog.json` and the images in
+`../public/products/` (shopStore is not needed). Besides products, variants (`Size` / `Flavor` options), USD prices,
+18 categories and the main images, it stores as metadata:
+
+- variant: `size`, `flavor`, `subscriptions` (`[{ months, price, savePercent }]`), `source_available`
+- product: `rating` (`{ value, count }`, 213 products), `product_line`, `form`, `is_bundle`, `health_categories`,
+  `content`, `supplement_facts`, `directions`, `storage`, `cautions`, `warnings`, `faq`, `related`
+
+Stock starts at 99 per variant (0 for the 4 products that were out of stock in the source) and is never reset on
+re-runs. A US region (USD), a demo warehouse and a $10 demo shipping option are created if missing.
+
+When reading variant metadata from the Store API, use `fields=+metadata,*variants,…` — an explicit field list such as
+`handle,title,…` drops `variants.metadata`.
 
 - The database lives in `backend/.local/postgres` (port 55433), secrets and the admin login in
   `backend/.local/config.json`. Both are git-ignored.
