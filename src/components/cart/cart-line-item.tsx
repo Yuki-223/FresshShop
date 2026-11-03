@@ -53,8 +53,8 @@ export function CartLineItem({ item, onNavigate }: { item: CartItem; onNavigate?
           <MiniAction
             icon={<X className="size-3 text-ink" />}
             label={t("cart.remove")}
-            onClick={() => {
-              remove(item.lineId)
+            onClick={async () => {
+              await remove(item.lineId)
               toast(t("cart.removed", { title }))
             }}
           />
@@ -75,7 +75,7 @@ export function CartLineItem({ item, onNavigate }: { item: CartItem; onNavigate?
         </dl>
         <div className="mt-auto flex items-end justify-between gap-2 pt-3">
           <Price price={item.price} oldPrice={item.listPrice} quantity={item.quantity} tone="brand" />
-          <QuantitySelector size="sm" value={item.quantity} onChange={(q) => setQuantity(item.lineId, q)} />
+          <QuantitySelector size="sm" value={item.quantity} onChange={(q) => void setQuantity(item.lineId, q)} />
         </div>
       </div>
     </div>

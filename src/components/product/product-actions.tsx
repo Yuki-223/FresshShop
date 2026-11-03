@@ -14,11 +14,15 @@ export function useAddToCart() {
   const { t, locale } = useI18n()
   const add = useCart((s) => s.add)
   const setOpen = useCart((s) => s.setOpen)
-  return (line: CartLineInput, quantity = 1) => {
-    add(line, quantity)
-    toast.success(t("product.addedToCart", { title: line.title[locale] }), {
-      action: { label: t("product.viewCart"), onClick: () => setOpen(true) },
-    })
+  return async (line: CartLineInput, quantity = 1) => {
+    try {
+      await add(line, quantity)
+      toast.success(t("product.addedToCart", { title: line.title[locale] }), {
+        action: { label: t("product.viewCart"), onClick: () => setOpen(true) },
+      })
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error))
+    }
   }
 }
 
@@ -26,8 +30,9 @@ export function useAddToCart() {
 export function BuyNowButton({ line, disabled, className }: { line: CartLineInput; disabled?: boolean; className?: string }) {
   const { t } = useI18n()
   const addToCart = useAddToCart()
+  const pending = useCart((s) => s.pending)
   return (
-    <Button size="sm" className={className} disabled={disabled} onClick={() => addToCart(line)}>
+    <Button size="sm" className={className} disabled={disabled || pending} onClick={() => addToCart(line)}>
       {disabled ? t("product.outOfStock") : t("product.buyNow")}
     </Button>
   )
@@ -36,8 +41,9 @@ export function BuyNowButton({ line, disabled, className }: { line: CartLineInpu
 export function AddToCartButton({ line, quantity, disabled }: { line: CartLineInput; quantity: number; disabled?: boolean }) {
   const { t } = useI18n()
   const addToCart = useAddToCart()
+  const pending = useCart((s) => s.pending)
   return (
-    <Button disabled={disabled} onClick={() => addToCart(line, quantity)}>
+    <Button disabled={disabled || pending} onClick={() => addToCart(line, quantity)}>
       <Plus className="size-4" strokeWidth={3} />
       {disabled ? t("product.outOfStock") : t("product.addToCart")}
     </Button>

@@ -6,7 +6,8 @@ export type CarrierId = "fedex" | "dhl" | "sf" | "jd"
 /**
  * Everything about checkout that differs between markets.
  * The form, summary and validation read this config — no `if (locale === "zh")` in components.
- * Carrier prices are in the region's display currency.
+ * Carrier names/days come from here; the actual shipping price comes from the Medusa
+ * shipping option with type code `carrier-<id>` (backend/scripts/import-metagenics.mjs).
  */
 export interface RegionConfig {
   id: RegionId
@@ -40,7 +41,8 @@ export const regions: Record<RegionId, RegionConfig> = {
     phonePattern: /^\+?[0-9 ()-]{7,20}$/,
     zipPattern: /^[A-Za-z0-9 -]{3,10}$/,
     zipRequired: true,
-    countries: ["Czech republic", "Slovakia", "Germany", "Austria", "Poland", "United Kingdom", "United States"],
+    // the Medusa demo region ships to the US (English store) and China (Chinese store)
+    countries: ["United States"],
   },
   cn: {
     id: "cn",

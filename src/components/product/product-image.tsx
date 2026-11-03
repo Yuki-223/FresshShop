@@ -20,7 +20,18 @@ export function ProductImage({
 }) {
   return (
     <PlaceholderImage className={className}>
-      {src && <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-contain p-[8%] mix-blend-multiply" />}
+      {/* images served by the Medusa backend (http://…) are shown as-is: Next's optimizer refuses local IPs by design */}
+      {src && (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes={sizes}
+          priority={priority}
+          unoptimized={/^https?:/.test(src)}
+          className="object-contain p-[8%] mix-blend-multiply"
+        />
+      )}
       {children}
     </PlaceholderImage>
   )

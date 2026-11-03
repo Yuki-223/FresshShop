@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ShieldCheck, ShoppingBasket } from "lucide-react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form"
 import { toast } from "sonner"
 import { AddressFields } from "@/components/checkout/address-fields"
@@ -13,13 +13,14 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
-import { useHydrated } from "@/hooks/use-hydrated"
 import { useI18n } from "@/i18n/client"
 import { localeConfig } from "@/i18n/config"
 import { Link, useRouter } from "@/i18n/navigation"
 import { regions } from "@/lib/checkout/regions"
 import { checkoutDefaults, makeCheckoutSchema, type CheckoutValues } from "@/lib/checkout/schema"
-import { computeTotals, useCart } from "@/lib/store/cart"
+import { placeOrder, prepareCheckout, selectCarrier } from "@/lib/cart/actions"
+import type { CarrierOption, CheckoutAddress } from "@/lib/cart/types"
+import { localTotals, useCart } from "@/lib/store/cart"
 import { cn } from "@/lib/utils"
 
 export const LAST_ORDER_KEY = "freshnesecom-last-order"
@@ -40,16 +41,61 @@ const formatExpiry = (v: string) => {
   const d = v.replace(/\D/g, "").slice(0, 4)
   return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d
 }
-const newOrderId = () => `FR-${Date.now().toString(36).toUpperCase()}`
+const orderNumber = (displayId: number) => `FR-${String(displayId).padStart(5, "0")}`
+
+type AddressValues = Partial<Record<"firstName" | "lastName" | "fullName" | "province" | "prefecture" | "district" | "address" | "city" | "zip", string>>
+
+/** Form values → Medusa address. The English store ships to the US, the Chinese one to China. */
+function toAddress(v: AddressValues, mode: "intl" | "cn", phone: string): CheckoutAddress {
+  if (mode === "cn")
+    return {
+      first_name: v.fullName ?? "",
+      last_name: "",
+      province: v.province,
+      city: v.prefecture ?? "",
+      address_1: [v.district, v.address].filter(Boolean).join(" "),
+      postal_code: v.zip || undefined,
+      country_code: "cn",
+      phone,
+    }
+  return {
+    first_name: v.firstName ?? "",
+    last_name: v.lastName ?? "",
+    address_1: v.address ?? "",
+    city: v.city ?? "",
+    postal_code: v.zip,
+    country_code: "us",
+    phone,
+  }
+}
 
 export function CheckoutForm() {
   const { t, fmt, locale } = useI18n()
   const region = regions[localeConfig[locale].region]
   const router = useRouter()
-  const hydrated = useHydrated()
+  const hydrated = useCart((s) => s.ready)
   const items = useCart((s) => s.items)
-  const promoCode = useCart((s) => s.promoCode)
+  const cart = useCart((s) => s.cart)
+  const setCart = useCart((s) => s.setCart)
   const clear = useCart((s) => s.clear)
+  const [carriers, setCarriers] = useState<CarrierOption[]>([])
+  const [placedOrder, setPlacedOrder] = useState(false)
+  const country = region.addressMode === "cn" ? "cn" : "us"
+  const hasItems = items.length > 0
+
+  // tell the backend where we ship, so it can offer carriers and price shipping
+  useEffect(() => {
+    if (!hydrated || !hasItems) return
+    let cancelled = false
+    prepareCheckout(country).then(({ cart: next, carriers: list }) => {
+      if (cancelled) return
+      setCarriers(list)
+      if (next) setCart(next)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [hydrated, hasItems, country, setCart])
 
   const schema = useMemo(() => makeCheckoutSchema(region, t), [region, t])
   const form = useForm<CheckoutValues>({
@@ -64,11 +110,15 @@ export function CheckoutForm() {
     name: ["shippingMethod", "paymentMethod", "shipToDifferent"],
   })
   const carrier = region.carriers.find((c) => c.id === shippingMethod)
-  const totals = computeTotals(items, promoCode, { toLocal: fmt.toLocal, shipping: carrier?.price ?? 0, taxRate: region.taxRate })
+  const totals = localTotals(cart, fmt.toLocal)
+  const money = (usd: number) => fmt.amount(fmt.toLocal(usd))
+  const availableCarriers = region.carriers
+    .map((c) => ({ ...c, option: carriers.find((o) => o.id === c.id) }))
+    .filter((c): c is typeof c & { option: CarrierOption } => !!c.option)
   const needsCard = region.payments.find((p) => p.id === paymentMethod)?.requiresCard ?? false
 
   // keep the layout stable while navigating to the success page after the cart is cleared
-  if (!hydrated || formState.isSubmitSuccessful) return <div className="h-[600px]" />
+  if (!hydrated || placedOrder) return <div className="h-[600px]" />
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center py-32 text-center">
@@ -83,21 +133,32 @@ export function CheckoutForm() {
   }
 
   const onSubmit = async (values: CheckoutValues) => {
-    await new Promise((r) => setTimeout(r, 800)) // simulate API call
-    const order: StoredOrder = {
-      id: newOrderId(),
-      email: values.email,
-      name: region.addressMode === "cn" ? values.fullName : `${values.firstName} ${values.lastName}`,
-      total: fmt.amount(totals.total),
-      items: totals.count,
-      carrier: carrier?.name ?? "",
-      deliveryDate: guaranteedDeliveryDate(carrier?.days),
-    }
     try {
-      sessionStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order))
-    } catch {}
-    clear()
-    router.push(`/checkout/success?order=${order.id}`)
+      const placed = await placeOrder({
+        email: values.email.trim(),
+        address: toAddress(values, region.addressMode, values.phone.trim()),
+        shippingAddress: values.shipToDifferent ? toAddress(values.shipping ?? {}, region.addressMode, values.phone.trim()) : undefined,
+        carrier: values.shippingMethod,
+      })
+      const order: StoredOrder = {
+        id: orderNumber(placed.displayId),
+        email: placed.email,
+        name: region.addressMode === "cn" ? values.fullName : `${values.firstName} ${values.lastName}`,
+        // same number the customer saw on the button (rows converted one by one)
+        total: fmt.amount(totals.total),
+        items: placed.count,
+        carrier: carrier?.name ?? "",
+        deliveryDate: guaranteedDeliveryDate(carrier?.days),
+      }
+      try {
+        sessionStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order))
+      } catch {}
+      setPlacedOrder(true)
+      clear()
+      router.push(`/checkout/success?order=${order.id}`)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error))
+    }
   }
 
   const onInvalid = () => {
@@ -136,8 +197,17 @@ export function CheckoutForm() {
               control={control}
               name="shippingMethod"
               render={({ field }) => (
-                <RadioGroup value={field.value || null} onValueChange={(v) => field.onChange(v)} className="gap-4" aria-label={t("checkout.deliveryMethod")}>
-                  {region.carriers.map((m) => (
+                <RadioGroup
+                  value={field.value || null}
+                  onValueChange={async (v) => {
+                    field.onChange(v)
+                    const option = carriers.find((o) => o.id === v)
+                    if (option) setCart(await selectCarrier(option.optionId))
+                  }}
+                  className="gap-4"
+                  aria-label={t("checkout.deliveryMethod")}
+                >
+                  {availableCarriers.map((m) => (
                     <OptionRow
                       key={m.id}
                       active={field.value === m.id}
@@ -147,7 +217,7 @@ export function CheckoutForm() {
                     >
                       <span className="grid grid-cols-[120px_auto_1fr] items-center gap-4">
                         <span className="font-heading text-xs font-semibold">{m.name}</span>
-                        <span className="font-heading text-xs font-semibold text-brand">+{fmt.amount(m.price)}</span>
+                        <span className="font-heading text-xs font-semibold text-brand">+{money(m.option.amount)}</span>
                         <span className="font-heading text-xs font-semibold">{t("checkout.additionalPrice")}</span>
                       </span>
                     </OptionRow>
@@ -297,7 +367,7 @@ export function CheckoutForm() {
         </form>
 
         <div>
-          <OrderSummary totals={totals} deliveryDays={carrier?.days} />
+          <OrderSummary cart={cart} deliveryDays={carrier?.days} />
         </div>
       </div>
     </FormProvider>

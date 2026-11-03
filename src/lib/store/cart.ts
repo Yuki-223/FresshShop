@@ -1,95 +1,90 @@
 "use client"
 
 import { create } from "zustand"
-import { createJSONStorage, persist } from "zustand/middleware"
-import { lineIdOf } from "@/lib/product"
+import { addToCart, applyPromoCode, getCart, removeCartLine, updateCartLine } from "@/lib/cart/actions"
+import type { CartView } from "@/lib/cart/types"
 import type { CartItem, CartLineInput } from "@/types"
 
-/** Demo promo codes → percentage off the subtotal. */
-const PROMO_CODES: Record<string, number> = { FRESH10: 0.1, FARM20: 0.2 }
+const EMPTY: Omit<CartView, "id"> = { items: [], subtotal: 0, discount: 0, shipping: 0, tax: 0, total: 0, count: 0, promoCode: null, carrier: null }
 
 interface CartState {
+  /** latest cart from the backend (null until loaded / when there is none) */
+  cart: CartView | null
   items: CartItem[]
   promoCode: string | null
+  /** true once the first getCart() finished */
+  ready: boolean
+  pending: boolean
   isOpen: boolean
-  /** Same SKU bought the same way → quantities merge; a different purchase mode is a separate line. */
-  add: (line: CartLineInput, quantity?: number) => void
-  setQuantity: (lineId: string, quantity: number) => void
-  remove: (lineId: string) => void
+  refresh: () => Promise<void>
+  setCart: (cart: CartView | null) => void
+  add: (line: CartLineInput, quantity?: number) => Promise<void>
+  setQuantity: (lineId: string, quantity: number) => Promise<void>
+  remove: (lineId: string) => Promise<void>
+  applyPromo: (code: string) => Promise<boolean>
+  /** forget the cart locally (after an order was placed — the server already dropped the cookie) */
   clear: () => void
-  applyPromo: (code: string) => boolean
   setOpen: (open: boolean) => void
 }
 
-export const useCart = create<CartState>()(
-  persist(
-    (set) => ({
-      items: [],
-      promoCode: null,
-      isOpen: false,
-      add: (line, quantity = 1) =>
-        set((s) => {
-          const lineId = lineIdOf(line.sku, line.purchase)
-          const existing = s.items.find((i) => i.lineId === lineId)
-          if (existing) return { items: s.items.map((i) => (i.lineId === lineId ? { ...i, quantity: i.quantity + quantity } : i)) }
-          return { items: [...s.items, { ...line, lineId, quantity }] }
-        }),
-      setQuantity: (lineId, quantity) =>
-        set((s) => ({ items: s.items.map((i) => (i.lineId === lineId ? { ...i, quantity: Math.max(1, quantity) } : i)) })),
-      remove: (lineId) => set((s) => ({ items: s.items.filter((i) => i.lineId !== lineId) })),
-      clear: () => set({ items: [], promoCode: null }),
-      applyPromo: (code) => {
-        const normalized = code.trim().toUpperCase()
-        if (!(normalized in PROMO_CODES)) return false
-        set({ promoCode: normalized })
-        return true
-      },
-      setOpen: (isOpen) => set({ isOpen }),
-    }),
-    {
-      name: "freshnesecom-cart",
-      // v3: lines are variant + purchase mode (supplement catalog); older carts are dropped
-      version: 3,
-      migrate: () => ({ items: [], promoCode: null }),
-      storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ items: s.items, promoCode: s.promoCode }),
+/**
+ * Client view of the backend cart. Every mutation is a server action that returns the
+ * recalculated cart, so prices, discounts and totals always come from Medusa.
+ */
+export const useCart = create<CartState>()((set, get) => {
+  const apply = (cart: CartView | null) => set({ cart, items: cart?.items ?? [], promoCode: cart?.promoCode ?? null, ready: true })
+  const run = async (fn: () => Promise<CartView | null>) => {
+    set({ pending: true })
+    try {
+      apply(await fn())
+    } finally {
+      set({ pending: false })
+    }
+  }
+  return {
+    cart: null,
+    items: [],
+    promoCode: null,
+    ready: false,
+    pending: false,
+    isOpen: false,
+    refresh: () => run(getCart),
+    setCart: apply,
+    add: (line, quantity = 1) => {
+      if (!line.variantId) return Promise.reject(new Error("This product is not available in the backend"))
+      return run(() => addToCart({ variantId: line.variantId!, quantity, purchase: line.purchase }))
     },
-  ),
-)
+    setQuantity: (lineId, quantity) => run(() => updateCartLine(lineId, quantity)),
+    remove: (lineId) => run(() => removeCartLine(lineId)),
+    applyPromo: async (code) => {
+      set({ pending: true })
+      try {
+        const { ok, cart } = await applyPromoCode(code)
+        apply(cart ?? get().cart)
+        return ok
+      } finally {
+        set({ pending: false })
+      }
+    },
+    clear: () => apply(null),
+    setOpen: (isOpen) => set({ isOpen }),
+  }
+})
 
-export interface CartTotals {
-  subtotal: number
-  discount: number
-  tax: number
-  taxRate: number
-  shipping: number
-  total: number
-  count: number
+/** Totals of the current cart (USD). */
+export function cartTotals(cart: CartView | null) {
+  return cart ? { ...EMPTY, ...cart } : { ...EMPTY }
 }
 
-const round2 = (n: number) => Math.round(n * 100) / 100
-
 /**
- * Pure pricing function shared by the cart drawer and the checkout summary.
- * Every amount is in the display currency: unit prices are converted with `toLocal`
- * first, so the rows the user sees always add up to the total.
+ * Totals converted to the display currency. Each row is converted on its own and the total is
+ * their sum, so the rows the customer sees always add up (no 1-cent rounding gaps in CNY).
  */
-export function computeTotals(
-  items: CartItem[],
-  promoCode: string | null,
-  opts: { toLocal: (base: number) => number; shipping?: number; taxRate?: number },
-): CartTotals {
-  const { toLocal, shipping = 0, taxRate = 0 } = opts
-  const subtotal = round2(items.reduce((sum, i) => sum + toLocal(i.price) * i.quantity, 0))
-  const discount = round2(promoCode ? subtotal * (PROMO_CODES[promoCode] ?? 0) : 0)
-  const tax = round2((subtotal - discount) * taxRate)
-  return {
-    subtotal,
-    discount,
-    tax,
-    taxRate,
-    shipping,
-    total: round2(subtotal - discount + tax + shipping),
-    count: items.reduce((n, i) => n + i.quantity, 0),
-  }
+export function localTotals(cart: CartView | null, toLocal: (usd: number) => number) {
+  const t = cartTotals(cart)
+  const subtotal = toLocal(t.subtotal)
+  const discount = toLocal(t.discount)
+  const shipping = toLocal(t.shipping)
+  const tax = toLocal(t.tax)
+  return { subtotal, discount, shipping, tax, total: Math.round((subtotal - discount + shipping + tax) * 100) / 100, count: t.count }
 }

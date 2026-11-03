@@ -4,6 +4,7 @@ import {
   validateAndTransformBody,
 } from "@medusajs/framework/http"
 import { AdminPostReviews } from "./admin/reviews/validators"
+import { StorePostPurchaseItem } from "./store/carts/[id]/purchase-items/validators"
 import { StorePostReview } from "./store/reviews/validators"
 
 // The product index declares filterable `status` and `sales_channel_ids`, so
@@ -20,6 +21,11 @@ export default defineMiddlewares({
       method: ["POST"],
       matcher: "/admin/reviews",
       middlewares: [validateAndTransformBody(AdminPostReviews)],
+    },
+    {
+      method: ["POST"],
+      matcher: "/store/carts/:id/purchase-items",
+      middlewares: [validateAndTransformBody(StorePostPurchaseItem)],
     },
     {
       method: ["POST"],

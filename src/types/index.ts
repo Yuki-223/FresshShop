@@ -22,6 +22,8 @@ export interface SubscriptionOffer {
 }
 
 export interface Variant {
+  /** Medusa variant id (needed to add the variant to a backend cart) */
+  id?: string
   sku: string
   /** "60 Capsules", "30 Servings · Vanilla", "Bundle" */
   label: string
@@ -40,7 +42,10 @@ export interface Rating {
 
 /** Product as used by listings — already localized for the requested locale. */
 export interface Product {
+  /** stable storefront id = handle (used by wish list / compare) */
   id: string
+  /** Medusa product id (reviews are stored against it) */
+  medusaId?: string
   slug: string
   title: string
   /** Title in every language — stored in the cart so it survives a language switch. */
@@ -145,4 +150,5 @@ export interface CartItem {
   quantity: number
 }
 
-export type CartLineInput = Omit<CartItem, "lineId" | "quantity">
+/** What the storefront sends when adding to the cart (display fields are used for the toast only). */
+export type CartLineInput = Omit<CartItem, "lineId" | "quantity"> & { variantId?: string }

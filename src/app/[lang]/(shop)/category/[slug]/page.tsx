@@ -48,7 +48,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
       </div>
 
       <div className="mt-16 grid grid-cols-[230px_1fr] gap-8">
-        <FilterSidebar categorySlug={slug} subcategories={facets.subcategories} brands={facets.brands} forms={facets.forms} priceBounds={priceRange(locale)} />
+        <FilterSidebar categorySlug={slug} subcategories={facets.subcategories} brands={facets.brands} forms={facets.forms} priceBounds={await priceRange(locale)} />
 
         <section aria-label={t("catalog.productsLabel")}>
           {result.items.length === 0 ? (

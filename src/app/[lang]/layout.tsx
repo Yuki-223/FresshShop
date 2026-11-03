@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Noto_Sans_SC, Open_Sans, Poppins } from "next/font/google"
 import { CartDrawer } from "@/components/cart/cart-drawer"
+import { CartSync } from "@/components/cart/cart-sync"
 import { Toaster } from "@/components/ui/sonner"
 import { I18nProvider } from "@/i18n/client"
 import { localeConfig, locales } from "@/i18n/config"
@@ -33,6 +34,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
       <body className="min-h-screen min-w-[1280px] bg-background">
         <I18nProvider locale={locale} dictionary={dictionaries[locale]}>
           {children}
+          <CartSync />
           <CartDrawer />
           <Toaster theme="light" position="top-center" richColors={false} />
         </I18nProvider>

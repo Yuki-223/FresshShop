@@ -15,6 +15,9 @@
  *     description blocks, supplement facts, directions, storage, cautions, warnings, FAQ
  * Variants that were out of stock in the source start with stock 0, the rest with 99.
  *
+ * It also sets up the store for the storefront checkout: one USD region for the US and China,
+ * carriers FedEx/DHL (US) and SF/JD (China) as shipping options, and promo codes FRESH10/FARM20.
+ *
  * Re-runs are safe: existing products (matched by handle + external_id) are reused and
  * their stock is never reset. All writes go through the Medusa Admin API.
  * Requires the backend to be running (pnpm start:local).
@@ -63,13 +66,17 @@ const {
   stores: [store],
 } = await admin("/admin/stores")
 
+// One USD region for the demo: the storefront's English checkout ships to the US, the Chinese one to China.
+const COUNTRIES = ["us", "cn"]
 const { regions } = await admin("/admin/regions")
 let region = regions.find((r) => r.countries.some((c) => c.iso_2 === "us"))
+if (region && !COUNTRIES.every((code) => region.countries.some((c) => c.iso_2 === code)))
+  ({ region } = await admin(`/admin/regions/${region.id}`, { countries: COUNTRIES }))
 if (!region)
   ({ region } = await admin("/admin/regions", {
-    name: "United States",
+    name: "United States & China (USD demo)",
     currency_code: "usd",
-    countries: ["us"],
+    countries: COUNTRIES,
     payment_providers: ["pp_system_default"],
     automatic_taxes: false,
     metadata: { purpose: "metagenics_demo", source_date: SOURCE_DATE },
@@ -98,30 +105,53 @@ if (!set) {
   await admin(`/admin/stock-locations/${location.id}/fulfillment-sets`, { name: "Metagenics Demo Delivery", type: "shipping" })
   set = (await fulfillmentSets()).find((f) => f.name === "Metagenics Demo Delivery")
 }
-let zone = set.service_zones?.find((z) => z.name === "United States Demo")
-if (!zone) {
-  const { fulfillment_set } = await admin(`/admin/fulfillment-sets/${set.id}/service-zones?fields=*service_zones`, {
-    name: "United States Demo",
-    geo_zones: [{ type: "country", country_code: "us" }],
-  })
-  zone = fulfillment_set.service_zones.find((z) => z.name === "United States Demo")
+/** Carriers shown in the storefront checkout (src/lib/checkout/regions.ts); matched by type code `carrier-<id>`. */
+const CARRIERS = {
+  us: { zone: "United States Demo", options: [{ id: "fedex", name: "FedEx", amount: 32 }, { id: "dhl", name: "DHL", amount: 15 }] },
+  // the storefront shows ¥12 / ¥8; the demo region bills in USD (rate 7.1)
+  cn: { zone: "China Demo", options: [{ id: "sf", name: "SF Express", amount: 1.69 }, { id: "jd", name: "JD Logistics", amount: 1.127 }] },
 }
-const { shipping_options } = await admin(`/admin/shipping-options?service_zone_id=${zone.id}`)
-if (!shipping_options.length)
-  await admin("/admin/shipping-options", {
-    name: "Demo Standard Shipping",
-    price_type: "flat",
-    provider_id: "manual_manual",
-    service_zone_id: zone.id,
-    shipping_profile_id: profile.id,
-    type: { label: "Demo Standard", description: "Demo shipping (not a carrier quote)", code: "metagenics-demo-standard" },
-    prices: [{ currency_code: "usd", amount: 10 }],
-    rules: [
-      { attribute: "enabled_in_store", value: "true", operator: "eq" },
-      { attribute: "is_return", value: "false", operator: "eq" },
-    ],
-    metadata: { purpose: "demo_only" },
+for (const [country, { zone: zoneName, options }] of Object.entries(CARRIERS)) {
+  let zone = set.service_zones?.find((z) => z.name === zoneName)
+  if (!zone) {
+    const { fulfillment_set } = await admin(`/admin/fulfillment-sets/${set.id}/service-zones?fields=*service_zones`, {
+      name: zoneName,
+      geo_zones: [{ type: "country", country_code: country }],
+    })
+    zone = fulfillment_set.service_zones.find((z) => z.name === zoneName)
+  }
+  const { shipping_options } = await admin(`/admin/shipping-options?service_zone_id=${zone.id}&fields=id,name,*type`)
+  for (const o of options) {
+    if (shipping_options.some((x) => x.type?.code === `carrier-${o.id}`)) continue
+    await admin("/admin/shipping-options", {
+      name: o.name,
+      price_type: "flat",
+      provider_id: "manual_manual",
+      service_zone_id: zone.id,
+      shipping_profile_id: profile.id,
+      type: { label: o.name, description: "Demo carrier (not a real quote)", code: `carrier-${o.id}` },
+      prices: [{ currency_code: "usd", amount: o.amount }],
+      rules: [
+        { attribute: "enabled_in_store", value: "true", operator: "eq" },
+        { attribute: "is_return", value: "false", operator: "eq" },
+      ],
+      metadata: { purpose: "demo_only", carrier: o.id },
+    })
+  }
+}
+
+// promo codes used by the storefront checkout
+const { promotions } = await admin("/admin/promotions?limit=100")
+for (const [code, percent] of [["FRESH10", 10], ["FARM20", 20]]) {
+  if (promotions.some((p) => p.code === code)) continue
+  await admin("/admin/promotions", {
+    code,
+    type: "standard",
+    status: "active",
+    is_automatic: false,
+    application_method: { type: "percentage", target_type: "order", value: percent, allocation: "across" },
   })
+}
 
 await admin(`/admin/stores/${store.id}`, {
   default_region_id: region.id,

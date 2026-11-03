@@ -1,22 +1,28 @@
 /**
- * Data access layer. Every page/component reads data through these async
- * functions only, so swapping the static catalog for a real backend
- * (e.g. the Medusa Store API in shopStore) means changing this file and nothing else.
+ * Data access layer. Every page/component reads data through these async functions only.
+ *
+ * - Products (prices, stock, variants, subscriptions, ratings, content) come from the
+ *   Medusa backend (backend/) via lib/data/metagenics/remote.ts — request-time data.
+ * - The store's taxonomy (navigation groups, category names, product lines) comes from the
+ *   local catalog, so the header and footer can still be prerendered.
  *
  * Product content is the collected English source text for every locale;
  * only navigation/category/form labels are translated.
  */
 import { localeConfig, type Locale } from "@/i18n/config"
 import { catalog, type CatalogProduct } from "@/lib/data/metagenics"
+import { remoteProducts } from "@/lib/data/metagenics/remote"
 import { categoryZh, formZh, navGroups } from "@/lib/data/metagenics/groups"
 import { infoPages } from "@/lib/data/pages"
 import type { Category, Option, Paginated, Product, ProductDetail, ProductQuery } from "@/types"
 
-const records = catalog.products
-const PRICE_MAX_BASE = Math.ceil(Math.max(...records.flatMap((p) => p.variants.map((v) => v.price))) / 10) * 10
+/** Products from the backend (request-time). */
+const records = () => remoteProducts()
 
-export function priceRange(locale: Locale) {
-  return { min: 0, max: Math.ceil(PRICE_MAX_BASE * localeConfig[locale].rate) }
+export async function priceRange(locale: Locale) {
+  const prices = (await records()).flatMap((p) => p.variants.map((v) => v.price))
+  const maxBase = Math.ceil(Math.max(0, ...prices) / 10) * 10
+  return { min: 0, max: Math.ceil(maxBase * localeConfig[locale].rate) }
 }
 
 const categoryLabel = (slug: string, locale: Locale) =>
@@ -33,6 +39,7 @@ function toProduct(r: CatalogProduct, locale: Locale): Product {
   const prices = r.variants.map((v) => v.price)
   return {
     id: r.slug,
+    medusaId: r.medusaId,
     slug: r.slug,
     title: r.name,
     titleL10n: { en: r.name, zh: r.name },
@@ -84,18 +91,19 @@ export async function findCategory(slug: string, locale: Locale) {
 
 /** The 18 source health categories with product counts. */
 export async function listHealthCategories(locale: Locale) {
+  const all = await records()
   return catalog.categories.map((c) => ({
     value: c.slug,
     label: categoryLabel(c.slug, locale),
-    count: records.filter((p) => p.categories.includes(c.slug)).length,
+    count: all.filter((p) => p.categories.includes(c.slug)).length,
     group: navGroups.find((g) => g.categories.includes(c.slug))!.slug,
   }))
 }
 
-/** Footer "Product tags": the product lines with the most products. */
+/** Footer "Product tags": the product lines with the most products (store taxonomy → local catalog, prerenderable). */
 export async function listProductTags(): Promise<Option[]> {
   const counts = new Map<string, number>()
-  for (const p of records) if (p.productLine) counts.set(p.productLine, (counts.get(p.productLine) ?? 0) + 1)
+  for (const p of catalog.products) if (p.productLine) counts.set(p.productLine, (counts.get(p.productLine) ?? 0) + 1)
   return [...counts]
     .sort((a, b) => b[1] - a[1])
     .slice(0, 16)
@@ -103,12 +111,13 @@ export async function listProductTags(): Promise<Option[]> {
 }
 
 export async function getProductBySlug(slug: string, locale: Locale) {
-  const r = records.find((p) => p.slug === slug)
+  const r = (await records()).find((p) => p.slug === slug)
   return r && toDetail(r, locale)
 }
 
 export async function getProductsBySlugs(slugs: string[], locale: Locale) {
-  return slugs.map((s) => records.find((p) => p.slug === s)).filter((r): r is CatalogProduct => !!r).map((r) => toProduct(r, locale))
+  const all = await records()
+  return slugs.map((s) => all.find((p) => p.slug === s)).filter((r): r is CatalogProduct => !!r).map((r) => toProduct(r, locale))
 }
 
 function inGroup(r: CatalogProduct, group?: string) {
@@ -150,7 +159,7 @@ const sorters: Record<NonNullable<ProductQuery["sort"]>, (a: CatalogProduct, b: 
 
 export async function searchProducts(query: ProductQuery, locale: Locale): Promise<Paginated<Product>> {
   const pageSize = query.pageSize ?? 9
-  const filtered = records.filter((p) => matches(p, query, locale)).sort(sorters[query.sort ?? "popular"])
+  const filtered = (await records()).filter((p) => matches(p, query, locale)).sort(sorters[query.sort ?? "popular"])
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
   const page = Math.min(Math.max(1, query.page ?? 1), pageCount)
   return {
@@ -164,7 +173,7 @@ export async function searchProducts(query: ProductQuery, locale: Locale): Promi
 
 /** Facet counts for the sidebar, computed on the navigation-group scope only. */
 export async function getFacets(group: string, locale: Locale) {
-  const scope = records.filter((p) => inGroup(p, group))
+  const scope = (await records()).filter((p) => inGroup(p, group))
   const count = (key: (p: CatalogProduct) => string[]) => {
     const m = new Map<string, number>()
     for (const p of scope) for (const k of key(p)) m.set(k, (m.get(k) ?? 0) + 1)
@@ -190,7 +199,7 @@ export async function getFacets(group: string, locale: Locale) {
 }
 
 export async function getTopRated(locale: Locale, limit = 3) {
-  return [...records]
+  return [...(await records())]
     .filter((p) => (p.rating?.count ?? 0) >= 5 && !p.isBundle)
     .sort(sorters.rating)
     .slice(0, limit)
@@ -198,22 +207,22 @@ export async function getTopRated(locale: Locale, limit = 3) {
 }
 
 export async function getMostReviewed(locale: Locale, limit = 3) {
-  return [...records].sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
+  return [...(await records())].sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
 }
 
 export async function getBundles(locale: Locale, limit = 4) {
-  return records.filter((p) => p.isBundle).sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
+  return (await records()).filter((p) => p.isBundle).sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
 }
 
 export async function getByCategory(category: string, locale: Locale, limit = 3) {
-  return records.filter((p) => p.categories.includes(category)).sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
+  return (await records()).filter((p) => p.categories.includes(category)).sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
 }
 
 export async function getRelatedProducts(product: ProductDetail, locale: Locale, limit = 4) {
   const picked = (await getProductsBySlugs(product.related, locale)).slice(0, limit)
   if (picked.length >= limit) return picked
   const firstCat = product.healthCategories[0]?.value
-  const extra = records
+  const extra = (await records())
     .filter((p) => p.slug !== product.slug && !picked.some((x) => x.slug === p.slug) && (!firstCat || p.categories.includes(firstCat)))
     .sort(sorters.popular)
     .slice(0, limit - picked.length)

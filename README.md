@@ -13,6 +13,26 @@
 - **购物车**：按"规格 + 购买方式"区分行，同一个规格的单次购买和订阅是两行。
 - **移除的内容**：博客、顾客评价轮播等生鲜版的演示内容。
 
+### 后端（Medusa）
+
+商城的商品、价格、库存、购物车和下单都由 `backend/` 里的 Medusa 后端负责。**本地运行商城前要先启动后端**：
+
+```bash
+cd backend
+pnpm install
+pnpm setup:local          # 第一次：建数据库、表、管理员
+pnpm start:local          # 启动后端（保持运行）→ http://localhost:9000/app
+# 第一次还要在另一个终端导入数据：
+pnpm import:metagenics && pnpm import:reviews
+```
+
+然后在项目根目录 `pnpm dev`。商城通过 `src/lib/medusa/server.ts` 访问后端，环境变量：
+
+- `MEDUSA_BACKEND_URL`：默认 `http://localhost:9000`
+- `MEDUSA_PUBLISHABLE_KEY`：默认读取 `backend/.local/publishable-key`，这个文件由 `pnpm setup:local` 生成
+
+导航分类和页脚的产品系列来自本地的 `catalog.json`，属于网站结构，可以提前生成。商品数据在请求时从后端读取，并缓存 15 秒，所以后台改价后十几秒内商城就会更新。
+
 ### 重新导入数据
 
 ```bash

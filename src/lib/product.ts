@@ -12,6 +12,7 @@ export function priceFor(variant: Variant, purchase: PurchaseMode) {
 /** Serializable cart line for a product/variant/purchase mode (passed to client components). */
 export function toCartLine(p: Product, variant: Variant = defaultVariant(p), purchase: PurchaseMode = { type: "once" }): CartLineInput {
   return {
+    variantId: variant.id,
     productId: p.id,
     slug: p.slug,
     title: p.titleL10n,

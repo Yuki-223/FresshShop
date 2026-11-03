@@ -4,7 +4,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { CartLineItem } from "@/components/cart/cart-line-item"
 import { useI18n } from "@/i18n/client"
-import { type CartTotals, useCart } from "@/lib/store/cart"
+import type { CartView } from "@/lib/cart/types"
+import { localTotals, useCart } from "@/lib/store/cart"
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -21,12 +22,15 @@ export function guaranteedDeliveryDate(days = 3) {
   return d.toISOString()
 }
 
-/** All amounts in `totals` are already in the display currency. */
-export function OrderSummary({ totals, deliveryDays }: { totals: CartTotals; deliveryDays?: number }) {
+/** Totals come from the backend cart (USD) and are converted to the display currency. */
+export function OrderSummary({ cart, deliveryDays }: { cart: CartView | null; deliveryDays?: number }) {
   const { t, fmt } = useI18n()
+  const totals = localTotals(cart, fmt.toLocal)
+  const money = (local: number) => fmt.amount(local)
   const items = useCart((s) => s.items)
   const promoCode = useCart((s) => s.promoCode)
   const applyPromo = useCart((s) => s.applyPromo)
+  const pending = useCart((s) => s.pending)
   const [code, setCode] = useState("")
 
   return (
@@ -44,17 +48,18 @@ export function OrderSummary({ totals, deliveryDays }: { totals: CartTotals; del
       </div>
 
       <div className="mt-6 space-y-3">
-        <Row label={t("checkout.subtotal")} value={fmt.amount(totals.subtotal)} />
-        {totals.discount > 0 && <Row label={t("checkout.promo", { code: promoCode ?? "" })} value={`− ${fmt.amount(totals.discount)}`} />}
-        <Row label={`${t("checkout.tax")} (${Math.round(totals.taxRate * 100)}%)`} value={fmt.amount(totals.tax)} />
-        <Row label={t("checkout.shipping")} value={fmt.amount(totals.shipping)} />
+        <Row label={t("checkout.subtotal")} value={money(totals.subtotal)} />
+        {totals.discount > 0 && <Row label={t("checkout.promo", { code: promoCode ?? "" })} value={`− ${money(totals.discount)}`} />}
+        <Row label={t("checkout.tax")} value={money(totals.tax)} />
+        <Row label={t("checkout.shipping")} value={money(totals.shipping)} />
       </div>
 
       <form
         className="mt-6 flex h-11 items-center rounded-xl border border-line bg-surface pr-4 pl-4"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault()
-          if (applyPromo(code)) {
+          if (!code.trim() || pending) return
+          if (await applyPromo(code)) {
             toast.success(t("checkout.promoSuccess"))
             setCode("")
           } else toast.error(t("checkout.promoInvalid"))
@@ -77,7 +82,7 @@ export function OrderSummary({ totals, deliveryDays }: { totals: CartTotals; del
           <p className="font-heading text-xs font-semibold text-ink">{t("checkout.totalOrder")}</p>
           <p className="text-xs text-brand">{t("checkout.guaranteedDelivery", { date: fmt.longDate(guaranteedDeliveryDate(deliveryDays)) })}</p>
         </div>
-        <p className="font-heading text-2xl font-semibold whitespace-nowrap text-brand">{fmt.amount(totals.total)}</p>
+        <p className="font-heading text-2xl font-semibold whitespace-nowrap text-brand">{money(totals.total)}</p>
       </div>
     </aside>
   )
