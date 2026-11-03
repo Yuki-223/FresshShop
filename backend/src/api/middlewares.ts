@@ -3,6 +3,7 @@ import {
   defineMiddlewares,
   validateAndTransformBody,
 } from "@medusajs/framework/http"
+import { AdminPostReviews } from "./admin/reviews/validators"
 import { StorePostReview } from "./store/reviews/validators"
 
 // The product index declares filterable `status` and `sales_channel_ids`, so
@@ -14,6 +15,11 @@ export default defineMiddlewares({
       matcher: "/admin/products",
       bodyParser: { sizeLimit: "5mb" },
       middlewares: [],
+    },
+    {
+      method: ["POST"],
+      matcher: "/admin/reviews",
+      middlewares: [validateAndTransformBody(AdminPostReviews)],
     },
     {
       method: ["POST"],

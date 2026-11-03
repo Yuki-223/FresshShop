@@ -11,6 +11,7 @@
  * Writes derived files only:
  *   src/lib/data/metagenics/catalog.json        (trimmed catalog used by lib/api)
  *   public/products/*.png                       (copied main images)
+ *   src/lib/data/metagenics/reviews.json        (review texts found in the structured data)
  */
 import fs from "node:fs"
 import path from "node:path"
@@ -115,6 +116,28 @@ function findRating(node) {
   return undefined
 }
 
+/** Collect schema.org Review objects anywhere in the structured data. */
+function findReviews(node, found = []) {
+  if (!node || typeof node !== "object") return found
+  if (Array.isArray(node)) {
+    for (const v of node) findReviews(v, found)
+    return found
+  }
+  if (node["@type"] === "Review" && node.reviewBody) {
+    found.push({
+      author: node.author?.name?.trim() || "Anonymous",
+      location: node.locationCreated?.name?.trim() || undefined,
+      rating: Number(node.reviewRating?.ratingValue) || undefined,
+      title: node.name?.trim() || undefined,
+      content: String(node.reviewBody).trim(),
+      date: node.datePublished,
+    })
+    return found
+  }
+  for (const v of Object.values(node)) findReviews(v, found)
+  return found
+}
+
 const STANDARD = new Set(["Description", "Supplement Facts", "Directions", "Storage", "Cautions", "Warnings"])
 const sectionText = (sections, title) => sections.find((s) => s.title === title)?.text?.trim() || undefined
 
@@ -144,6 +167,7 @@ for (const p of products) {
 const homeByUrl = new Map(homeCatalog.map((h) => [h.sourceUrl, h]))
 const out = []
 const missing = []
+const reviewsBySlug = {}
 fs.mkdirSync(imageOut, { recursive: true })
 
 for (const p of products) {
@@ -189,6 +213,16 @@ for (const p of products) {
     image = `/products/${file}`
   } else missing.push(`${slug}: no main image`)
 
+  // the structured data lists every review twice — keep one per author + date + text
+  const seen = new Set()
+  const reviews = findReviews(p.structuredData).filter((r) => {
+    const key = `${r.author}|${r.date}|${r.content}`
+    if (seen.has(key) || !(r.rating >= 1 && r.rating <= 5 && r.date)) return false
+    seen.add(key)
+    return true
+  })
+  if (reviews.length) reviewsBySlug[slug] = reviews
+
   const line = linePrefix(p.name)
   const cats = membershipByProduct.get(p.sourceUrl) ?? []
   if (cats.includes("bundle-and-save")) for (const v of variants) if (v.label === "Standard") v.label = "Bundle"
@@ -223,6 +257,12 @@ for (const p of out) p.related = [...new Set(p.related.filter((s) => known.has(s
 fs.mkdirSync(outDir, { recursive: true })
 const catalog = { source: { repo: "Yuki-223/shopStore", batch, products: out.length }, categories, products: out }
 fs.writeFileSync(path.join(outDir, "catalog.json"), JSON.stringify(catalog))
+const reviewCount = Object.values(reviewsBySlug).reduce((n, r) => n + r.length, 0)
+fs.writeFileSync(
+  path.join(outDir, "reviews.json"),
+  JSON.stringify({ source: { repo: "Yuki-223/shopStore", batch, reviews: reviewCount }, reviews: reviewsBySlug }, null, 2) + "\n",
+)
+console.log(`reviews ${reviewCount} for ${Object.keys(reviewsBySlug).length} products: ${Object.keys(reviewsBySlug).join(", ")}`)
 
 const variantCount = out.reduce((n, p) => n + p.variants.length, 0)
 console.log(`products ${out.length}, variants ${variantCount}, categories ${categories.length}`)

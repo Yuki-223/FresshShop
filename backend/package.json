@@ -16,6 +16,7 @@
     "setup:local": "node scripts/local.mjs setup",
     "start:local": "node scripts/local.mjs dev",
     "import:metagenics": "node scripts/import-metagenics.mjs",
+    "import:reviews": "node scripts/import-reviews.mjs",
     "build": "medusa build",
     "start": "medusa start",
     "dev": "medusa develop",

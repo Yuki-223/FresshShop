@@ -16,6 +16,7 @@ pnpm start:local   # PostgreSQL + Medusa → http://localhost:9000/app
 
 # in a second terminal, with the backend running:
 pnpm import:metagenics                    # 229 products (add --sample for 3)
+pnpm import:reviews                       # 20 collected review texts (2 products)
 node scripts/verify-metagenics.mjs        # checks everything through the Store API
 ```
 
@@ -51,6 +52,7 @@ and runs with `pnpm setup:local` (or `pnpm exec medusa db:migrate`).
 | `GET /store/reviews?product_id=…&limit=10&offset=0` | approved reviews, newest first, plus `summary` |
 | `POST /store/reviews` | `{ product_id, rating, author_name, title?, content }` → created review + new `summary` (auto-approved in this demo) |
 | `GET /admin/reviews?product_id=&source=&status=` | all reviews for the store owner (admin login required) |
+| `POST /admin/reviews` | bulk create `{ reviews: [...] }` keeping author, location and date (used by `pnpm import:reviews`) |
 
 `summary` = the rating collected from the source site (`product.metadata.rating`, which already counts the collected
 reviews) merged with approved reviews written by our customers.
