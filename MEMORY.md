@@ -73,7 +73,33 @@ FresshShop 有两个分支：
 - 地址：Admin 是 `localhost:9000/app`，官方店面是 `localhost:8000/us`。管理员邮箱 `admin@shopstore.local`，密码在 setup 时随机生成，存在 `.medusa-local/config.json`。
 - 之前的导入**没有**订阅价和评分。成分表等原文存在商品的 metadata 里，库存都是演示值 99。
 
-### 接后端的计划（已经给用户一件一件讲完，用户还没说开始）
+### 在云端启动 Medusa 的方法（第 1 件已完成，2026-11-03）
+
+云端环境用 **root** 运行，而 shopStore 的 `./medusa.sh` 用的是 embedded-postgres。PostgreSQL 不能以 root 身份运行，所以 embedded-postgres 会改用系统里的 `postgres` 用户，这时会遇到三个问题。按下面的顺序处理即可：
+
+```bash
+cd /home/user/shopstore            # shopStore 的 clone（深度 1）
+cd tools/medusa-local && npm ci && cd ../..
+PATH="$PWD/tools/medusa-local/node_modules/.bin:$PATH" ./tools/medusa-local/node_modules/node/bin/node \
+  ./tools/medusa-local/node_modules/pnpm/bin/pnpm.cjs --dir medusa-dtc install --frozen-lockfile
+./medusa.sh status || true         # 第一次运行会生成 .medusa-local/config.json（失败也没关系）
+# 问题 1：postgres 用户进不去 .medusa-local（权限 700）
+# 问题 2：initdb 不能在里面新建数据目录
+# 问题 3：数据库的 socket 文件（-k .medusa-local）写不进去，导致启动"静默失败"（没有任何输出，退出码 0）
+mkdir -p .medusa-local/postgres && chown postgres:postgres .medusa-local/postgres && chmod 700 .medusa-local/postgres
+chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 root 所有、权限 600
+./medusa.sh setup                  # 建库、迁移、创建管理员；成功时输出 "Setup complete"
+./medusa.sh backend                # 后台运行；http://localhost:9000/health 返回 200，Admin 在 /app
+```
+
+还有两个注意点：
+- 如果脚本检测到 55432 端口上**已经有一个数据库在运行**，会打印 "Using workspace PostgreSQL" 并**跳过建库**，接着就会报 "database shopstore_medusa_dtc does not exist"。遇到这种情况，先杀掉遗留的 `native/bin/postgres` 进程再重跑。这次的遗留进程是我手动测试时没关掉的。
+- 管理员密码在 `.medusa-local/config.json` 里，读取后直接使用，**不要显示在对话里**。截图用 Playwright 登录 `localhost:9000/app/login`。
+- 这些改动只在云端，**没有修改 shopStore 仓库**。setup 生成的 `.env` 文件已经被 git 忽略。
+
+第 1 件的结果：后台已登录，商品列表里只有 4 件 Medusa 官方示例衣服。
+
+### 接后端的计划（用户已同意，按顺序进行）
 
 1. 在云端安装并启动 Medusa（后端里是空的），截管理后台的图给用户看。
 2. 用现成脚本导入 229 个商品，截后台商品列表的图。
@@ -84,7 +110,7 @@ FresshShop 有两个分支：
 
 ## 可能的下一步（还没做）
 
-- **接入 Medusa 后端**：按上面的 4 步做，等用户说开始。
+- **接入 Medusa 后端**：第 1 件已完成，正在做第 2 件（导入商品）。用户正在把 1.2 GB 图库作为 Release 上传到 FresshShop。
 - 给保健品版换站名和配色（目前还叫 Freshnesecom、用绿色主题）。
 - 部署到 Vercel。
 - 把 Playwright 测试脚本放进项目（目前只在会话的临时目录里）。
