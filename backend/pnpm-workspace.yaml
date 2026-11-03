@@ -1,0 +1,11 @@
+# The backend is its own pnpm project, separate from the Next.js storefront at the repo root.
+packages:
+  - "."
+
+# embedded-postgres needs its install script to set up the PostgreSQL binaries
+onlyBuiltDependencies:
+  - "@embedded-postgres/darwin-arm64"
+  - "@embedded-postgres/darwin-x64"
+  - "@embedded-postgres/linux-arm64"
+  - "@embedded-postgres/linux-x64"
+  - "@embedded-postgres/windows-x64"

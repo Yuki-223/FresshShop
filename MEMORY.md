@@ -136,7 +136,18 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 
    每个环节截一张图。收尾时提交并推送到 FresshShop，并更新 `MEMORY.md`，写清楚怎么启动和注意事项。
 
-目前进度：**7 件都已经给用户讲完**，用户还没说开始。下一步是在用户同意后从第 1 件开始做。**每做完一件都要停下来汇报，等用户确认再继续。**
+目前进度：**7 件都已经给用户讲完**。**每做完一件都要停下来汇报，等用户确认再继续。**
+
+**第 1 件已完成（2026-11-03）**：后端已经在 `metagenics` 分支的 `backend/` 里。
+- 复制了 shopStore `medusa-dtc/apps/backend` 下被 git 管理的 32 个文件，没有复制 node_modules、.env、数据库和上传文件。
+- 后端是独立的 pnpm 项目（`backend/pnpm-workspace.yaml`），有自己的 `pnpm-lock.yaml`。根目录的 `tsconfig.json` 和 eslint 都排除了 `backend/`。
+- pnpm 默认不运行依赖包的安装脚本，所以在 `backend/pnpm-workspace.yaml` 的 `onlyBuiltDependencies` 里允许了 `@embedded-postgres/*`，否则会报 "Missing symlink libecpg.so"。
+- 启动脚本是 `backend/scripts/local.mjs`。用 `pnpm setup:local` 初始化（注意不能叫 `pnpm setup`，那是 pnpm 自带命令），用 `pnpm start:local` 启动。脚本已经**自动处理 root 权限**：数据目录和 socket 目录交给 postgres 用户；PostgreSQL 已在运行时也会确保建库。
+- 端口：PostgreSQL 用 55433，数据库名 `freshshop_medusa`，Medusa 用 9000。管理员 `admin@freshshop.local`，密码在 `backend/.local/config.json`。publishable key 写在 `backend/.local/publishable-key`。`.env` 的 STORE_CORS 允许 `localhost:3000`。
+- shopStore 那一套后端已经停掉。
+- 结果：后台可以登录，只有 4 件官方示例商品。
+
+下一步：第 2 件，在 FresshShop 写导入程序，导入 229 个商品，另外放进订阅价和评分汇总。
 
 ## 可能的下一步（还没做）
 
