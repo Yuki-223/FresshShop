@@ -25,8 +25,8 @@ async function TopBar() {
           </a>
         </div>
         <div className="flex items-center gap-10 text-brand">
-          <Link href="/blog" className="hover:underline">
-            {t("header.blog")}
+          <Link href="/category/all?subscribe=1" className="hover:underline">
+            {t("header.subscribeSave")}
           </Link>
           <Link href="/about" className="hover:underline">
             {t("header.aboutUs")}

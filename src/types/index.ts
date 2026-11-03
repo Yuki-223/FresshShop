@@ -1,88 +1,79 @@
 import type { L10n } from "@/i18n/config"
 
-export type Unit = "pcs" | "kgs" | "box" | "pack"
-
 /** A filterable value with a stable key (used in URLs) and a localized label. */
 export interface Option {
   value: string
   label: string
 }
 
+/** Navigation group (top nav item). `subcategories` are the source health categories. */
 export interface Category {
   slug: string
   name: string
   subcategories: Option[]
 }
 
-/** Product as returned by the API — already localized for the requested locale. */
+export interface SubscriptionOffer {
+  /** delivery interval in months */
+  months: number
+  /** price per delivery in USD */
+  price: number
+  savePercent: number
+}
+
+export interface Variant {
+  sku: string
+  /** "60 Capsules", "30 Servings · Vanilla", "Bundle" */
+  label: string
+  size?: string
+  flavor?: string
+  /** one-time purchase price in USD */
+  price: number
+  subscriptions: SubscriptionOffer[]
+  available: boolean
+}
+
+export interface Rating {
+  value: number
+  count: number
+}
+
+/** Product as used by listings — already localized for the requested locale. */
 export interface Product {
   id: string
   slug: string
   title: string
   /** Title in every language — stored in the cart so it survives a language switch. */
   titleL10n: L10n
+  /** short line under the title on cards */
   description: string
-  longDescription: string
-  categorySlug: string
-  /** Stable subcategory key (URL value) + localized label. */
-  subcategory: string
-  subcategoryLabel: string
-  /** Stable brand key (URL value) + localized label. */
-  brand: string
-  brandName: string
-  farm: string
-  farmL10n: L10n
-  /** current price in USD (base currency) */
+  summary?: string
+  image?: string
+  /** source health categories (stable keys) and their labels */
+  healthCategories: Option[]
+  productLine?: string
+  form: string
+  formLabel: string
+  isBundle: boolean
+  rating?: Rating
+  variants: Variant[]
+  /** lowest one-time price across variants (USD) */
   price: number
-  /** original price before discount, in USD, if discounted */
-  oldPrice?: number
-  rating: number
-  reviewsCount: number
-  questionsCount: number
-  sku: string
-  freshnessDays: number
-  stock: number
-  units: Unit[]
-  deliveryDays: number
-  deliveryArea: string
-  freeShipping: boolean
-  tags: string[]
-  createdAt: string
+  /** best subscription saving across variants, in % */
+  maxSave: number
+  available: boolean
+  sourceUrl: string
 }
 
-export interface Review {
-  id: string
-  productId: string
-  author: string
-  rating: number
-  date: string
-  body: string
-}
-
-export interface Testimonial {
-  id: string
-  quote: string
-  author: string
-}
-
-export type BlogBlock =
+export type ContentBlock =
   | { type: "paragraph"; text: string }
   | { type: "heading"; text: string }
-  | { type: "quote"; text: string }
-  | { type: "image"; caption?: string }
   | { type: "list"; items: string[] }
 
-export interface BlogPost {
-  slug: string
-  title: string
-  excerpt: string
-  /** stable tag key (URL value) */
-  tag: string
-  tagLabel: string
-  author: string
-  date: string
-  readMinutes: number
-  content: BlogBlock[]
+export interface SupplementFacts {
+  servingSize?: string
+  servings?: string
+  rows: { name: string; amount: string; dv: string }[]
 }
 
 export interface ProductQA {
@@ -90,25 +81,36 @@ export interface ProductQA {
   a: string
 }
 
-export interface NutritionRow {
-  name: string
-  quantity: string
-  dv: string
+/** Everything the product detail page needs. */
+export interface ProductDetail extends Product {
+  content: ContentBlock[]
+  supplementFacts?: SupplementFacts
+  directions?: string
+  storage?: string
+  cautions?: string
+  warnings?: string
+  faq: ProductQA[]
+  related: string[]
 }
 
-export type SortKey = "popular" | "newest" | "price-asc" | "price-desc" | "rating"
+export type SortKey = "popular" | "name" | "price-asc" | "price-desc" | "rating"
 
 export interface ProductQuery {
+  /** navigation group slug, or "all" */
   category?: string
+  /** source health category key */
   subcategory?: string
   q?: string
+  /** product lines */
   brands?: string[]
+  forms?: string[]
+  /** minimum star rating buckets (4 → 4.0–4.99) */
   ratings?: number[]
   /** price bounds in the locale's display currency */
   minPrice?: number
   maxPrice?: number
-  discounted?: boolean
-  freeShipping?: boolean
+  subscribe?: boolean
+  bundle?: boolean
   inStock?: boolean
   sort?: SortKey
   page?: number
@@ -123,20 +125,24 @@ export interface Paginated<T> {
   pageCount: number
 }
 
-/** Snapshot of a product stored in the cart (prices locked at add time, text in all languages). */
+export type PurchaseMode = { type: "once" } | { type: "subscription"; months: number }
+
+/** Cart line: one variant bought one way. Prices locked at add time, text in all languages. */
 export interface CartItem {
+  /** sku + purchase mode, e.g. "ADRES|sub3" */
+  lineId: string
   productId: string
   slug: string
   title: L10n
-  /** base (USD) unit price */
+  image?: string
+  sku: string
+  variantLabel: string
+  /** unit price for the chosen purchase mode (USD) */
   price: number
-  oldPrice?: number
-  rating: number
-  farm: L10n
-  freshnessDays: number
-  units: Unit[]
+  /** one-time price, shown struck through for subscriptions (USD) */
+  listPrice: number
+  purchase: PurchaseMode
   quantity: number
-  unit: Unit
 }
 
-export type ProductSnapshot = Omit<CartItem, "quantity" | "unit">
+export type CartLineInput = Omit<CartItem, "lineId" | "quantity">

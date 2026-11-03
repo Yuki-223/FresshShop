@@ -109,17 +109,20 @@ export function FilterSidebar({
   categorySlug,
   subcategories,
   brands,
+  forms,
   priceBounds,
 }: {
   categorySlug: string
   subcategories: Facet[]
   brands: Facet[]
+  forms: Facet[]
   priceBounds: { min: number; max: number }
 }) {
   const { t } = useI18n()
   const { params, toggleInList } = useQueryState()
   const activeSub = params.get("sub")
   const selectedBrands = params.getAll("brand")
+  const selectedForms = params.getAll("form")
   const selectedRatings = params.getAll("rating")
   const min = params.get("min")
   const max = params.get("max")
@@ -153,10 +156,20 @@ export function FilterSidebar({
       )}
 
       <FilterGroup title={t("catalog.brands")}>
-        <div className="space-y-3">
+        <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
           {brands.map((b) => (
             <CheckRow key={b.value} id={`brand-${b.value}`} checked={selectedBrands.includes(b.value)} onChange={() => toggleInList("brand", b.value)}>
               {b.label} <span className="text-ink-muted">({b.count})</span>
+            </CheckRow>
+          ))}
+        </div>
+      </FilterGroup>
+
+      <FilterGroup title={t("catalog.forms")}>
+        <div className="space-y-3">
+          {forms.map((f) => (
+            <CheckRow key={f.value} id={`form-${f.value}`} checked={selectedForms.includes(f.value)} onChange={() => toggleInList("form", f.value)}>
+              {f.label} <span className="text-ink-muted">({f.count})</span>
             </CheckRow>
           ))}
         </div>

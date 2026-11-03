@@ -5,13 +5,13 @@ export const infoPages: Record<string, { title: L10n; intro: L10n }> = {
   about: {
     title: { en: "About Us", zh: "关于我们" },
     intro: {
-      en: "Freshnesecom connects families with local farms. We deliver fresh fruit, vegetables, meat and bakery products straight from the field to your door.",
-      zh: "Freshnesecom 连接家庭与本地农场，把新鲜的水果、蔬菜、肉类和烘焙食品从田间直接送到你家门口。",
+      en: "Freshnesecom offers practitioner-grade supplements for everyday health needs — from probiotics and omega-3s to protein and sleep support.",
+      zh: "Freshnesecom 提供专业级营养补充剂，满足日常健康需求：益生菌、Omega-3、蛋白粉、睡眠支持等。",
     },
   },
   careers: {
     title: { en: "Careers", zh: "加入我们" },
-    intro: { en: "We are always looking for people who love good food. Drop us a line at info@freshnesecom.com.", zh: "我们一直在寻找热爱美食的伙伴，欢迎发邮件到 info@freshnesecom.com。" },
+    intro: { en: "We are always looking for people who care about health. Drop us a line at info@freshnesecom.com.", zh: "我们一直在寻找关注健康的伙伴，欢迎发邮件到 info@freshnesecom.com。" },
   },
   press: {
     title: { en: "Press Releases", zh: "新闻动态" },
@@ -19,15 +19,15 @@ export const infoPages: Record<string, { title: L10n; intro: L10n }> = {
   },
   affiliate: {
     title: { en: "Become an Affiliate", zh: "成为推广伙伴" },
-    intro: { en: "Earn a commission by recommending fresh food from local farms.", zh: "推荐本地农场的新鲜食材，即可获得佣金。" },
+    intro: { en: "Earn a commission by recommending supplements you trust.", zh: "推荐你信赖的营养补充剂，即可获得佣金。" },
   },
   advertise: {
     title: { en: "Advertise your product", zh: "投放广告" },
-    intro: { en: "Reach thousands of households that care about where their food comes from.", zh: "触达成千上万关心食材来源的家庭。" },
+    intro: { en: "Reach thousands of health-conscious customers.", zh: "触达成千上万关注健康的顾客。" },
   },
   sell: {
     title: { en: "Sell on Market", zh: "入驻开店" },
-    intro: { en: "Are you a farmer? Join our marketplace and sell directly to customers.", zh: "你是农场主吗？入驻我们的商城，直接把产品卖给消费者。" },
+    intro: { en: "Are you a supplement brand? Join our marketplace and sell directly to customers.", zh: "你是营养品牌吗？入驻我们的商城，直接把产品卖给消费者。" },
   },
   account: {
     title: { en: "Your account", zh: "我的账户" },
@@ -39,7 +39,7 @@ export const infoPages: Record<string, { title: L10n; intro: L10n }> = {
   },
   protection: {
     title: { en: "100 % purchase protection", zh: "100% 购物保障" },
-    intro: { en: "Every order is covered: if it doesn't arrive fresh, you don't pay.", zh: "每一笔订单都有保障：送到时不新鲜，就不用付钱。" },
+    intro: { en: "Every order is covered: if it arrives damaged, we replace it for free.", zh: "每一笔订单都有保障：商品破损免费补发。" },
   },
   help: {
     title: { en: "Help", zh: "帮助中心" },

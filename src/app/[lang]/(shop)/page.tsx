@@ -1,45 +1,27 @@
-import { BlogCard, BlogFeatureCard, BlogListItem } from "@/components/blog/blog-cards"
+import { CountPill } from "@/components/common/pills"
 import { LinkListSidebar } from "@/components/common/link-list-sidebar"
 import { SectionHeader } from "@/components/common/section-header"
 import { PromoBanner } from "@/components/home/promo-banner"
-import { TestimonialCarousel } from "@/components/home/testimonial-carousel"
 import { ProductGrid } from "@/components/product/product-card"
+import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
-import {
-  getBestFromFarmers,
-  getBestSelling,
-  getFeatured,
-  listBlogPosts,
-  listCategories,
-  listProductTags,
-  listTestimonials,
-} from "@/lib/api"
-
-const catLink = (slug: string, sub?: string) => `/category/${slug}${sub ? `?sub=${encodeURIComponent(sub)}` : ""}`
+import { getBundles, getByCategory, getMostReviewed, getTopRated, listCategories, listHealthCategories, listProductTags } from "@/lib/api"
 
 export default async function HomePage() {
   const { t, locale } = await getI18n()
-  const [categories, bestSelling, farmers, featured, testimonials, blog, tags] = await Promise.all([
+  const [groups, health, mostReviewed, topRated, bundles, sleep, lines] = await Promise.all([
     listCategories(locale),
-    getBestSelling(locale, 3),
-    getBestFromFarmers(locale, 3),
-    getFeatured(locale, 4),
-    listTestimonials(locale),
-    listBlogPosts(locale, { pageSize: 5 }),
-    listProductTags(locale),
+    listHealthCategories(locale),
+    getMostReviewed(locale, 3),
+    getTopRated(locale, 3),
+    getBundles(locale, 4),
+    getByCategory("sleep", locale, 4),
+    listProductTags(),
   ])
-  const [featurePost, middlePost, ...sidePosts] = blog.items
-  const bySlug = (slug: string) => categories.find((c) => c.slug === slug)!
-  const pick = (slugs: string[]) => slugs.map(bySlug).map((c) => ({ label: c.name, href: catLink(c.slug) }))
-  const tagLink = (key: string) => {
-    const label = tags.find((tg) => tg.value === key)?.label ?? key
-    return { label, href: `/category/all?q=${encodeURIComponent(label)}` }
+  const healthLink = (value: string) => {
+    const h = health.find((x) => x.value === value)!
+    return { label: h.label, href: `/category/${h.group}?sub=${encodeURIComponent(h.value)}` }
   }
-  const meat = bySlug("meat-and-fish")
-  const subLink = (value: string) => ({
-    label: meat.subcategories.find((s) => s.value === value)?.label ?? value,
-    href: catLink("meat-and-fish", value),
-  })
 
   return (
     <div className="container-page space-y-32 pt-16">
@@ -47,59 +29,64 @@ export default async function HomePage() {
       <section className="grid grid-cols-[1fr_3fr] gap-8">
         <LinkListSidebar
           title={t("home.categoryMenu")}
-          links={categories.slice(0, 5).map((c) => ({ label: c.name, href: catLink(c.slug) }))}
+          links={groups.slice(0, 6).map((g) => ({ label: g.name, href: `/category/${g.slug}` }))}
           more={{ label: t("home.moreCategories"), href: "/category/all" }}
         />
         <div className="grid grid-cols-2 gap-8">
-          <PromoBanner eyebrow={t("home.banner1Eyebrow")} title={t("home.banner1Title")} cta={t("home.banner1Cta")} href="/blog" />
           <PromoBanner
-            eyebrow={t("home.banner2Eyebrow")}
-            title={t("home.banner2Title")}
-            cta={t("home.banner2Cta")}
-            href="/category/fruit-and-vegetables?discounted=1"
+            eyebrow={t("home.banner1Eyebrow")}
+            title={t("home.banner1Title")}
+            cta={t("home.banner1Cta")}
+            href="/category/gut-detox?sub=digestion-and-probiotics"
           />
+          <PromoBanner eyebrow={t("home.banner2Eyebrow")} title={t("home.banner2Title")} cta={t("home.banner2Cta")} href="/category/all?subscribe=1" />
         </div>
       </section>
 
       <section className="grid grid-cols-[1fr_3fr] gap-8">
         <LinkListSidebar
           title={t("home.bestSelling")}
-          links={pick(["kitchen", "meat-and-fish", "special-nutrition", "pharmacy", "baby"])}
+          links={["digestion-and-probiotics", "immune-health", "heart-health", "omega-3s-and-fish-oil", "magnesium"].map(healthLink)}
           more={{ label: t("home.moreProducts"), href: "/category/all?sort=popular" }}
         />
-        <ProductGrid products={bestSelling} />
+        <ProductGrid products={mostReviewed} />
       </section>
 
       <section className="grid grid-cols-[1fr_3fr] gap-8">
         <LinkListSidebar
-          title={t("home.bestFromFarmers")}
-          links={[tagLink("Carrots"), tagLink("Tomatoes"), tagLink("Fresh food"), subLink("Chicken"), subLink("Pork")]}
-          more={{ label: t("home.moreProducts"), href: "/category/fruit-and-vegetables" }}
+          title={t("home.topRated")}
+          links={lines.slice(0, 5).map((l) => ({ label: l.label, href: `/category/all?brand=${encodeURIComponent(l.value)}` }))}
+          more={{ label: t("home.moreProducts"), href: "/category/all?sort=rating" }}
         />
-        <ProductGrid products={farmers} />
+        <ProductGrid products={topRated} />
       </section>
 
       <section>
-        <SectionHeader title={t("home.customersSay")} href="/about" linkLabel={t("home.readMore")} />
-        <TestimonialCarousel items={testimonials} />
+        <SectionHeader title={t("home.healthGoals")} href="/category/all" linkLabel={t("home.moreCategories")} />
+        <div className="grid grid-cols-6 gap-4">
+          {health
+            .filter((h) => h.value !== "bundle-and-save")
+            .map((h) => (
+              <Link
+                key={h.value}
+                href={`/category/${h.group}?sub=${encodeURIComponent(h.value)}`}
+                className="group flex h-28 flex-col justify-between rounded-xl border border-line bg-card p-4 transition-colors hover:border-brand-light hover:bg-brand-soft"
+              >
+                <span className="font-heading text-sm font-semibold text-ink group-hover:text-brand-dark">{h.label}</span>
+                <CountPill className="w-fit">{t.plural("home.productCount", h.count)}</CountPill>
+              </Link>
+            ))}
+        </div>
       </section>
 
       <section className="border-t border-surface-2 pt-16">
-        <SectionHeader title={t("home.weeklyDeals")} href="/category/all?discounted=1" linkLabel={t("home.allDeals")} />
-        <ProductGrid products={featured} columns={4} />
+        <SectionHeader title={t("home.weeklyDeals")} href="/category/bundles" linkLabel={t("home.allDeals")} />
+        <ProductGrid products={bundles} columns={4} />
       </section>
 
       <section>
-        <SectionHeader title={t("home.blogPosts")} href="/blog" linkLabel={t("home.goToBlog")} />
-        <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-8">
-          {featurePost && <BlogFeatureCard post={featurePost} className="min-h-[400px]" />}
-          {middlePost && <BlogCard post={middlePost} />}
-          <div className="flex flex-col gap-8">
-            {sidePosts.map((p) => (
-              <BlogListItem key={p.slug} post={p} />
-            ))}
-          </div>
-        </div>
+        <SectionHeader title={t("home.sleepPicks")} href="/category/brain-mood-sleep?sub=sleep" linkLabel={t("home.allSleep")} />
+        <ProductGrid products={sleep} columns={4} />
       </section>
     </div>
   )

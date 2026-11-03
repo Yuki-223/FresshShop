@@ -5,10 +5,10 @@ export type RawSearchParams = Record<string, string | string[] | undefined>
 
 export const SORT_OPTIONS: { value: SortKey; label: MessageKey }[] = [
   { value: "popular", label: "catalog.sortPopular" },
-  { value: "newest", label: "catalog.sortNewest" },
+  { value: "rating", label: "catalog.sortRating" },
+  { value: "name", label: "catalog.sortName" },
   { value: "price-asc", label: "catalog.sortPriceAsc" },
   { value: "price-desc", label: "catalog.sortPriceDesc" },
-  { value: "rating", label: "catalog.sortRating" },
 ]
 
 export type ViewMode = "grid" | "list"
@@ -33,8 +33,9 @@ export function parseProductQuery(sp: RawSearchParams, category?: string): Produ
     ratings: list(sp.rating).map(Number).filter(Boolean),
     minPrice: num(sp.min),
     maxPrice: num(sp.max),
-    discounted: first(sp.discounted) === "1",
-    freeShipping: first(sp.shipping) === "1",
+    forms: list(sp.form),
+    subscribe: first(sp.subscribe) === "1",
+    bundle: first(sp.bundle) === "1",
     inStock: first(sp.stock) === "1",
     sort: SORT_OPTIONS.some((o) => o.value === sort) ? sort : "popular",
     page: num(sp.page) ?? 1,

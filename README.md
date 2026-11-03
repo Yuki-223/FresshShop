@@ -1,4 +1,35 @@
-# Freshnesecom
+# Freshnesecom — Metagenics 保健品版（`metagenics` 分支）
+
+> 这个分支用同一套商城外壳装载 Metagenics 保健品数据：229 个商品、316 个规格、18 个健康分类。`main` 分支仍然是原来的生鲜版。
+
+## 这个分支和 main 的区别
+
+- **数据**：来自 `Yuki-223/shopStore` 的采集数据（批次 2026-10-31）。`scripts/import-metagenics.mjs` 把它转成精简的 `src/lib/data/metagenics/catalog.json`，并复制 229 张主图到 `public/products/`。采集原件不做任何修改。
+- **语言**：默认进入英文站，商品内容是英文原文。仍然可以切换到中文界面，界面文字是中文、商品内容保持英文，价格换算成人民币。
+- **导航**：18 个健康分类合并成 8 个导航分组，分类页里再按健康分类细分。一个商品可以同时属于多个分类。
+- **商品详情**：可选容量和口味；可选单次购买或订阅（1/2/3 个月），订阅价来自采集数据；标签页依次是介绍、成分表（Supplement Facts）、用法与储存、注意事项、FAQ、评分。
+- **评分**：只显示采集到的真实评分和评价数（229 个商品中有 213 个），不编造评价内容。
+- **筛选**：健康分类、产品系列（UltraFlora、OmegaGenics 等）、剂型、评分、价格，以及"有货 / 订阅更省 / 组合装"快捷筛选。
+- **购物车**：按"规格 + 购买方式"区分行，同一个规格的单次购买和订阅是两行。
+- **移除的内容**：博客、顾客评价轮播等生鲜版的演示内容。
+
+### 重新导入数据
+
+```bash
+git clone https://github.com/Yuki-223/shopStore.git ../shopStore
+node scripts/import-metagenics.mjs ../shopStore
+```
+
+### 已知限制
+
+- 规格详情（成分表、用法等）取自每个商品的第一个规格。不同口味的成分表可能略有不同。
+- 4 个商品采集时显示缺货，页面上不能加入购物车。
+- 9 个组合装作为普通商品展示，没有拆分组件。
+- 价格是 2026-10-31 的快照；订阅只是演示，不会产生真实的周期扣款。
+
+---
+
+# 以下是 main 分支（生鲜版）的说明
 
 基于 Figma 模板「eCommerce - Template」实现的生鲜商城前端，支持**中文 / 英文**双语：Next.js 16（App Router，开启 Cache Components）、TypeScript、Tailwind v4、shadcn/ui（Base UI 版本）。
 

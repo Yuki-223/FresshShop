@@ -10,10 +10,10 @@ import type { MessageKey } from "@/i18n/dictionary"
 import { SORT_OPTIONS, type ViewMode } from "@/lib/search-params"
 import { cn } from "@/lib/utils"
 
-const TOGGLES: { key: "stock" | "discounted" | "shipping"; label: MessageKey }[] = [
+const TOGGLES: { key: "stock" | "subscribe" | "bundle"; label: MessageKey }[] = [
   { key: "stock", label: "catalog.inStock" },
-  { key: "discounted", label: "catalog.discounted" },
-  { key: "shipping", label: "catalog.freeShipping" },
+  { key: "subscribe", label: "catalog.subscribe" },
+  { key: "bundle", label: "catalog.bundle" },
 ]
 
 /** Row of quick-filter chips + sort select under the page title. */
@@ -76,8 +76,13 @@ export function AppliedFilters({ labels }: { labels: Record<string, string> }) {
   if (sub) chips.push({ label: label(sub), remove: () => set({ sub: null }) })
   for (const b of params.getAll("brand"))
     chips.push({ label: label(b), remove: () => set({ brand: params.getAll("brand").filter((x) => x !== b) }) })
+  for (const f of params.getAll("form"))
+    chips.push({ label: label(f), remove: () => set({ form: params.getAll("form").filter((x) => x !== f) }) })
   for (const r of params.getAll("rating"))
-    chips.push({ label: t.plural("catalog.ratingChip", Number(r)), remove: () => set({ rating: params.getAll("rating").filter((x) => x !== r) }) })
+    chips.push({
+      label: t.plural("catalog.ratingChip", Number(r), { next: Number(r) === 5 ? 5 : `${r}.9` }),
+      remove: () => set({ rating: params.getAll("rating").filter((x) => x !== r) }),
+    })
   const min = params.get("min")
   const max = params.get("max")
   if (min || max)
@@ -101,7 +106,7 @@ export function AppliedFilters({ labels }: { labels: Record<string, string> }) {
       ))}
       <button
         type="button"
-        onClick={() => set(Object.fromEntries(["q", "sub", "brand", "rating", "min", "max", ...TOGGLES.map((tg) => tg.key)].map((k) => [k, null])))}
+        onClick={() => set(Object.fromEntries(["q", "sub", "brand", "form", "rating", "min", "max", ...TOGGLES.map((tg) => tg.key)].map((k) => [k, null])))}
         className="ml-2 text-ink-muted underline hover:text-ink"
       >
         {t("catalog.clearAll")}

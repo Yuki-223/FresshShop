@@ -23,7 +23,7 @@ export function MainNavBase({ categories, pathname }: { categories: Category[]; 
   const t = useT()
   return (
     <nav aria-label={t("header.categoriesNav")} className="bg-surface">
-      <ul className="container-page flex h-[52px] items-center gap-10">
+      <ul className="container-page flex h-[52px] items-center justify-between gap-6">
         {categories.map((c) => {
           const active = pathname === `/category/${c.slug}`
           return (
@@ -33,7 +33,7 @@ export function MainNavBase({ categories, pathname }: { categories: Category[]; 
                   openOnHover
                   delay={80}
                   className={cn(
-                    "flex items-center gap-1 font-heading text-[15px] font-medium text-ink outline-none hover:text-brand data-popup-open:text-brand",
+                    "flex items-center gap-1 font-heading text-[15px] font-medium whitespace-nowrap text-ink outline-none hover:text-brand data-popup-open:text-brand",
                     active && "text-brand",
                   )}
                 >

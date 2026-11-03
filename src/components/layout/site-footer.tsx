@@ -11,7 +11,7 @@ const columns: { title: MessageKey; links: { label: MessageKey | string; href: s
       { label: "footer.aboutUs", href: "/about" },
       { label: "footer.careers", href: "/careers" },
       { label: "footer.pressReleases", href: "/press" },
-      { label: "footer.blog", href: "/blog" },
+      { label: "footer.bundles", href: "/category/bundles" },
     ],
   },
   {
@@ -48,8 +48,8 @@ export async function Copyright({ owner = "petrbilek.com" }: { owner?: string })
 }
 
 export async function SiteFooter() {
-  const { t, locale } = await getI18n()
-  const tags = await listProductTags(locale)
+  const { t } = await getI18n()
+  const tags = await listProductTags()
   const label = (l: string) => (l.startsWith("footer.") ? t(l as MessageKey) : l)
   return (
     <footer className="container-page mt-24">
@@ -73,7 +73,7 @@ export async function SiteFooter() {
         <h3 className="mb-4 text-lg font-medium text-ink">{t("footer.productTags")}</h3>
         <div className="flex flex-wrap gap-x-4 gap-y-3">
           {tags.map((tag) => (
-            <TagChip key={tag.value} href={`/category/all?q=${encodeURIComponent(tag.label)}`}>
+            <TagChip key={tag.value} href={`/category/all?brand=${encodeURIComponent(tag.value)}`}>
               {tag.label}
             </TagChip>
           ))}

@@ -33,6 +33,9 @@ export function OrderSummary({ totals, deliveryDays }: { totals: CartTotals; del
     <aside className="sticky top-6 rounded-xl border border-line p-6">
       <h2 className="text-[22px] font-semibold text-ink">{t("checkout.orderSummary")}</h2>
       <p className="text-xs text-ink-muted">{t("checkout.orderSummarySub")}</p>
+      {items.some((i) => i.purchase.type === "subscription") && (
+        <p className="mt-3 rounded-xl bg-brand-soft px-3 py-2 text-xs text-brand-dark">{t("checkout.subscriptionNote")}</p>
+      )}
 
       <div className="divide-y divide-surface-2 border-b border-surface-2">
         {items.map((item) => (

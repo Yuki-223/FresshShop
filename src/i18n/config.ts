@@ -1,6 +1,7 @@
 export const locales = ["zh", "en"] as const
 export type Locale = (typeof locales)[number]
-export const defaultLocale: Locale = "zh"
+/** The supplement catalog is English-first: everyone starts on /en unless they picked a language. */
+export const defaultLocale: Locale = "en"
 
 /** Cookie that remembers the visitor's explicit language choice (read by proxy.ts). */
 export const LOCALE_COOKIE = "NEXT_LOCALE"

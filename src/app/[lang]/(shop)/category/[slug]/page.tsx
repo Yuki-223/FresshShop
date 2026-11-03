@@ -32,7 +32,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   const query = parseProductQuery(await searchParams, slug)
   const [result, facets] = await Promise.all([searchProducts(query, locale), getFacets(slug, locale)])
   const title = query.q ? t("catalog.resultsFor", { q: query.q }) : category.name
-  const labels = Object.fromEntries([...facets.brands, ...facets.subcategories].map((f) => [f.value, f.label]))
+  const labels = Object.fromEntries([...facets.brands, ...facets.subcategories, ...facets.forms].map((f) => [f.value, f.label]))
 
   return (
     <div className="container-page">
@@ -48,7 +48,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
       </div>
 
       <div className="mt-16 grid grid-cols-[230px_1fr] gap-8">
-        <FilterSidebar categorySlug={slug} subcategories={facets.subcategories} brands={facets.brands} priceBounds={priceRange(locale)} />
+        <FilterSidebar categorySlug={slug} subcategories={facets.subcategories} brands={facets.brands} forms={facets.forms} priceBounds={priceRange(locale)} />
 
         <section aria-label={t("catalog.productsLabel")}>
           {result.items.length === 0 ? (
@@ -68,7 +68,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
           ) : (
             <div className="grid grid-cols-3 gap-8">
               {result.items.map((p) => (
-                <ProductCard key={p.id} product={p} showRating />
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}

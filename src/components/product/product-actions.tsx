@@ -8,46 +8,36 @@ import { useI18n } from "@/i18n/client"
 import { useCart } from "@/lib/store/cart"
 import { useCompare, useWishlist } from "@/lib/store/wishlist"
 import { cn } from "@/lib/utils"
-import type { ProductSnapshot, Unit } from "@/types"
+import type { CartLineInput } from "@/types"
 
 export function useAddToCart() {
   const { t, locale } = useI18n()
   const add = useCart((s) => s.add)
   const setOpen = useCart((s) => s.setOpen)
-  return (product: ProductSnapshot, quantity = 1, unit?: Unit) => {
-    add(product, quantity, unit)
-    toast.success(t("product.addedToCart", { title: product.title[locale] }), {
+  return (line: CartLineInput, quantity = 1) => {
+    add(line, quantity)
+    toast.success(t("product.addedToCart", { title: line.title[locale] }), {
       action: { label: t("product.viewCart"), onClick: () => setOpen(true) },
     })
   }
 }
 
 /** Compact "Buy now" button used on every product card. */
-export function BuyNowButton({ product, className }: { product: ProductSnapshot; className?: string }) {
+export function BuyNowButton({ line, disabled, className }: { line: CartLineInput; disabled?: boolean; className?: string }) {
   const { t } = useI18n()
   const addToCart = useAddToCart()
   return (
-    <Button size="sm" className={className} onClick={() => addToCart(product)}>
-      {t("product.buyNow")}
+    <Button size="sm" className={className} disabled={disabled} onClick={() => addToCart(line)}>
+      {disabled ? t("product.outOfStock") : t("product.buyNow")}
     </Button>
   )
 }
 
-export function AddToCartButton({
-  product,
-  quantity,
-  unit,
-  disabled,
-}: {
-  product: ProductSnapshot
-  quantity: number
-  unit: Unit
-  disabled?: boolean
-}) {
+export function AddToCartButton({ line, quantity, disabled }: { line: CartLineInput; quantity: number; disabled?: boolean }) {
   const { t } = useI18n()
   const addToCart = useAddToCart()
   return (
-    <Button disabled={disabled} onClick={() => addToCart(product, quantity, unit)}>
+    <Button disabled={disabled} onClick={() => addToCart(line, quantity)}>
       <Plus className="size-4" strokeWidth={3} />
       {disabled ? t("product.outOfStock") : t("product.addToCart")}
     </Button>

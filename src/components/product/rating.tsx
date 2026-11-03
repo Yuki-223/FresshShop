@@ -10,11 +10,14 @@ import { cn } from "@/lib/utils"
  */
 export function Rating({
   value,
+  count,
   tone = "ink",
   size = "sm",
   className,
 }: {
   value: number
+  /** show "(14)" after the stars */
+  count?: number
   tone?: "ink" | "gold"
   size?: "xs" | "sm" | "md"
   className?: string
@@ -25,8 +28,9 @@ export function Rating({
   return (
     <div className={cn("flex items-center gap-0.5", className)} role="img" aria-label={t("product.ratedOutOf", { value })}>
       {Array.from({ length: 5 }, (_, i) => (
-        <Star key={i} className={cn(px, i < value ? filled : "fill-transparent text-line")} strokeWidth={1.5} />
+        <Star key={i} className={cn(px, i < Math.round(value) ? filled : "fill-transparent text-line")} strokeWidth={1.5} />
       ))}
+      {count != null && <span className="ml-1 text-xs text-ink-muted">({count})</span>}
     </div>
   )
 }

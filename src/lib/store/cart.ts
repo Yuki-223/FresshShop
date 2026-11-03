@@ -2,7 +2,8 @@
 
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
-import type { CartItem, ProductSnapshot, Unit } from "@/types"
+import { lineIdOf } from "@/lib/product"
+import type { CartItem, CartLineInput } from "@/types"
 
 /** Demo promo codes → percentage off the subtotal. */
 const PROMO_CODES: Record<string, number> = { FRESH10: 0.1, FARM20: 0.2 }
@@ -11,9 +12,10 @@ interface CartState {
   items: CartItem[]
   promoCode: string | null
   isOpen: boolean
-  add: (product: ProductSnapshot, quantity?: number, unit?: Unit) => void
-  update: (productId: string, patch: Partial<Pick<CartItem, "quantity" | "unit">>) => void
-  remove: (productId: string) => void
+  /** Same SKU bought the same way → quantities merge; a different purchase mode is a separate line. */
+  add: (line: CartLineInput, quantity?: number) => void
+  setQuantity: (lineId: string, quantity: number) => void
+  remove: (lineId: string) => void
   clear: () => void
   applyPromo: (code: string) => boolean
   setOpen: (open: boolean) => void
@@ -25,25 +27,16 @@ export const useCart = create<CartState>()(
       items: [],
       promoCode: null,
       isOpen: false,
-      add: (product, quantity = 1, unit) =>
+      add: (line, quantity = 1) =>
         set((s) => {
-          const existing = s.items.find((i) => i.productId === product.productId)
-          if (existing) {
-            return {
-              items: s.items.map((i) =>
-                i.productId === product.productId ? { ...i, quantity: i.quantity + quantity, unit: unit ?? i.unit } : i,
-              ),
-            }
-          }
-          return { items: [...s.items, { ...product, quantity, unit: unit ?? product.units[0] }] }
+          const lineId = lineIdOf(line.sku, line.purchase)
+          const existing = s.items.find((i) => i.lineId === lineId)
+          if (existing) return { items: s.items.map((i) => (i.lineId === lineId ? { ...i, quantity: i.quantity + quantity } : i)) }
+          return { items: [...s.items, { ...line, lineId, quantity }] }
         }),
-      update: (productId, patch) =>
-        set((s) => ({
-          items: s.items.map((i) =>
-            i.productId === productId ? { ...i, ...patch, quantity: Math.max(1, patch.quantity ?? i.quantity) } : i,
-          ),
-        })),
-      remove: (productId) => set((s) => ({ items: s.items.filter((i) => i.productId !== productId) })),
+      setQuantity: (lineId, quantity) =>
+        set((s) => ({ items: s.items.map((i) => (i.lineId === lineId ? { ...i, quantity: Math.max(1, quantity) } : i)) })),
+      remove: (lineId) => set((s) => ({ items: s.items.filter((i) => i.lineId !== lineId) })),
       clear: () => set({ items: [], promoCode: null }),
       applyPromo: (code) => {
         const normalized = code.trim().toUpperCase()
@@ -55,8 +48,8 @@ export const useCart = create<CartState>()(
     }),
     {
       name: "freshnesecom-cart",
-      // v2: product text is stored in every language ({ en, zh }); older carts are dropped
-      version: 2,
+      // v3: lines are variant + purchase mode (supplement catalog); older carts are dropped
+      version: 3,
       migrate: () => ({ items: [], promoCode: null }),
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({ items: s.items, promoCode: s.promoCode }),
