@@ -174,7 +174,31 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 - 注意：采集到的评论**全是 5 星**，而平均分只有 3.9 到 4.3，说明采集的只是原网站排在前面的好评。
 - 第一次导入时没有去重，导进了 40 条，后来用 SQL 删掉 collected 评论，再按去重后的数据重新导入。
 
-下一步：第 5 件，商城改成从后端读取商品。
+**第 5 件已完成（2026-11-03）**：商城的商品、购物车和下单都走后端。
+- `src/lib/medusa/server.ts`：只在服务端使用，访问 Store API。key 优先读环境变量 `MEDUSA_PUBLISHABLE_KEY`，否则读 `backend/.local/publishable-key`；还会找到美元区（`storeRegion()`）。
+- `src/lib/data/metagenics/remote.ts`：从后端拉取 metagenics 集合的全部商品，转换成原来的 `CatalogProduct` 结构，在进程内缓存 15 秒。函数里调用了 `connection()`，所以只在请求时读取，构建时不需要后端。
+- `lib/api` 的商品函数都改成 `await records()`。`priceRange` 改成异步。`listCategories` 和 `listProductTags` 仍然读本地 `catalog.json`，这样页头页脚可以提前生成。
+- 类型新增：`Variant.id`（Medusa variant id）、`Product.medusaId`、`CartLineInput.variantId`。
+- 后端图片地址是 `http://localhost:9000/static/...`。因为 Next 16 默认不优化本机 IP 的图片，所以对 http 地址加了 `unoptimized`，没有打开 `dangerouslyAllowLocalIP`。
+- 后端新增 `POST /store/carts/:id/purchase-items`（`backend/src/api/store/carts/[id]/purchase-items/`）。订阅价由服务端从 variant metadata 里查出，再用 `addToCartWorkflow` 的 `unit_price` 加购。line item 的 metadata 里有 `purchase`、`months`、`list_price`。单次购买和订阅是两行。不存在的订阅周期会被拒绝。
+- `backend/scripts/import-metagenics.mjs` 新增：
+  - 区域改为美元区，包含 us 和 cn。
+  - 物流：FedEx $32、DHL $15（美国）；SF $1.69、JD $1.127（中国，换算后正好 ¥12 和 ¥8）。shipping option 的 type code 是 `carrier-<id>`。
+  - 优惠码 FRESH10 和 FARM20（按订单打折）。
+  - 旧的 "Demo Standard $10" 在当前数据库里还在，商城按 `carrier-` 过滤掉了。
+- 购物车：`src/lib/cart/actions.ts`（server actions）+ `src/lib/cart/types.ts` + `src/lib/store/cart.ts`（zustand，不再持久化）+ `components/cart/cart-sync.tsx`（启动时加载）。cookie 是 `freshshop_cart_id`（httpOnly）。所有金额都由后端计算。
+- 结账：进入页面先调用 `prepareCheckout(us|cn)` 设置收货国家并列出物流；选择物流时调用 `selectCarrier`；提交时调用 `placeOrder`，依次更新邮箱和地址、设置物流、创建付款（pp_system_default），最后 complete。订单号显示为 `FR-00007` 这种格式（display_id）。英文站国家只有 United States。中文地址的映射：province → province，prefecture → city，区县和详细地址合并成 address_1，国家是 cn。
+- 人民币显示：`localTotals()` 逐行换算再相加，保证每一行加起来等于总价。金额全程保留完整精度，只在显示时四舍五入。
+- 验证结果：
+  - 后台把 Adreset 改成 $49.95，16 秒后商城跟着变（之后已改回 $45.95）。
+  - 购物车可以加入单次和订阅；改数量后订阅价不变；刷新页面购物车还在。
+  - 无效优惠码被拒绝，FRESH10 生效。
+  - 英文站 DHL 下单生成后台订单；中文站顺丰下单生成后台订单，地址是中国。
+  - 控制台没有报错。
+- 后台里有 7 个测试订单（#1–#7），是演示数据。
+- **商城现在必须先启动后端才能使用**，因为没有静态数据回退。
+
+下一步：第 6 件，商城加上评论界面。
 
 ## 可能的下一步（还没做）
 
