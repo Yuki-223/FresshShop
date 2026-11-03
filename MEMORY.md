@@ -99,18 +99,38 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 
 第 1 件的结果：后台已登录，商品列表里只有 4 件 Medusa 官方示例衣服。
 
-### 接后端的计划（用户已同意，按顺序进行）
+### 用 shopStore 的后端试跑（已完成，计划已经被取代）
 
-1. 在云端安装并启动 Medusa（后端里是空的），截管理后台的图给用户看。
-2. 用现成脚本导入 229 个商品，截后台商品列表的图。
-3. 把商城（FresshShop 的 `metagenics` 分支）的 `lib/api` 改成从 Medusa 读数据，购物车和下单也走后端。做到这一步时要**问用户**：后端没有的订阅价和评分怎么处理（暂时隐藏，还是继续读静态文件）。
-4. 走一遍流程，截图给用户看：商城页面、后台改价格后商城跟着变、下单后后台出现订单。
+- 第 1 件已完成：在云端启动 shopStore 的 Medusa，见上文。
+- 第 2 件已完成：用 shopStore 的 `import-metagenics.mjs` 导入了 229 个商品（新建 226 个，加上之前的 3 个样本）。官方核验脚本 `verify-metagenics.mjs` 全部通过：229 个商品、316 个规格、18 个分类、9 个组合装、美元价格一致、库存都是 99、229 张图可访问、购物车测试通过。核验脚本还需要官方店面在 `:8000` 运行，用 `./medusa.sh storefront` 启动。
+- 导入和核验会改写 shopStore 的 `verification/*.json`；Next 开发模式会改写 `medusa-dtc/apps/storefront/next-env.d.ts`。这些都要用 `git checkout` **还原，不要提交**到 shopStore。
 
-每做完一件都要停下来汇报，等用户确认再继续。
+### 关于评价数据（2026-11-03 查证）
+
+- **评分汇总**：229 个商品里有 213 个有平均分和评价数，来自 `structuredData` 里的 `aggregateRating`。
+- **评论原文**：只有 2 个商品有，各 20 条，一共 40 条：MagActive® Magnesium Muscle Powder Packets、Tran-Q Sleep。字段有标题、正文、日期、作者、地区和星级。其余商品没有采集评论原文。
+- Medusa **默认没有评论功能**，需要在后端自己加一个评论模块（官方有教程）。
+- 前端现状：保健品版只显示星级、评价数，以及一个跳到品牌官网的链接，没有评论列表，也不能写评论。生鲜版（main）有一个写评论的表单，但没有后端，刷新后评论就没了。
+
+### 新计划：后端搬进 FresshShop + 评论功能（用户已认可方向，还没开始动手）
+
+用户的决定：**把后端复制一份到 FresshShop 里，在这里加评论功能，不改 shopStore**。shopStore 只作为采集数据的来源。之后会有两份后端，各自独立修改。
+
+总览，一共 7 件：
+1. **把后端搬进 FresshShop**：在 FresshShop 新建 `backend/`，复制 shopStore 的 Medusa 后端和启动工具（`medusa-dtc` 里的 backend 和 `tools/medusa-local`），在云端启动。**不复制** `node_modules`、数据库文件、`.env` 和 `config.json` 这类密码文件。做完后截一张后台的图，这时后台里没有商品。
+2. **把商品放进新后端**：在 FresshShop 写导入程序，参照 shopStore 的 `import-metagenics.mjs`。这次**另外放进订阅价和评分汇总**，存到商品或规格的 metadata 里。做完后截图：后台有 229 个商品，并且能看到订阅价和评分。
+3. **给后端加评论功能**：做一个评论模块，后端能保存和读取评论。
+4. **放入已有的评价数据**：213 个商品的评分汇总，以及 40 条评论原文。
+5. **商城从后端读取商品**：把 `metagenics` 分支的 `lib/api` 改成调用 Medusa Store API，购物车和下单也走后端。页面样子不变。
+6. **商城加上评论界面**：商品页显示评论列表，并且可以写评论（参考 main 分支的表单）。
+7. **整体走一遍，截图给用户看**，然后更新 `MEMORY.md`。
+
+目前进度：总览、第 1 件、第 2 件已经给用户讲完；第 3 到第 7 件还没细讲。下一步是讲第 3 件，或者在用户同意后从第 1 件开始做。**每做完一件都要停下来汇报。**
 
 ## 可能的下一步（还没做）
 
-- **接入 Medusa 后端**：第 1 件已完成，正在做第 2 件（导入商品）。用户正在把 1.2 GB 图库作为 Release 上传到 FresshShop。
+- **后端搬进 FresshShop + 评论功能**：按上面的 7 件事做，还没开始。
+- 用户正在把 1.2 GB 图库作为 Release 上传到 FresshShop。
 - 给保健品版换站名和配色（目前还叫 Freshnesecom、用绿色主题）。
 - 部署到 Vercel。
 - 把 Playwright 测试脚本放进项目（目前只在会话的临时目录里）。
