@@ -147,7 +147,15 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 - shopStore 那一套后端已经停掉。
 - 结果：后台可以登录，只有 4 件官方示例商品。
 
-下一步：第 2 件，在 FresshShop 写导入程序，导入 229 个商品，另外放进订阅价和评分汇总。
+**第 2 件已完成（2026-11-03）**：在 `backend/scripts/import-metagenics.mjs` 写了导入程序（`pnpm import:metagenics`，`--sample` 只导 3 个）。
+- 数据源是 FresshShop 自己的 `src/lib/data/metagenics/catalog.json` 和 `public/products/*.png`，**导入时不需要 shopStore**。
+- 比 shopStore 的导入多放了这些：规格 metadata 里有 `size`、`flavor`、`subscriptions`、`source_available`；商品 metadata 里有 `rating`、`product_line`、`form`、`is_bundle`、`content`、`supplement_facts`、`directions`、`storage`、`cautions`、`warnings`、`faq`、`related`。
+- 选项改成正规的 `Size` / `Flavor`，组合装用 `Bundle`，原来是单一的 "Size / Flavor"。4 个缺货商品库存设为 0，其余是 99。
+- 核验程序 `backend/scripts/verify-metagenics.mjs` 全部通过：229 个商品、316 个规格、18 个分类、213 个评分、316 个规格都有订阅价、价格 316/316 一致、229 张图可以访问、缺货商品加购会被拒绝。
+- **坑**：Store API 的 fields 如果写成"只要这几个字段"（例如 `handle,title,…`），就拿不到 `variants.metadata`。要用 `+metadata,*variants,…` 这种写法。
+- **坑**：后端开发模式会监视文件，改 `backend/` 里的文件（包括 package.json 和 scripts）会自动重启，大约 10 秒内调用接口会连不上。
+
+下一步：第 3 件，给后端加评论功能。
 
 ## 可能的下一步（还没做）
 
