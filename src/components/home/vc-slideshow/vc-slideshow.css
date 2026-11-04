@@ -1,0 +1,223 @@
+/* ==========================================================================
+   VcSlideshow — Vitacost homepage hero slideshow (from the user's vc-slideshow component).
+   Desktop only. Placed inside .container-page, so the viewport has no padding of its own:
+   1350 × 369 at 1440px (ratio 27.34375% = 525 ÷ 1920). Colours use the store's tokens.
+   ========================================================================== */
+
+.vcs {
+  --vcs-ink: var(--ink);
+  --vcs-ink-soft: rgba(21, 21, 21, 0.75);
+  --vcs-line: rgba(21, 21, 21, 0.08);
+  --vcs-track: #f2f2f0;
+  --vcs-ratio: 27.34375%;
+
+  position: relative;
+  width: 100%;
+}
+
+.vcs *,
+.vcs *::before,
+.vcs *::after {
+  box-sizing: border-box;
+}
+
+/* the page container provides width and gutters */
+.vcs__viewport {
+  width: 100%;
+}
+
+/* native horizontal scrolling + scroll-snap (not transforms) */
+.vcs__track {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.vcs__track::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.vcs__slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: center;
+}
+
+/* height comes from the ratio; the image is absolutely positioned (no layout shift) */
+.vcs__media {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: var(--vcs-ratio);
+  overflow: hidden;
+  background: var(--vcs-track);
+}
+
+.vcs__picture,
+.vcs__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.vcs__img {
+  object-fit: cover;
+  object-position: center center;
+  user-select: none;
+}
+
+.vcs__link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+}
+
+
+/* ---------- controls under the image ---------- */
+
+.vcs__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+}
+
+.vcs__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--vcs-ink-soft);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.vcs__btn:hover {
+  color: var(--vcs-ink);
+}
+
+.vcs__btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: -2px;
+  border-radius: 2px;
+}
+
+.vcs__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.vcs__btn:hover .vcs__icon-wrap {
+  transform: scale(1.1);
+}
+
+.vcs__icon-caret {
+  width: 10px;
+  height: 6px;
+}
+
+.vcs__btn--next .vcs__icon-caret {
+  transform: rotate(-90deg);
+}
+
+.vcs__btn--prev .vcs__icon-caret {
+  transform: rotate(90deg);
+}
+
+.vcs__counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.4rem;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--vcs-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* play/pause: thin divider on the left, as on vitacost.com */
+.vcs__btn--play {
+  width: 44px;
+  padding-left: 6px;
+  margin-left: 6px;
+  border-left: 1px solid var(--vcs-line);
+}
+
+.vcs__btn--play .vcs__icon-wrap {
+  position: relative;
+  width: 10px;
+  height: 14px;
+}
+
+.vcs__icon-pause,
+.vcs__icon-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  opacity: 1;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.vcs__icon-pause {
+  width: 8px;
+  height: 12px;
+}
+
+.vcs__icon-play {
+  width: 10px;
+  height: 14px;
+}
+
+.vcs__btn--play.is-paused .vcs__icon-pause,
+.vcs__btn--play:not(.is-paused) .vcs__icon-play {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.8);
+}
+
+.vcs__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .vcs__track {
+    scroll-behavior: auto;
+  }
+
+  .vcs__btn:hover .vcs__icon-wrap {
+    transform: none;
+  }
+}

@@ -16,7 +16,8 @@
  * Variants that were out of stock in the source start with stock 0, the rest with 99.
  *
  * It also sets up the store for the storefront checkout: one USD region for the US and China,
- * carriers FedEx/DHL (US) and SF/JD (China) as shipping options, and promo codes FRESH10/FARM20.
+ * carriers FedEx/DHL (US) and SF/JD (China) as shipping options (free when the items total ≥ $30),
+ * and promo codes FRESH10/FARM20/OCT26DAILY.
  *
  * Re-runs are safe: existing products (matched by handle + external_id) are reused and
  * their stock is never reset. All writes go through the Medusa Admin API.
@@ -111,6 +112,12 @@ const CARRIERS = {
   // the storefront shows ¥12 / ¥8; the demo region bills in USD (rate 7.1)
   cn: { zone: "China Demo", options: [{ id: "sf", name: "SF Express", amount: 1.69 }, { id: "jd", name: "JD Logistics", amount: 1.127 }] },
 }
+/**
+ * "Free shipping on orders over $30" (homepage banner): every carrier costs 0 once the cart's
+ * item_total — the items after discounts, without shipping — reaches $30.
+ */
+const FREE_SHIPPING_RULE = { attribute: "item_total", operator: "gte", value: 30 }
+const freeShippingPrice = { currency_code: "usd", amount: 0, rules: [FREE_SHIPPING_RULE] }
 for (const [country, { zone: zoneName, options }] of Object.entries(CARRIERS)) {
   let zone = set.service_zones?.find((z) => z.name === zoneName)
   if (!zone) {
@@ -120,9 +127,22 @@ for (const [country, { zone: zoneName, options }] of Object.entries(CARRIERS)) {
     })
     zone = fulfillment_set.service_zones.find((z) => z.name === zoneName)
   }
-  const { shipping_options } = await admin(`/admin/shipping-options?service_zone_id=${zone.id}&fields=id,name,*type`)
+  const { shipping_options } = await admin(
+    `/admin/shipping-options?service_zone_id=${zone.id}&fields=id,name,*type,*prices,*prices.price_rules`,
+  )
   for (const o of options) {
-    if (shipping_options.some((x) => x.type?.code === `carrier-${o.id}`)) continue
+    const existing = shipping_options.find((x) => x.type?.code === `carrier-${o.id}`)
+    if (existing) {
+      // older databases: add the free-shipping price if it is missing
+      const hasFree = existing.prices?.some((p) => p.price_rules?.some((r) => r.attribute === FREE_SHIPPING_RULE.attribute))
+      if (!hasFree) {
+        const base = existing.prices.find((p) => !p.price_rules?.length)
+        await admin(`/admin/shipping-options/${existing.id}`, {
+          prices: [{ id: base.id, currency_code: "usd", amount: base.amount }, freeShippingPrice],
+        })
+      }
+      continue
+    }
     await admin("/admin/shipping-options", {
       name: o.name,
       price_type: "flat",
@@ -130,7 +150,7 @@ for (const [country, { zone: zoneName, options }] of Object.entries(CARRIERS)) {
       service_zone_id: zone.id,
       shipping_profile_id: profile.id,
       type: { label: o.name, description: "Demo carrier (not a real quote)", code: `carrier-${o.id}` },
-      prices: [{ currency_code: "usd", amount: o.amount }],
+      prices: [{ currency_code: "usd", amount: o.amount }, freeShippingPrice],
       rules: [
         { attribute: "enabled_in_store", value: "true", operator: "eq" },
         { attribute: "is_return", value: "false", operator: "eq" },
@@ -142,7 +162,8 @@ for (const [country, { zone: zoneName, options }] of Object.entries(CARRIERS)) {
 
 // promo codes used by the storefront checkout
 const { promotions } = await admin("/admin/promotions?limit=100")
-for (const [code, percent] of [["FRESH10", 10], ["FARM20", 20]]) {
+// OCT26DAILY: "20% off" on the homepage banners — the whole order
+for (const [code, percent] of [["FRESH10", 10], ["FARM20", 20], ["OCT26DAILY", 20]]) {
   if (promotions.some((p) => p.code === code)) continue
   await admin("/admin/promotions", {
     code,

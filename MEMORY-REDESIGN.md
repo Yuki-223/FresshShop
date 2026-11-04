@@ -74,7 +74,7 @@ Vitacost 首页从上到下依次是：
 5. 检查：每个下拉面板、每个链接（不能有 404）、吸顶效果；确认商品页、购物车和结账没有被影响。
 6. 截图给用户看，然后提交。
 
-### 第 2 步：首页轮播图（讨论完，等用户说"开始"）
+### 第 2 步：首页轮播图（✅ 已完成，2026-11-04）
 
 - **组件来源**：Release "vc-header" 里的 `default.zip`（asset id 710007098）。zip 里有一个 `轮播图/` 文件夹，里面还有一层 zip（`vc-slideshow-react/`）。用户说只需要看 `VcSlideshow.tsx`、`vc-slideshow.css`、`types.ts`，接入方式参考 `example.tsx`；`assets/`（3 组 banner，1920×525 桌面 + 960×960 移动）和 `screenshots/` 是素材和截图。同一层还有一个 `vitacost-redesign.md`，还没读。
   - 下载：`gh api -H "Accept: application/octet-stream" repos/Yuki-223/fresshshop/releases/assets/710007098 > default.zip`
@@ -117,4 +117,17 @@ Vitacost 首页从上到下依次是：
     - 已经改好：`.vch__menu-link`、`.vch__panel-title`、`.vch__group-title` 改用 `var(--font-display)`。Categories 右侧改成两列，因为面板变窄后三列会把 "Omega-3s & Fish Oil" 截断。
     - **做首页时要注意**：我们的区块标题现在是 18px semibold，Vitacost 是 Roboto Slab 24px 700，到时候要对齐。
   - 下一步：首页的其他部分。
-- 2026-11-04：讨论完轮播图（第 2 步），决定写在上面。等用户说"开始"。
+- 2026-11-04：讨论完轮播图（第 2 步），决定写在上面。
+- 2026-11-04：**第 2 步轮播图完成。**
+  - 新文件：`src/components/home/vc-slideshow/`，包括 `vc-slideshow.tsx`（客户端组件，用 useT 读取按钮文字；用 next/image；只保留桌面端；没有文字层）、`vc-slideshow.css`（放在 `.container-page` 里面，图片区域 1350×369）、`types.ts`。图片放在 `public/banners/`（probiotics.jpg、supplement-sale.jpg、free-shipping.jpg，只用了桌面版 1920×525）。
+  - 首页第一行原来是"左侧分类列表 + 两张绿色卡片"，整行换成了轮播图（左侧分类列表和顶部 Categories 菜单重复，所以一起去掉）。删掉了 `promo-banner.tsx`。字典新增 `home.slide*`。
+  - 后端（`backend/scripts/import-metagenics.mjs`）：
+    - OCT26DAILY 整单 8 折。
+    - 每个 shipping option 加了价格 `{amount: 0, rules: [{attribute: "item_total", operator: "gte", value: 30}]}`。已经存在的 option 也会补上，脚本可以重复运行。
+  - **实测**：Medusa 的 `item_total` 是**折后**金额，符合要求（$34.95 用码后变成 $27.96，物流恢复收费）。
+  - **发现并修复的漏洞**：Medusa 改商品数量时会重新计算已选物流的运费，但**输入优惠码时不会**。所以 `applyPromoCode` 会在已经选了物流时重新选一次。结账页在 `subtotal - discount` 变化时也会重新获取物流价格，运费为 0 的物流显示 "Free"（`checkout.freeShipping`）。
+  - 验证结果：
+    - 轮播：自动 3 秒切换、悬停暂停、箭头、暂停按钮、3 张图的跳转都正常。
+    - 结账：$25.95 → 收运费；$60.90 → Free；用码后 $48.72 → 仍然 Free；删掉商品后 $27.96 → 恢复 $32；先选了免费的 FedEx 再用码降到 $30 以下 → 运费变回 $32。
+    - 完整走查通过（订单 #10，FedEx 包邮，实付 $77.32），控制台没有报错。测试评论已删除。
+  - 下一步：首页的其他部分（圆形分类、商品行）。要先和用户讨论。

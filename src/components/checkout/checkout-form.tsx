@@ -83,7 +83,9 @@ export function CheckoutForm() {
   const country = region.addressMode === "cn" ? "cn" : "us"
   const hasItems = items.length > 0
 
-  // tell the backend where we ship, so it can offer carriers and price shipping
+  // tell the backend where we ship, so it can offer carriers and price shipping.
+  // Carrier prices depend on the items total (free from $30), so reload them when it changes.
+  const itemsTotal = cart ? cart.subtotal - cart.discount : 0
   useEffect(() => {
     if (!hydrated || !hasItems) return
     let cancelled = false
@@ -95,7 +97,7 @@ export function CheckoutForm() {
     return () => {
       cancelled = true
     }
-  }, [hydrated, hasItems, country, setCart])
+  }, [hydrated, hasItems, country, setCart, itemsTotal])
 
   const schema = useMemo(() => makeCheckoutSchema(region, t), [region, t])
   const form = useForm<CheckoutValues>({
@@ -217,7 +219,9 @@ export function CheckoutForm() {
                     >
                       <span className="grid grid-cols-[120px_auto_1fr] items-center gap-4">
                         <span className="font-heading text-xs font-semibold">{m.name}</span>
-                        <span className="font-heading text-xs font-semibold text-brand">+{money(m.option.amount)}</span>
+                        <span className="font-heading text-xs font-semibold text-brand">
+                          {m.option.amount === 0 ? t("checkout.freeShipping") : `+${money(m.option.amount)}`}
+                        </span>
                         <span className="font-heading text-xs font-semibold">{t("checkout.additionalPrice")}</span>
                       </span>
                     </OptionRow>

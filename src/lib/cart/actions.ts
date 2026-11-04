@@ -142,7 +142,15 @@ export async function applyPromoCode(code: string): Promise<{ ok: boolean; cart:
   } catch (error) {
     if (!(error instanceof MedusaError) || error.status >= 500) throw error
   }
-  const cart = toView(await retrieve(id))
+  // Medusa re-prices the shipping method when items change, but not when a promotion is applied.
+  // Free shipping depends on the discounted items total (≥ $30), so re-select the chosen carrier.
+  let raw = await retrieve(id)
+  const method = raw.shipping_methods?.[0]
+  if (method) {
+    await medusa(`/store/carts/${id}/shipping-methods`, { body: { option_id: method.shipping_option_id } })
+    raw = await retrieve(id)
+  }
+  const cart = toView(raw)
   return { ok: cart.promoCode === normalized, cart }
 }
 
