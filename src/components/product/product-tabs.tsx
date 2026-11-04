@@ -1,12 +1,13 @@
 "use client"
 
-import { ExternalLink } from "lucide-react"
+import { useEffect, useState } from "react"
 import { CountPill } from "@/components/common/pills"
-import { Rating } from "@/components/product/rating"
+import { ProductReviews } from "@/components/product/product-reviews"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useI18n } from "@/i18n/client"
 import { cn } from "@/lib/utils"
+import type { ReviewPage } from "@/lib/reviews/types"
 import type { ContentBlock, ProductDetail } from "@/types"
 
 function Heading({ children }: { children: React.ReactNode }) {
@@ -45,8 +46,16 @@ function TabLabel({ children, count }: { children: React.ReactNode; count?: numb
 }
 
 /** Description, Supplement Facts, Directions & Storage, Warnings, FAQ and Ratings — straight from the collected source. */
-export function ProductTabs({ product }: { product: ProductDetail }) {
+export function ProductTabs({ product, reviews }: { product: ProductDetail; reviews: ReviewPage }) {
   const { t } = useI18n()
+  const [tab, setTab] = useState("description")
+  // "#reviews" links (rating next to the title) open the reviews tab
+  useEffect(() => {
+    const sync = () => window.location.hash === "#reviews" && setTab("reviews")
+    sync()
+    window.addEventListener("hashchange", sync)
+    return () => window.removeEventListener("hashchange", sync)
+  }, [])
   const facts = product.supplementFacts
   const trigger = cn(
     "h-12 flex-none justify-start rounded-none border-0 border-b-2 border-transparent px-0 mr-6 last:mr-0 font-heading text-[15px] font-medium text-ink",
@@ -54,7 +63,7 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
   )
 
   return (
-    <Tabs defaultValue="description" className="mt-12 gap-8">
+    <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="mt-12 gap-8">
       <TabsList variant="line" className="h-auto w-full flex-wrap justify-start gap-0 border-b border-surface-2 p-0">
         <TabsTrigger value="description" className={trigger}>
           {t("productPage.tabDescription")}
@@ -76,7 +85,7 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
           </TabsTrigger>
         )}
         <TabsTrigger value="reviews" className={trigger}>
-          <TabLabel count={product.rating?.count}>{t("productPage.tabReviews")}</TabLabel>
+          <TabLabel count={reviews.summary?.count}>{t("productPage.tabReviews")}</TabLabel>
         </TabsTrigger>
       </TabsList>
 
@@ -163,24 +172,8 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
         </TabsContent>
       )}
 
-      <TabsContent value="reviews" className="space-y-4">
-        {product.rating ? (
-          <div className="flex items-center gap-4">
-            <span className="font-heading text-4xl font-semibold text-ink">{product.rating.value.toFixed(1)}</span>
-            <div>
-              <Rating value={product.rating.value} tone="gold" size="md" />
-              <p className="mt-1 text-xs text-ink-muted">
-                {t("productPage.ratingSummary", { value: product.rating.value })} · {t.plural("product.reviews", product.rating.count)}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-ink-muted">{t("product.noRating")}</p>
-        )}
-        <p className="text-sm text-ink-soft">{t("productPage.reviewsNote")}</p>
-        <a href={product.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-brand hover:underline">
-          {t("productPage.viewSource")} <ExternalLink className="size-3.5" />
-        </a>
+      <TabsContent value="reviews">
+        <ProductReviews productId={product.medusaId} sourceUrl={product.sourceUrl} initial={reviews} />
       </TabsContent>
     </Tabs>
   )

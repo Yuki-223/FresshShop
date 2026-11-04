@@ -11,7 +11,7 @@ import { PurchasePanel } from "@/components/product/purchase-panel"
 import { Rating } from "@/components/product/rating"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
-import { getProductBySlug, getRelatedProducts, listCategories, toListing } from "@/lib/api"
+import { getProductBySlug, getProductReviews, getRelatedProducts, listCategories, toListing } from "@/lib/api"
 import type { Product } from "@/types"
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/product/[slug]">): Promise<Metadata> {
@@ -37,7 +37,9 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
   const { t, locale } = await getI18n()
   const product = await getProductBySlug((await params).slug, locale)
   if (!product) notFound()
-  const [related, groups] = await Promise.all([getRelatedProducts(product, locale), listCategories(locale)])
+  const [related, groups, reviews] = await Promise.all([getRelatedProducts(product, locale), listCategories(locale), getProductReviews(product)])
+  // backend summary = collected rating + approved customer reviews
+  const rating = reviews.summary ?? product.rating
   const firstCat = product.healthCategories[0]
   const group = groups.find((g) => g.subcategories.some((s) => s.value === firstCat?.value))
   // the purchase panel only needs listing data, not the long content
@@ -94,11 +96,11 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         <div>
           <h1 className="text-[32px] leading-tight font-semibold text-ink">{product.title}</h1>
           <div className="mt-2 flex items-center gap-2">
-            {product.rating ? (
+            {rating ? (
               <>
-                <Rating value={product.rating.value} tone="gold" size="md" />
+                <Rating value={rating.value} tone="gold" size="md" />
                 <a href="#reviews" className="text-xs text-ink-muted underline">
-                  {product.rating.value.toFixed(1)} {t.plural("productPage.customerReviews", product.rating.count)}
+                  {rating.value.toFixed(1)} {t.plural("productPage.customerReviews", rating.count)}
                 </a>
               </>
             ) : (
@@ -117,7 +119,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
           </div>
 
           <div id="reviews">
-            <ProductTabs product={product} />
+            <ProductTabs product={product} reviews={reviews} />
           </div>
         </div>
       </div>

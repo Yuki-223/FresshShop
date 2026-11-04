@@ -198,11 +198,25 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 - 后台里有 7 个测试订单（#1–#7），是演示数据。
 - **商城现在必须先启动后端才能使用**，因为没有静态数据回退。
 
-下一步：第 6 件，商城加上评论界面。
+
+### 第 6 件完成记录（商城评论界面）
+
+- 新文件：`src/lib/reviews/types.ts`（每页 5 条，`REVIEWS_PAGE_SIZE`）、`src/lib/reviews/actions.ts`（server actions：`loadReviews` 和 `submitReview`，调用后端的 `/store/reviews`）、`src/components/product/product-reviews.tsx`（左侧汇总，右侧评论列表和"Show more reviews"按钮，下方是写评论表单）。
+- `lib/api` 里新增 `getProductReviews(product)`。商品页把它的 summary 用在标题旁的评分上（采集评分加上顾客评论），然后传给 `ProductTabs`。
+- 点击标题旁的评分（`#reviews`）会自动切到 Ratings 标签。
+- 中英文文案都已补齐。
+- 验证结果：
+  - Tran-Q Sleep 显示 10 条评论，先显示 5 条，点 Show more 后显示 10 条。
+  - 提交一条 4 星评论后，列表变成 11 条，标题旁变成 92 条评价。刷新后还在。
+  - 没有评论原文的商品（Adreset，中文界面）只显示汇总和"还没有文字评价"。
+  - 控制台没有报错。
+  - 测试评论已经从数据库删掉。
+
+下一步：第 7 件，完整走一遍并截图，用全新 clone 测试能否复刻，然后更新 README 和 MEMORY。
 
 ## 可能的下一步（还没做）
 
-- **后端搬进 FresshShop + 评论功能**：按上面的 7 件事做，还没开始。
+- **后端搬进 FresshShop + 评论功能**：第 1–6 件已完成，只剩第 7 件。
 - 用户正在把 1.2 GB 图库作为 Release 上传到 FresshShop。
 - 给保健品版换站名和配色（目前还叫 Freshnesecom、用绿色主题）。
 - 部署到 Vercel。

@@ -12,6 +12,8 @@
 import { localeConfig, type Locale } from "@/i18n/config"
 import { catalog, type CatalogProduct } from "@/lib/data/metagenics"
 import { remoteProducts } from "@/lib/data/metagenics/remote"
+import { loadReviews } from "@/lib/reviews/actions"
+import type { ReviewPage } from "@/lib/reviews/types"
 import { categoryZh, formZh, navGroups } from "@/lib/data/metagenics/groups"
 import { infoPages } from "@/lib/data/pages"
 import type { Category, Option, Paginated, Product, ProductDetail, ProductQuery } from "@/types"
@@ -228,6 +230,12 @@ export async function getRelatedProducts(product: ProductDetail, locale: Locale,
     .slice(0, limit - picked.length)
     .map((r) => toProduct(r, locale))
   return [...picked, ...extra]
+}
+
+/** First page of written reviews + the merged rating, for the product page (request-time). */
+export async function getProductReviews(product: ProductDetail): Promise<ReviewPage> {
+  if (!product.medusaId) return { reviews: [], count: 0, summary: product.rating ?? null }
+  return loadReviews(product.medusaId, 0)
 }
 
 export async function getInfoPage(slug: string, locale: Locale) {
