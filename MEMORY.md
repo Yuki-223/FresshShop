@@ -195,7 +195,7 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
   - 无效优惠码被拒绝，FRESH10 生效。
   - 英文站 DHL 下单生成后台订单；中文站顺丰下单生成后台订单，地址是中国。
   - 控制台没有报错。
-- 后台里有 7 个测试订单（#1–#7），是演示数据。
+- 后台里有测试订单（#1–#8），是演示数据。
 - **商城现在必须先启动后端才能使用**，因为没有静态数据回退。
 
 
@@ -212,11 +212,20 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
   - 控制台没有报错。
   - 测试评论已经从数据库删掉。
 
-下一步：第 7 件，完整走一遍并截图，用全新 clone 测试能否复刻，然后更新 README 和 MEMORY。
+
+### 第 7 件完成记录（完整走查 + 全新 clone 复刻）
+
+- 完整走查（英文站）：首页 → 全部商品 229 个，按 Capsules 筛选后剩 43 个 → Tran-Q Sleep 选订阅（$39.96，原价 $49.95）→ 加入购物车，再加一个 Adreset 单次购买（小计 $85.91）→ 写评论 → 结账，使用 FRESH10 和 FedEx → 下单成功，实付 $109.32 → 后台订单列表里有这一单。控制台没有报错。走查脚本在会话的 scratchpad 里，没有放进仓库。
+- 全新 clone 复刻：在空文件夹 clone `metagenics` 分支（42 MB，不带数据库和 node_modules），**只按 README 操作**：后端 install → setup:local → start:local → 两个导入脚本 → verify 输出 OK（229/316/213/316/4，图片 229/229）→ 根目录 install → pnpm dev → 同一套走查全部通过。结论：**别的会话 clone 后可以复刻。**
+- 复刻时发现并修复的问题：用 `pnpm dev` 时，浏览器控制台会报 "uncached data … outside of <Suspense>"。这是 Next.js 16.4 只在开发模式下给出的提示，build 模式下看不到，所以之前没发现。按官方文档，在分类页和商品页加上 `export const instant = false`（表示"这两页每次请求都要读后端，允许等待"）。加上后报错消失，build 正常。
+- README 的"从零跑起来"一节按实测步骤重写：分成终端 1 和终端 2，写明 "Ignored build scripts" 提示可以忽略，固定端口是 55433、9000、3000。
+- 测试数据：之前的两条测试评论已经从数据库删除；原环境里多了订单 #8（走查产生的）。复刻用的临时文件夹已删除。
+
+**"后端搬进 FresshShop + 评论功能" 的 7 件事全部完成。**
 
 ## 可能的下一步（还没做）
 
-- **后端搬进 FresshShop + 评论功能**：第 1–6 件已完成，只剩第 7 件。
+- **后端搬进 FresshShop + 评论功能**：7 件全部完成。
 - 用户正在把 1.2 GB 图库作为 Release 上传到 FresshShop。
 - 给保健品版换站名和配色（目前还叫 Freshnesecom、用绿色主题）。
 - 部署到 Vercel。
