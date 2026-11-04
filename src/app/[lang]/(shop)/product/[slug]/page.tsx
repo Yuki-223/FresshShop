@@ -14,6 +14,9 @@ import { getI18n } from "@/i18n/server"
 import { getProductBySlug, getProductReviews, getRelatedProducts, listCategories, toListing } from "@/lib/api"
 import type { Product } from "@/types"
 
+// Product data comes from the backend on every request (no static shell to show instantly).
+export const instant = false
+
 export async function generateMetadata({ params }: PageProps<"/[lang]/product/[slug]">): Promise<Metadata> {
   const { locale } = await getI18n()
   const product = await getProductBySlug((await params).slug, locale)

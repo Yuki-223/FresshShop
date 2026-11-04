@@ -15,18 +15,47 @@
 
 ### 后端（Medusa）
 
-商城的商品、价格、库存、购物车和下单都由 `backend/` 里的 Medusa 后端负责。**本地运行商城前要先启动后端**：
+商城的商品、价格、库存、购物车、下单和评论都由 `backend/` 里的 Medusa 后端负责。**本地运行商城前要先启动后端**。
+
+#### 从零跑起来（已在全新 clone 上实测通过）
+
+需要 Node 20+ 和 pnpm 10。数据库是内置的 PostgreSQL（embedded-postgres），不用另外安装。
+
+```bash
+git clone -b metagenics https://github.com/Yuki-223/fresshshop.git && cd fresshshop
+```
+
+**终端 1：后端**
 
 ```bash
 cd backend
-pnpm install
-pnpm setup:local          # 第一次：建数据库、表、管理员
-pnpm start:local          # 启动后端（保持运行）→ http://localhost:9000/app
-# 第一次还要在另一个终端导入数据：
-pnpm import:metagenics && pnpm import:reviews
+pnpm install              # 提示 "Ignored build scripts …" 可以忽略
+pnpm setup:local          # 只需第一次：建数据库、表、管理员，生成 .env 和 .local/
+pnpm start:local          # 启动数据库 + 后端（保持运行）→ http://localhost:9000/app
 ```
 
-然后在项目根目录 `pnpm dev`。商城通过 `src/lib/medusa/server.ts` 访问后端，环境变量：
+**终端 2：导入数据（只需第一次，等终端 1 显示启动完成）**
+
+```bash
+cd backend
+pnpm import:metagenics    # 229 个商品、物流、优惠码（可以重复运行）
+pnpm import:reviews       # 20 条采集评论
+node scripts/verify-metagenics.mjs   # 可选：检查结果，最后输出 OK
+```
+
+**终端 2：商城**
+
+```bash
+cd ..                     # 回到项目根目录
+pnpm install
+pnpm dev                  # http://localhost:3000
+```
+
+- 后台登录：账号和密码在 `backend/.local/config.json`（不进 Git，每台机器各自生成）。
+- 以后再启动：只需要 `cd backend && pnpm start:local`，再在根目录 `pnpm dev`。数据保存在 `backend/.local/postgres`，重启后还在。
+- 端口固定：数据库 55433，后端 9000，商城 3000。
+
+商城通过 `src/lib/medusa/server.ts` 访问后端，环境变量：
 
 - `MEDUSA_BACKEND_URL`：默认 `http://localhost:9000`
 - `MEDUSA_PUBLISHABLE_KEY`：默认读取 `backend/.local/publishable-key`，这个文件由 `pnpm setup:local` 生成

@@ -12,6 +12,9 @@ import { getI18n } from "@/i18n/server"
 import { findCategory, getFacets, priceRange, searchProducts } from "@/lib/api"
 import { parseProductQuery } from "@/lib/search-params"
 
+// Product data comes from the backend on every request (no static shell to show instantly).
+export const instant = false
+
 async function resolveCategory(slug: string) {
   const { t, locale } = await getI18n()
   if (slug === "all") return { slug: "all", name: t("catalog.allProducts"), subcategories: [] }
