@@ -114,23 +114,45 @@
 }
 
 .vch__search {
+  position: relative;
   display: flex;
   align-items: center;
   flex: 1 1 auto;
-  height: 36px;
+  height: 38px;
   padding: 0 10px 0 15px;
-  border: 1px solid var(--vch-line);
   border-radius: 25px;
   background: #fff;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.vch__search:focus-within {
-  border-color: #b6b6b6;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+/* vitacost.com draws the field with two inset-shadow layers (no plain border), measured:
+   ::before  inset 0 1px 3px #ccc
+   ::after   1px solid rgba(18,18,18,.15) + the same inset shadow, inset by 1px */
+.vch__search::before,
+.vch__search::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 25px;
+  box-shadow: inset 0 1px 3px #ccc;
+}
+
+.vch__search::before {
+  inset: 0;
+}
+
+.vch__search::after {
+  inset: 1px;
+  border: 1px solid rgba(18, 18, 18, 0.15);
+  transition: border-color 0.18s ease;
+}
+
+.vch__search:focus-within::after {
+  border-color: rgba(18, 18, 18, 0.4);
 }
 
 .vch__search input {
+  position: relative;
+  z-index: 1;
   flex: 1 1 auto;
   min-width: 0;
   height: 100%;
@@ -138,15 +160,22 @@
   outline: 0;
   background: transparent;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--vch-ink-solid);
 }
 
 .vch__search input::placeholder {
-  color: #8a8a8a;
+  color: rgba(18, 18, 18, 0.5);
+}
+
+/* hide the browser's own clear button on type="search" */
+.vch__search input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
 }
 
 .vch__search button {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
