@@ -7,9 +7,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Latin glyphs from Open Sans / Poppins, Chinese glyphs fall back to Noto Sans SC */
-  --font-sans: var(--font-open-sans), var(--font-noto-sc), sans-serif;
-  --font-heading: var(--font-poppins), var(--font-noto-sc), sans-serif;
+  /* Typography follows vitacost.com: Roboto Slab for headings (h1–h6, `font-display`),
+     Helvetica / Arial for everything else. `font-heading` is the bold UI face (buttons, prices,
+     labels), so it is the same sans stack. Chinese glyphs fall back to Noto Sans SC. */
+  --font-sans: Helvetica, Arial, var(--font-noto-sc), sans-serif;
+  --font-heading: Helvetica, Arial, var(--font-noto-sc), sans-serif;
+  --font-display: var(--font-roboto-slab), var(--font-noto-sc), serif;
 
   /* Freshnesecom design tokens */
   --color-brand: var(--brand);
@@ -124,7 +127,7 @@
     @apply font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-display;
   }
   /* Chinese text needs more air between lines */
   :lang(zh) p,

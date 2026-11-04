@@ -1,0 +1,479 @@
+/* ============================================================
+   vc-header — Vitacost-style header (from the user's vc-header component).
+   Heights as measured on vitacost.com at 1440px: announcement 40 / bar 73 / nav 44.
+   Colours are this store's tokens (globals.css); desktop only (no mobile drawer).
+   Content is aligned with .container-page (max 1440px, 45px gutters).
+   ============================================================ */
+
+.vch {
+  --vch-green: var(--brand);
+  --vch-accent: var(--brand-dark);
+  --vch-orange: var(--hot);
+  --vch-ink: rgba(21, 21, 21, 0.75);
+  --vch-ink-solid: var(--ink);
+  --vch-line: #e5e5e5;
+  --vch-gutter: 45px;
+
+  position: relative;
+  z-index: 40;
+  font-family: var(--font-sans);
+  color: var(--vch-ink);
+  background: #fff;
+}
+
+.vch *,
+.vch *::before,
+.vch *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- 顶部促销条 ---------- */
+.vch__announce {
+  background: var(--vch-green);
+  color: #fff;
+  font-size: 14px;
+}
+
+.vch__announce-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1440px;
+  height: 40px;
+  margin: 0 auto;
+  padding: 0 var(--vch-gutter);
+}
+
+.vch__announce-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.vch__announce-arrow {
+  transition: transform 0.18s ease;
+}
+
+.vch__announce-text:hover .vch__announce-arrow {
+  transform: translateX(3px);
+}
+
+.vch__announce-action {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.vch__announce-action:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 吸顶外壳 ---------- */
+.vch__sticky {
+  background: #fff;
+  transition: box-shadow 0.2s ease;
+}
+
+.vch__sticky-slot {
+  position: relative;
+}
+
+.vch__sticky.is-pinned {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.vch__sticky.is-scrolled {
+  box-shadow: 0 2px 8px rgba(18, 18, 18, 0.08);
+}
+
+/* ---------- 主栏：logo / 搜索 / 图标 ---------- */
+.vch__bar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  max-width: 1440px;
+  height: 73px;
+  margin: 0 auto;
+  padding: 8px var(--vch-gutter);
+  background: #fff;
+}
+
+.vch__logo {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 42px;
+  text-decoration: none;
+}
+
+.vch__search {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  height: 36px;
+  padding: 0 10px 0 15px;
+  border: 1px solid var(--vch-line);
+  border-radius: 25px;
+  background: #fff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.vch__search:focus-within {
+  border-color: #b6b6b6;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+
+.vch__search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--vch-ink-solid);
+}
+
+.vch__search input::placeholder {
+  color: #8a8a8a;
+}
+
+.vch__search button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: none;
+  color: #5a5a5a;
+  cursor: pointer;
+}
+
+.vch__actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 0 0 auto;
+}
+
+.vch__icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--vch-ink-solid);
+  cursor: pointer;
+  transition: background-color 0.16s ease;
+}
+
+.vch__icon-btn:hover {
+  background: #f4f4f4;
+}
+
+.vch__cart-count {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--vch-green);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+}
+
+/* ---------- 主导航 ---------- */
+.vch__nav {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 calc(var(--vch-gutter) - 18px);
+}
+
+.vch__menu {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  height: 44px;
+}
+
+.vch__menu-item {
+  position: relative;
+}
+
+.vch__menu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--vch-ink);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.vch__menu-link:hover,
+.vch__menu-link.is-open {
+  color: var(--vch-ink-solid);
+}
+
+.vch__menu-link.is-accent {
+  color: var(--vch-orange);
+}
+
+.vch__caret {
+  display: inline-flex;
+  transition: transform 0.2s ease;
+  color: currentColor;
+}
+
+.vch__caret.is-up {
+  transform: rotate(180deg);
+}
+
+/* ---------- Mega 面板 ---------- */
+.vch__mega-wrap {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 60;
+  animation: vch-fade 0.16s ease-out;
+}
+
+@keyframes vch-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.vch__mega {
+  display: flex;
+  background: #fff;
+  box-shadow: 0 4px 5px rgba(18, 18, 18, 0.05);
+}
+
+/* 左侧分类 + 右侧内容 */
+/* Vitacost's panel is 1100×420 for ~20 links per group; our groups have 1–4, so it is narrower
+   and as tall as the group list */
+.vch__mega--sidebar {
+  width: 900px;
+}
+
+.vch__sidebar {
+  flex: 0 0 260px;
+  width: 260px;
+  margin: 0;
+  padding: 12px 0;
+  list-style: none;
+  background: #f7f7f7;
+  overflow-y: auto;
+}
+
+.vch__sidebar-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 45px;
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #3a3a3a;
+  text-decoration: none;
+  transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.vch__sidebar-link:hover {
+  background: #f0f0f0;
+}
+
+.vch__sidebar-link.is-active {
+  background: #fff;
+  color: var(--vch-accent);
+  font-weight: 600;
+}
+
+.vch__chev {
+  display: inline-flex;
+  opacity: 0.55;
+}
+
+.vch__panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  padding: 16px 30px 24px;
+  overflow-y: auto;
+}
+
+.vch__panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  gap: 16px;
+}
+
+.vch__panel-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--vch-ink-solid);
+  letter-spacing: 0.01em;
+}
+
+.vch__chip {
+  flex: 0 0 auto;
+  padding: 6px 16px;
+  border: 1px solid var(--vch-accent);
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--vch-accent);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.vch__chip:hover {
+  background: var(--vch-accent);
+  color: #fff;
+}
+
+.vch__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 233px));
+  column-gap: 40px;
+  align-content: start;
+  padding-top: 10px;
+}
+
+.vch__col-link {
+  display: block;
+  padding: 4px 0;
+  font-size: 16px;
+  line-height: 21px;
+  color: var(--vch-ink);
+  text-decoration: none;
+  /* 原站列宽固定 233px，超长名称直接省略 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vch__col-link:hover {
+  color: var(--vch-accent);
+  text-decoration: underline;
+}
+
+/* 多列小面板 */
+.vch__mega--columns {
+  gap: 8px;
+  padding: 22px 24px;
+  width: 420px;
+}
+
+.vch__group {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.vch__group-title {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--vch-ink-solid);
+  text-decoration: none;
+}
+
+.vch__group-title:hover {
+  color: var(--vch-accent);
+}
+
+.vch__group-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vch__group-list a {
+  display: block;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--vch-ink);
+  text-decoration: none;
+}
+
+.vch__group-list a:hover {
+  color: var(--vch-accent);
+  text-decoration: underline;
+}
+
+/* 单列紧凑面板（Brands / Deals） */
+.vch__mega--condensed {
+  min-width: 212px;
+  max-width: 460px;
+  padding: 12px 0;
+}
+
+.vch__condensed-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vch__condensed-list a {
+  display: block;
+  padding: 3px 20px;
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--vch-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.vch__condensed-list a:hover {
+  color: var(--vch-accent);
+  background: #fafafa;
+}
+
+/* link counts ("Tablets 79") */
+.vch__count {
+  margin-left: 6px;
+  color: #9a9a9a;
+  font-size: 0.85em;
+}
+
+/* "Shop by Form" has three groups */
+.vch__mega--columns.has-3 {
+  width: 600px;
+}

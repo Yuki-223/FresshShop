@@ -2,76 +2,46 @@ import { Suspense } from "react"
 import { UserRound } from "lucide-react"
 import { CartButton } from "@/components/cart/cart-drawer"
 import { LanguageSwitcher, LanguageSwitcherFallback } from "@/components/layout/language-switcher"
-import { MainNav, MainNavBase } from "@/components/layout/main-nav"
-import { SearchBar } from "@/components/layout/search-bar"
+import { VcHeader } from "@/components/layout/vc-header/vc-header"
+import { VcSearch, VcSearchFallback } from "@/components/layout/vc-header/vc-search"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
-import { listCategories } from "@/lib/api"
-
-async function TopBar() {
-  const { t, locale } = await getI18n()
-  return (
-    <div className="container-page">
-      <div className="flex h-11 items-center justify-between border-b border-surface-2 text-xs">
-        <div className="flex items-center gap-10">
-          <a href="#chat" className="text-brand hover:underline">
-            {t("header.chatWithUs")}
-          </a>
-          <a href={locale === "zh" ? "tel:4008001234" : "tel:+420336775664"} className="text-ink">
-            {locale === "zh" ? "400-800-1234" : "+420 336 775 664"}
-          </a>
-          <a href="mailto:info@freshnesecom.com" className="text-ink">
-            info@freshnesecom.com
-          </a>
-        </div>
-        <div className="flex items-center gap-10 text-brand">
-          <Link href="/category/all?subscribe=1" className="hover:underline">
-            {t("header.subscribeSave")}
-          </Link>
-          <Link href="/about" className="hover:underline">
-            {t("header.aboutUs")}
-          </Link>
-          <Link href="/careers" className="hover:underline">
-            {t("header.careers")}
-          </Link>
-          <Suspense fallback={<LanguageSwitcherFallback />}>
-            <LanguageSwitcher />
-          </Suspense>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { buildNav } from "@/lib/nav"
 
 export function Logo() {
   return (
-    <Link href="/" className="font-heading text-[26px] font-semibold tracking-tight text-ink">
+    <Link href="/" className="font-display text-[28px] font-bold tracking-tight text-ink">
       Freshnesecom
     </Link>
   )
 }
 
+/** Vitacost-style header: announcement bar, logo + long search + icons, mega-menu navigation. */
 export async function SiteHeader() {
   const { t, locale } = await getI18n()
-  const categories = await listCategories(locale)
   return (
-    <header>
-      <TopBar />
-      <div className="container-page flex h-[104px] items-center justify-between">
-        <Logo />
-        <Suspense fallback={<div className="h-11 w-[420px] rounded-xl border border-line bg-surface" />}>
-          <SearchBar categories={categories} />
+    <VcHeader
+      navItems={buildNav(locale, t)}
+      announcement={{ text: t("nav.announcement"), href: "/category/all?subscribe=1", actionLabel: t("nav.help"), actionHref: "/help" }}
+      navLabel={t("nav.mainNav")}
+      shopAllLabel={t("nav.shopAll")}
+      logo={<Logo />}
+      search={
+        <Suspense fallback={<VcSearchFallback />}>
+          <VcSearch />
         </Suspense>
-        <div className="flex items-center gap-8">
-          <Link href="/account" aria-label={t("header.account")} className="grid size-10 place-items-center rounded-lg text-ink hover:bg-surface">
-            <UserRound className="size-6" strokeWidth={1.75} />
+      }
+      actions={
+        <>
+          <Suspense fallback={<LanguageSwitcherFallback />}>
+            <LanguageSwitcher className="mr-3 text-xs" />
+          </Suspense>
+          <Link href="/account" aria-label={t("header.account")} className="vch__icon-btn">
+            <UserRound className="size-[22px]" strokeWidth={1.5} />
           </Link>
           <CartButton />
-        </div>
-      </div>
-      <Suspense fallback={<MainNavBase categories={categories} pathname={null} />}>
-        <MainNav categories={categories} />
-      </Suspense>
-    </header>
+        </>
+      }
+    />
   )
 }

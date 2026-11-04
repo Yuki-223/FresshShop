@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Noto_Sans_SC, Open_Sans, Poppins } from "next/font/google"
+import { Noto_Sans_SC, Roboto_Slab } from "next/font/google"
 import { CartDrawer } from "@/components/cart/cart-drawer"
 import { CartSync } from "@/components/cart/cart-sync"
 import { Toaster } from "@/components/ui/sonner"
@@ -9,8 +9,8 @@ import { dictionaries } from "@/i18n/dictionaries"
 import { getI18n } from "@/i18n/server"
 import "../globals.css"
 
-const poppins = Poppins({ variable: "--font-poppins", subsets: ["latin"], weight: ["400", "500", "600", "700"] })
-const openSans = Open_Sans({ variable: "--font-open-sans", subsets: ["latin"] })
+// Headings: Roboto Slab (as on vitacost.com). Everything else uses the system Helvetica / Arial (globals.css).
+const robotoSlab = Roboto_Slab({ variable: "--font-roboto-slab", subsets: ["latin"] })
 // CJK font: served in unicode-range chunks, so browsers only download the glyphs a page uses
 const notoSansSC = Noto_Sans_SC({ variable: "--font-noto-sc", weight: ["400", "500", "600", "700"], preload: false })
 
@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const { locale } = await getI18n()
   return (
-    <html lang={localeConfig[locale].intl} className={`${poppins.variable} ${openSans.variable} ${notoSansSC.variable} antialiased`}>
+    <html lang={localeConfig[locale].intl} className={`${robotoSlab.variable} ${notoSansSC.variable} antialiased`}>
       <body className="min-h-screen min-w-[1280px] bg-background">
         <I18nProvider locale={locale} dictionary={dictionaries[locale]}>
           {children}

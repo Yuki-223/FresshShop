@@ -129,7 +129,7 @@ src/
   components/
     ui/                # shadcn 生成的基础组件（button 已按设计稿扩展了 variant）
     common/            # ButtonLink, Breadcrumbs, SectionHeader, 各类 pill/tag, 占位图
-    layout/            # SiteHeader, SearchBar, MainNav, SiteFooter, LanguageSwitcher
+    layout/            # SiteHeader（metagenics：vc-header/ 里的 Vitacost 风格头部和菜单）, SiteFooter, LanguageSwitcher
     product/           # ProductCard, ProductListItem, Price, Rating, QuantityUnitSelector,
                        # PurchasePanel, ProductTabs, 加购和收藏按钮
     catalog/           # FilterSidebar, FilterBar, AppliedFilters, ViewToggle, CatalogPagination

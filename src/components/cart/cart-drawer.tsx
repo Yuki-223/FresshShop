@@ -1,6 +1,6 @@
 "use client"
 
-import { ShoppingBasket } from "lucide-react"
+import { ShoppingBag, ShoppingBasket } from "lucide-react"
 import { CartLineItem } from "@/components/cart/cart-line-item"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -19,15 +19,11 @@ export function CartButton() {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="relative grid size-10 place-items-center rounded-lg text-ink hover:bg-surface"
+      className="vch__icon-btn"
       aria-label={hydrated ? t.plural("header.openCartCount", count) : t("header.openCart")}
     >
-      <ShoppingBasket className="size-6" strokeWidth={1.75} />
-      {hydrated && count > 0 && (
-        <span className="absolute bottom-1 left-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-hot px-1 font-heading text-[10px] font-bold text-white">
-          {count > 99 ? "99+" : count}
-        </span>
-      )}
+      <ShoppingBag className="size-[22px]" strokeWidth={1.5} />
+      {hydrated && count > 0 && <span className="vch__cart-count">{count > 99 ? "99+" : count}</span>}
     </button>
   )
 }

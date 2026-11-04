@@ -102,7 +102,7 @@ export function ProductReviews({ productId, sourceUrl, initial }: { productId?: 
         </aside>
 
         <section aria-label={t.plural("productPage.reviewsHeading", page.count)}>
-          <h3 className="mb-4 font-heading text-[15px] font-medium text-ink">{t.plural("productPage.reviewsHeading", page.count)}</h3>
+          <h3 className="mb-4 text-[15px] font-medium text-ink">{t.plural("productPage.reviewsHeading", page.count)}</h3>
           {page.reviews.length === 0 ? (
             <p className="text-sm text-ink-muted">{t("productPage.noWrittenReviews")}</p>
           ) : (
