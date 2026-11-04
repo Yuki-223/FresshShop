@@ -229,8 +229,9 @@
   padding: 0 18px;
   border: 0;
   background: none;
-  font-family: inherit;
-  font-size: 14px;
+  /* vitacost.com: the top-level menu items are Roboto Slab 15px */
+  font-family: var(--font-display);
+  font-size: 15px;
   font-weight: 400;
   color: var(--vch-ink);
   text-decoration: none;
@@ -346,6 +347,7 @@
 
 .vch__panel-title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
   color: var(--vch-ink-solid);
@@ -370,7 +372,8 @@
 
 .vch__columns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 233px));
+  /* two columns: the narrower panel (900px) can't fit three without cutting names */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: 40px;
   align-content: start;
   padding-top: 10px;
@@ -409,7 +412,8 @@
 .vch__group-title {
   display: block;
   margin-bottom: 10px;
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 15px;
   font-weight: 600;
   color: var(--vch-ink-solid);
   text-decoration: none;
