@@ -74,6 +74,24 @@ Vitacost 首页从上到下依次是：
 5. 检查：每个下拉面板、每个链接（不能有 404）、吸顶效果；确认商品页、购物车和结账没有被影响。
 6. 截图给用户看，然后提交。
 
+### 第 2 步：首页轮播图（讨论完，等用户说"开始"）
+
+- **组件来源**：Release "vc-header" 里的 `default.zip`（asset id 710007098）。zip 里有一个 `轮播图/` 文件夹，里面还有一层 zip（`vc-slideshow-react/`）。用户说只需要看 `VcSlideshow.tsx`、`vc-slideshow.css`、`types.ts`，接入方式参考 `example.tsx`；`assets/`（3 组 banner，1920×525 桌面 + 960×960 移动）和 `screenshots/` 是素材和截图。同一层还有一个 `vitacost-redesign.md`，还没读。
+  - 下载：`gh api -H "Accept: application/octet-stream" repos/Yuki-223/fresshshop/releases/assets/710007098 > default.zip`
+- 组件：零依赖，自动播放 3 秒一张，悬停暂停，下方是"← 1/3 → ⏸"。用原生横向滚动 + scroll-snap 实现。有可选的文字层（heading/subheading/ctaLabel）。
+- 接入时要改：`<a>` 换成 `Link`；英文 aria 文案（Previous slide 等）接到字典；宽度对齐 `.container-page`（`--vcs-max-width: 1440px`，`--vcs-gutter: 45px`）；`#3a7a07` 换成我们的品牌色；放在首页顶部，替换现在的两张绿色卡片 banner。
+- **图片：原样用 Vitacost 的 3 张图**（用户确认可以用，图 1 里别家品牌的瓶子也不换）。图上的文字是画在图里的：
+  1. "20% off probiotics · Code: OCT26DAILY"（图里是 California Gold、Garden of Life 等别家瓶子）
+  2. "Supplement Sale · 20% off trending categories · Code: OCT26DAILY"
+  3. "Free shipping on orders over $30"
+- **用户选了"改商城去配合图片"（方案 2）**，具体决定：
+  - **OCT26DAILY = 整单 8 折**（和 FRESH10、FARM20 一样，在后端 import 脚本里建 promotion）。
+  - **满 $30 包邮：4 种物流全部免运费**（FedEx、DHL、顺丰、京东）。按商品金额算，不含运费；如果用了优惠码，按折后金额算。做法：给每个 shipping option 的价格加一条 `item_total >= 30 → 0` 的价格规则。**要实测** Medusa 的 item_total 是折前还是折后金额；如果是折前，先告诉用户再商量。
+  - **点击跳转**：图 1 → 益生菌分类（`/category/gut-detox?sub=digestion-and-probiotics`）；图 2 → 全部商品按评价最多排序（`/category/all?sort=popular`）；图 3 → 全部商品。整张图都可以点（"Shop now"是画在图里的）。
+  - 改动要写进 `backend/scripts/import-metagenics.mjs`，保证从零 clone 也能复刻；README 的优惠码说明也要更新。
+- 用户还说：**以后想把首页的商品图也换成 Vitacost 的**，因为我们的商品图很多带阴影，放在首页看起来灰蒙蒙的，Vitacost 的图很干净。等做商品行时再讨论。
+- Release 里还有一个 `VcCarousel.zip`（asset id 709967201，里面是 `VcCarousel.tsx`、`INTEGRATE.md`、`example.tsx`），看名字是商品行的滑动组件，**还没读**，等做商品行时再看。
+
 ### 以后的步骤（还没讨论细节）
 - 首页其他部分：大横幅轮播（图片从哪里来还要决定）、圆形分类（8 个分组）、可滑动的商品行加"+"一键加购（多规格商品点"+"加哪个规格还要决定）、页脚改不改。
 - 真正的账户页。
@@ -98,4 +116,5 @@ Vitacost 首页从上到下依次是：
     - Helvetica：绿条、搜索框、下拉面板里的普通链接和左侧分类、圆形分类下的文字（18px）、商品名、价格。
     - 已经改好：`.vch__menu-link`、`.vch__panel-title`、`.vch__group-title` 改用 `var(--font-display)`。Categories 右侧改成两列，因为面板变窄后三列会把 "Omega-3s & Fish Oil" 截断。
     - **做首页时要注意**：我们的区块标题现在是 18px semibold，Vitacost 是 Roboto Slab 24px 700，到时候要对齐。
-  - 下一步：首页的其他部分（横幅、圆形分类、商品行）。要先和用户讨论。
+  - 下一步：首页的其他部分。
+- 2026-11-04：讨论完轮播图（第 2 步），决定写在上面。等用户说"开始"。
