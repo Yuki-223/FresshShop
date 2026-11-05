@@ -92,6 +92,54 @@ Vitacost 首页从上到下依次是：
 - 用户还说：**以后想把首页的商品图也换成 Vitacost 的**，因为我们的商品图很多带阴影，放在首页看起来灰蒙蒙的，Vitacost 的图很干净。等做商品行时再讨论。
 - Release 里还有一个 `VcCarousel.zip`（asset id 709967201，里面是 `VcCarousel.tsx`、`INTEGRATE.md`、`example.tsx`），看名字是商品行的滑动组件，**还没读**，等做商品行时再看。
 
+### 第 3 步：圆形分类（"Explore More"）+ 商品行（🗣 讨论中，还没动代码）
+
+**新对话从这里接着讨论。** 规矩不变：一次只问一个问题，讨论完写进这里，用户说"开始"才动手。
+
+#### 用户的总体要求（2026-11-05）
+- 把 Vitacost 首页的**圆形分类**和**商品行**复刻过来，**图片也用 Vitacost 的**，但**点击跳转到我们自己的链接**。
+
+#### 调研结果
+- **Vitacost 也卖 Metagenics，一共 209 个商品**（例如 AdvaClear、Bone Builder、Collagenics、Glutagenics、Magnesium Glycinate、OmegaGenics）。
+  - 查询方式：`https://www.vitacost.com/search?q=metagenics`；品牌页 `https://www.vitacost.com/collections/metagenics` 返回 200。
+  - 这意味着商品行可以做成：**商品还是我们的**（价格、库存、购物车都不变），**图片换成 Vitacost 上同一个商品的干净白底图**（按商品名匹配）。这正好解决用户之前说的"我们的商品图有阴影、灰蒙蒙"的问题。具体做法还没讨论。
+- **`VcCarousel.zip`（商品行组件）缺文件**：`INTEGRATE.md` 说需要 `VcCarousel.tsx` + `vc-carousel.css` + `types.ts` 三个文件，缺一不可。但 zip 里只有 `VcCarousel.tsx`（491 行）、`INTEGRATE.md`、`example.tsx`，**没有 `vc-carousel.css` 和 `types.ts`**。已告诉用户，等讨论到商品行时请用户补传。
+  - 组件要点（来自 INTEGRATE.md）：props 必填 `title`、`products`；`background` 用 `#ffffff` 或 `#edf6de` 交替；`perView` 默认 5（卡宽 = 1280 ÷ 5 = 240px）；有 `shopAllHref`；`onAddToCart`（悬停时加购按钮从 36px 圆形展开成 128px 胶囊）；有 loading、空、错误三种状态；`scrollStorageKey` 用来区分多个商品行；Next.js 里要加 `'use client'`。
+  - 下载：`gh api -H "Accept: application/octet-stream" repos/Yuki-223/fresshshop/releases/assets/709967201 > VcCarousel.zip`
+
+#### 圆形分类：已做的决定
+- **图片：原样用 Vitacost 的 6 张圆形图**（用户选的方案 1，理由是"为了页面干净"）。用户已知道图和我们的分类内容对不上，可以接受。
+  - Vitacost 原来的 6 个圆圈：Supplements（胶原蛋白粉）、Sports（Orgain 蛋白粉）、Grocery（玉米片）、Personal Care（Rael 女性护理）、Pets（宠物关节咀嚼片）、See all deals（"See all deals"文字图）。圆圈下的文字是 Helvetica 18px。
+  - 实现时要从 vitacost.com 首页把这 6 张图下载到 `public/` 里自己托管（CDN 链接会过期）。
+
+#### 圆形分类：⏳ 等用户回答的问题
+**圆圈下面的文字用他们的还是我们的？**
+- **A. 用他们的文字**（Supplements / Sports / Grocery / Personal Care / Pets / See all deals）：最像原站，但我们没有 Grocery、Pets 这些分类，点进去会对不上。
+- **B. 换成我们的分类名（推荐）**，按图的内容找最接近的分类：
+
+  | 图 | 文字 | 链接 |
+  |---|---|---|
+  | 胶原蛋白粉 | Vitamins & Wellness | `/category/vitamins-wellness` |
+  | Orgain 蛋白粉 | Joint & Sports | `/category/joint-sports` |
+  | 玉米片 | Gut & Detox | `/category/gut-detox` |
+  | Rael 女性护理 | Women, Men & Kids | `/category/women-men-kids` |
+  | 宠物关节咀嚼片 | Brain, Mood & Sleep（最难对上，只是凑一个位置） | `/category/brain-mood-sleep` |
+  | See all deals | See All Deals | `/category/all?subscribe=1` |
+
+  我们有 8 个分组，只有 6 个位置，Heart & Metabolism 和 Immune Health 放不进来（顶部 Categories 菜单里都有）。用户选 B 的话，表里任何一行都可以改。
+
+#### 之后还要讨论的（按顺序，一个一个问）
+1. 圆形分类的文字（上面那个问题）。
+2. 商品行：放几行、每行标题和放什么商品（Vitacost 是 "Vitacost Best Sellers"、"California Gold Nutrition Favorites"、"Sport Supplements"、"Trending Products"，背景白色和浅绿色交替）。对应到我们，可以是评价最多、某个产品系列精选（如 UltraFlora）、运动、评分最高等。
+3. 商品行的图片：是否换成 Vitacost 上 Metagenics 商品的干净图？怎么匹配（按商品名）？匹配不上的怎么办？只换首页，还是全站都换？
+4. 商品卡片上的"+"一键加购：有多个规格的商品，点"+"加哪个规格（比如默认规格、单次购买）？
+5. 首页区块标题对齐 Vitacost：Roboto Slab 24px 700（现在是 18px semibold）。
+6. 首页上现有的其他区块（Most reviewed、Top rated 侧栏 + 网格、Shop by health goal、组合优惠、睡眠类）保留哪些、换掉哪些。
+7. 页脚改不改。
+
+#### 环境提醒
+- 2026-11-04 后端在后台跑满 2 小时，被系统停掉了。数据还在数据库文件里。继续工作前先启动：`cd backend && pnpm start:local`（放在后台运行，等 `/health` 返回 OK），然后在根目录 `pnpm build && pnpm start`（或 `pnpm dev`）。
+
 ### 以后的步骤（还没讨论细节）
 - 首页其他部分：大横幅轮播（图片从哪里来还要决定）、圆形分类（8 个分组）、可滑动的商品行加"+"一键加购（多规格商品点"+"加哪个规格还要决定）、页脚改不改。
 - 真正的账户页。
@@ -131,4 +179,7 @@ Vitacost 首页从上到下依次是：
     - 结账：$25.95 → 收运费；$60.90 → Free；用码后 $48.72 → 仍然 Free；删掉商品后 $27.96 → 恢复 $32；先选了免费的 FedEx 再用码降到 $30 以下 → 运费变回 $32。
     - 完整走查通过（订单 #10，FedEx 包邮，实付 $77.32），控制台没有报错。测试评论已删除。
 - 2026-11-04：**搜索框加阴影**（用户截图指出 Vitacost 的搜索框有阴影）。按原站实测：没有普通边框，用两层伪元素画出来：`::before` 是 `inset 0 1px 3px #ccc`；`::after` 是 1px `rgba(18,18,18,.15)` 边框加同样的内阴影，向内缩 1px。高 38px，圆角 25px，输入文字 16px，提示文字 `rgba(18,18,18,.5)`。聚焦时 `::after` 的边框颜色加深。
-  - 下一步：首页的其他部分（圆形分类、商品行）。要先和用户讨论。
+- 2026-11-05：开始讨论**第 3 步（圆形分类 + 商品行）**。
+  - 已决定：圆形分类原样用 Vitacost 的 6 张图，点击跳转到我们的链接。
+  - 等用户回答：圆圈下面的文字用 A（他们的）还是 B（我们的分类名）。
+  - 用户说会**开一个新对话**接着讨论。详情见上面"第 3 步"一节。
