@@ -1,0 +1,918 @@
+{
+ "adrenogen": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Adrenogen®, 90 Tablets"
+ },
+ "adreset": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Adreset®, 60 Capsules"
+ },
+ "advaclear": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, AdvaClear®, 42 Capsules"
+ },
+ "alpha-lipoic-acid": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Alpha-Lipoic Acid, 300 mg, 60 Tablets"
+ },
+ "andrographis-plus": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "argincor": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "arginine-plus": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "axis-endo": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Axis Endo™, Mango , 1 lb 3.26 oz (546 g)"
+ },
+ "bcaas": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "berberine-gt": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Berberine GT, Cardiometabolic, 60 Capsules"
+ },
+ "biopure-protein": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "biosom": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, BioSom®, 2 fl oz (59.5 ml)"
+ },
+ "black-cohosh-plus": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "blisphora": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Blisphora®, 30 Tablets"
+ },
+ "bone-builder-active": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "bone-builder-boron": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Bone Builder® With Boron, 270 Tablets"
+ },
+ "bone-builder-chewable": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Bone Builder® Chewable, 90 Tablets"
+ },
+ "bone-builder-extra-strength": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "bone-builder-magnesium": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Bone Builder® With Magnesium, 180 Tablets"
+ },
+ "bone-builder-plus": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Bone Builder® Plus, 90 Capsules"
+ },
+ "bone-builder-prime": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "bone-builder-vegetarian": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "bone-builder": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Bone Builder®, 270 Tablets"
+ },
+ "calm-mood-stress-resilience-pracstack": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "candibactin-ar": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, CandiBactin-AR®, Gut Health, 60 Softgels"
+ },
+ "candibactin-br": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, CandiBactin-BR®, 90 Tablets"
+ },
+ "cardiogenics-intensive-care": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "cardiolux-hdl": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ceralin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Ceralin® , 90 Capsules"
+ },
+ "ceriva": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "chasteberry-plus": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Chasteberry Plus®, PMS Support, 60 Tablets"
+ },
+ "cholarest-sc": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "chondrocare": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, ChondroCare®, 240 Tablets"
+ },
+ "chromium-picolinate": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "clear-change-10-day": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Clear Change®, 10-Day Detox Program, Vanilla, 4 Piece Set"
+ },
+ "clear-change-28-day": {
+  "source": "cleaned",
+  "reason": "Vitacost 只有 10 天装"
+ },
+ "clear-change-daily-essentials": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "clear-change-plus-10-day": {
+  "source": "cleaned",
+  "reason": "口味和套装内容不同"
+ },
+ "clear-change-plus-28-day": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "clear-change-plus-ph-10-day": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "clear-change-plus-ph-28-day": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "collagenics": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Collagenics®, 180 Tablets"
+ },
+ "concentrated-ultra-prostagen": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Men's Health, Concentrated Ultra Prostagen™, 60 Capsules"
+ },
+ "coq10-st-100": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, CoQ10 ST®, 100 mg, 60 Softgels"
+ },
+ "coq10-st-200": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, CoQ10 ST®, 200 mg, 60 Softgels"
+ },
+ "cortico-b5b6": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Cortico-B5B6®, 60 Tablets"
+ },
+ "creatine-up": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Creatine UP®, Unflavored, 8.47 oz (240 g)"
+ },
+ "daily-detox-support-pracstack": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "daily-fiber-boost": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "echinacea-synergy": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "endura-electrolyte-powder": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Endura® Electrolyte Powder, Lemonade, 30 Packets, 0.2 oz (5.56 g) Each"
+ },
+ "essential-defense": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "essential-nutrition-shake": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "estrofactors": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Women's Health, EstroFactors®, 60 Capsules"
+ },
+ "exhilarin": {
+  "source": "cleaned",
+  "reason": "Vitacost 的图是旧包装"
+ },
+ "fem-estroplex": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "fem-prenatal": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "fenugreek-plus": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "fibroplex": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "folapro": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, FolaPro®, 1,330 mcg, 120 Tablets"
+ },
+ "gi-support": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, G.I. Support, 14.81 oz (420 g)"
+ },
+ "gi-sustain": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, GI Sustain™, 24.2 oz (686 g)"
+ },
+ "glucosamine-sulfate-750": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "glucosamine-sulfate": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "glutaclear": {
+  "source": "cleaned",
+  "reason": "Vitacost 的图是旧包装"
+ },
+ "glutagenics": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Glutagenics®, Gut Health, 9.33 oz (264.6 g)"
+ },
+ "golden-fusion": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "gut-health-bundle": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "gut-relief-duo-pracstack": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "hemagenics": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Hemagenics®, 60 Tablets"
+ },
+ "hersynergy": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "herwellness-estrovera": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Estrovera®, Menopause, 30 Tablets"
+ },
+ "herwellness-naturally-balanced": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, HerWellness™ Naturally Balanced, 30 Capsules"
+ },
+ "herwellness-rapid-period-relief": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, HerWellness™ Rapid Period Relief, 20 Softgels"
+ },
+ "herwellness-rapid-stress-relief": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "herwellness-recharge-overnight": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Women's Health, HerWellness™ Recharge Overnight With Magnesium Glycinate, 60 Tablets"
+ },
+ "hissynergy": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "immucore": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, ImmuCore®, 90 Tablets"
+ },
+ "immune-active": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Immune Active™, 60 Capsules"
+ },
+ "immune-defense-pack": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Immune Defense Pack, 30 Packets"
+ },
+ "indole-3-carbinol": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Indole-3-Carbinol, Women's Health, 60 Capsules"
+ },
+ "inflavonoid-intensive-care": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Inflavonoid Intensive Care®, Joint Health, 120 Capsules"
+ },
+ "insulin-guard": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Insulin Guard, 90 Tablets"
+ },
+ "intrinsi-vitamin-b12-folate": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Intrinsi Vitamin B12-Folate™ , 60 Tablets"
+ },
+ "kaprex": {
+  "source": "original",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ketogenic-shake": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "l-carnitine": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "licorice-plus": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Licorice Plus®, 60 Tablets"
+ },
+ "lipo-gen": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Lipo-Gen™, 270 Tablets"
+ },
+ "lipotain": {
+  "source": "cleaned",
+  "reason": "Vitacost 的图是旧包装"
+ },
+ "magactive-3-in-1-magnesium-chews": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "magactive-magnesium-muscle-powder": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MagActive™ Magnesium Muscle Powder, Strawberry Lemonade, 5.29 oz (150 g)"
+ },
+ "magactive-magnesium-night-powder": {
+  "source": "cleaned",
+  "reason": "Vitacost 是罐装，我们是小袋装"
+ },
+ "magactive-magnesium-relax-powder": {
+  "source": "original",
+  "reason": "Vitacost 是罐装，我们是小袋装"
+ },
+ "magnesium-citrate": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Magnesium Citrate, 120 Tablets"
+ },
+ "magnesium-glycinate-extra-strength": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "magnesium-glycinate": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Magnesium Glycinate, 100 mg, 120 Tablets"
+ },
+ "magtein-magnesium-l-threonate": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Magtein® Magnesium L-Threonate, 120 Capsules"
+ },
+ "mct-powder": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "meta-sitosterol-2-0": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "metafiber": {
+  "source": "cleaned",
+  "reason": "Vitacost 的图是旧包装"
+ },
+ "metaglycemx": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MetaGlycemX™, 60 Tablets"
+ },
+ "metakids-multivitamin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MetaKids® Multivitamin, Grape, 60 Soft Chews"
+ },
+ "metakids-nutrition-powder": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "metakids-vitamin-d3": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "metarelax": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MetaRelax®, Orange Citrus, 30 Packets, 0.11 oz (3.3 g) Each"
+ },
+ "metasleep": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MetaSleep®, 60 Capsules"
+ },
+ "methyl-care": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MethylCare®, Heart Health, 120 Capsules"
+ },
+ "mg-k-aspartate": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "milk-thistle-extract": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Milk Thistle Extract, 90 Tablets (112 mg per Tablet)"
+ },
+ "mitovive": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "multigenics-chewable-multivitamin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Multigenics® Chewable Multivitamin, 90 Tablets"
+ },
+ "multigenics-intensive-care-multivitamin-iron": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "multigenics-intensive-care-multivitamin": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "multigenics-multivitamin-iron": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Multigenics® Multivitamin with Iron, 180 Tablets"
+ },
+ "multigenics-multivitamin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Multigenics® Multivitamin, 180 Tablets"
+ },
+ "muscle-gains-bundle": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "muscle-joint-healthy-aging-stack": {
+  "source": "original",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "mycotaki": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "myo-inositol-plus": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Myo-Inositol Plus, 7.8 oz (222 g)"
+ },
+ "myocalm-plus": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MyoCalm® Plus, 60 Tablets"
+ },
+ "myocalm": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, MyoCalm®, 60 Tablets"
+ },
+ "niatain": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "nusera": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "nutragems-coq10": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, NutraGems® CoQ10, 300 mg, 30 Chewable Gels"
+ },
+ "omegagenics-algae-omega-3s": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "omegagenics-borage-seed-oil-gla-240": {
+  "source": "cleaned",
+  "reason": "Vitacost 的图是旧包装"
+ },
+ "omegagenics-evening-primrose-oil": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "omegagenics-fish-oil-epa-1200": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, OmegaGenics®, Fish Oil EPA, 1,200 mg, 60 Softgels"
+ },
+ "omegagenics-fish-oil-epa-dha-1000": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, OmegaGenics® 5-in-1 Fish Oil, Natural Lemon, 30 Softgels"
+ },
+ "omegagenics-fish-oil-epa-dha-2400": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, OmegaGenics®, Fish Oil EPA-DHA Liquid, Natural Lemon, 5 fl oz (150 ml)"
+ },
+ "omegagenics-fish-oil-epa-dha-300": {
+  "source": "cleaned",
+  "reason": "剂量不同（我们 300 mg，他们 720 mg）"
+ },
+ "omegagenics-fish-oil-epa-dha-500": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, OmegaGenics®, Fish Oil EPA-DHA, Natural Lemon, 500 mg, 120 Softgels"
+ },
+ "omegagenics-fish-oil-epa-dha-720": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, OmegaGenics®, Fish Oil EPA-DHA, Natural Lemon-Lime, 720 mg, 60 Softgels"
+ },
+ "omegagenics-fish-oil-mega-10": {
+  "source": "original",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "omegagenics-kids-dha": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "omegagenics-neuro-fish-oil-1000": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, OmegaGenics®, Neuro Fish Oil, 1,000 mg, 60 Softgels"
+ },
+ "osteovantiv": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ostera": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Ostera®, 60 Tablets"
+ },
+ "perfect-protein-pea-rice": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "perfect-protein-whey": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Perfect Protein® Whey, Natural Vanilla , 1 lb 12.57 oz (810 g)"
+ },
+ "perimine": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Perimine®, 100 mg, 60 Tablets"
+ },
+ "phosphatidylserine": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Phosphatidylserine, 60 Softgels (150 mg per Softgel)"
+ },
+ "phytomulti-multivitamin-capsules": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, PhytoMulti® Multivitamin, 60 Capsules"
+ },
+ "phytomulti-multivitamin-iron": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, PhytoMulti® Multivitamin with Iron, 60 Tablets"
+ },
+ "phytomulti-multivitamin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, PhytoMulti® Multivitamin, 30 Tablets"
+ },
+ "phytomulti-superfoods": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, PhytoMulti® Superfoods, Tropical Fruit, 10.58 oz (300 g)"
+ },
+ "plusone-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, PlusOne®, Daily Prenatal Packs, 30 Packets"
+ },
+ "power-nutrition-shake": {
+  "source": "cleaned",
+  "reason": "口味不同（我们 Mixed Berry，他们 Chocolate）"
+ },
+ "probioplex-intensive-care": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "quercetin-500": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Quercetin, Immunity & Heart Health, 500 mg, 60 Capsules"
+ },
+ "rapid-relief": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Rapid Relief, Body Soreness , 20 Softgels"
+ },
+ "renagen-dtx": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Renagen DTX™, 60 Capsules"
+ },
+ "serenagen": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Serenagen®, 60 Tablets"
+ },
+ "serosyn": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SeroSyn™, 90 Capsules"
+ },
+ "sinuplex": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Sinuplex®, 120 Tablets"
+ },
+ "sleep-reset-and-circadian-support-pracstack": {
+  "source": "original",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "spectrazyme-betaine-hci-pepsin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SpectraZyme® Betaine HCl + Pepsin, 270 Tablets"
+ },
+ "spectrazyme-complete-enzymes": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SpectraZyme® Complete Enzymes, 60 Capsules"
+ },
+ "spectrazyme-gluten-digest-enzymes": {
+  "source": "cleaned",
+  "reason": "包装不同（我们默认 40 粒盒装，他们 90 粒瓶装）"
+ },
+ "spectrazyme-pancreatic-enzymes-extra-strength": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "spectrazyme-pancreatic-enzymes": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SpectraZyme® Pancreatic Enzymes, 90 Tablets"
+ },
+ "spm-active-one-daily": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SPM Active® One Daily, 14 Softgels"
+ },
+ "spm-active": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SPM Active®, Body & Joint Soreness, 60 Softgels"
+ },
+ "staystrong-4-in-1-collagen-chews": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "staystrong-brain-body-collagen-creatine-powder": {
+  "source": "original",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "staystrong-joint-muscle-collagen-creatine-powder": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "sulforaclear": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SulforaClear®, 60 Capsules"
+ },
+ "supergarlic-6000": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, SuperGarlic 6000®, 90 Tablets"
+ },
+ "testralin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Testralin®, 60 Tablets"
+ },
+ "thyrosol": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Thyrosol®, 90 Capsules"
+ },
+ "tran-q-sleep": {
+  "source": "cleaned",
+  "reason": "Vitacost 的图是旧包装"
+ },
+ "trancor": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Trancor®, 120 Capsules"
+ },
+ "ultra-glucose-control": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Ultra Glucose Control®, Medical Food, Vanilla, 3 lbs 8.09 oz, (1,590 g)"
+ },
+ "ultra-potent-c-1000-vitamin-c": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Ultra Potent-C® 1000 Vitamin C, 90 Tablets"
+ },
+ "ultra-potent-c-500-vitamin-c": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Ultra Potent-C® 500 Vitamin C, 90 Tablets"
+ },
+ "ultra-potent-c-vitamin-c-powder": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ultra-potent-c-vitamin-c": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Ultra Potent-C® Vitamin C, Orange , 90 Chewable Tablets"
+ },
+ "ultra-protein": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ultraclear-detox-powder": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ultraclear-plus-detox-powder": {
+  "source": "cleaned",
+  "reason": "口味不同（我们 Berry，他们 Vanilla）"
+ },
+ "ultraclear-plus-ph-detox-powder": {
+  "source": "cleaned",
+  "reason": "口味不同（我们 Pineapple Banana，他们 Vanilla）"
+ },
+ "ultraclear-renew-detox-powder": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraClear® Renew Detox Powder, Vanilla, 26.67 oz (756 g)"
+ },
+ "ultraflora-3-in-1-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® 3in1 Daily Probiotic, Berry, 60 Gummies"
+ },
+ "ultraflora-acute-care-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Acute Care Probiotic, 30 Capsules"
+ },
+ "ultraflora-baby-probiotic": {
+  "source": "cleaned",
+  "reason": "Vitacost 是滴剂，我们是粉剂"
+ },
+ "ultraflora-balance-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Balance Probiotic, 55 mg (15 Billion CFU), 30 Capsules"
+ },
+ "ultraflora-biomepro-probiotic": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ultraflora-complete-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Complete Probiotic, 30 Capsules"
+ },
+ "ultraflora-complete-womens-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Complete Women's Probiotic, Women's Health, 30 Capsules"
+ },
+ "ultraflora-control-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Control Probiotic, 113.1 mg (10 Billion CFU), 30 Capsules"
+ },
+ "ultraflora-fiber-prebiotic-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Fiber, Prebiotic & Probiotic, Orange, 5.46 oz (155 g)"
+ },
+ "ultraflora-healthy-weight-akkermansia": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Healthy Weight with Akkermansia, 30 Capsules"
+ },
+ "ultraflora-ib-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® IB Probiotic, 30 Capsules"
+ },
+ "ultraflora-immune-booster-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Immune Booster Probiotic, 30 Capsules"
+ },
+ "ultraflora-intensive-care-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Intensive Care Probiotic, 60 Capsules (85 mg (10 Billion CFU) per Capsule)"
+ },
+ "ultraflora-kids-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Kids Probiotic, Grape, 60 Chewable Tablets"
+ },
+ "ultraflora-night-rest-digest": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Night Rest & Digest Postbiotic, 14 Capsules"
+ },
+ "ultraflora-probiotic-plus-multivitamin": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora®, Probiotic + Multivitamin, 30 Capsules"
+ },
+ "ultraflora-restore-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Restore Probiotic, 30 Capsules (253.5 mg (20 Billion CFU) per Capsule)"
+ },
+ "ultraflora-spectrum-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Spectrum Probiotic , 30 Capsules"
+ },
+ "ultraflora-synergy-probiotic": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "ultraflora-triplebiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Triplebiotic, Gut Health, 30 Capsules"
+ },
+ "ultraflora-womens-probiotic": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraFlora® Women's Probiotic, Vaginal Health, 30 Capsules"
+ },
+ "ultragi-replenish": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraGI Replenish®, Chocolate, 47.62 oz (1,350 g)"
+ },
+ "ultrainflamx-plus-360": {
+  "source": "cleaned",
+  "reason": "口味不同（我们 Chocolate Orange）"
+ },
+ "ultrameal-advanced-protein": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Medical Food, UltraMeal Advanced Protein®, French Vanilla, 1 lb 4.74 oz (588 g)"
+ },
+ "ultrameal-cardio-360": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, UltraMeal Cardio 360°®,  Medical Food, Vanilla, 1 lb 2.27 oz (518 g)"
+ },
+ "vasotensin": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "vitamin-b-complex": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin B-Complex, 60 Tablets"
+ },
+ "vitamin-d3-10-000-k": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin D3 10,000 + K, 60 Softgels"
+ },
+ "vitamin-d3-1000": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin D3 1000, 25 mcg (1,000 IU), 120 Tablets"
+ },
+ "vitamin-d3-2000-complex": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin D3 2000 Complex, 90 Tablets"
+ },
+ "vitamin-d3-5000-k": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin D3 5,000 + K, 60 Softgels"
+ },
+ "vitamin-d3-5000": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin D3 5000, 125 mcg (5,000 IU), 120 Softgels"
+ },
+ "vitamin-d3-liquid": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin D3 Liquid, 2 fl oz (59.14 ml)"
+ },
+ "vitamin-e-mixed-tocopherols": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Vitamin E Mixed Tocopherols, 60 Softgels"
+ },
+ "vitamin-e-selenium": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "weight-and-hormone-balance-for-men-pracstack": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "wellness-essentials-active-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials® Active Daily Packs, 30 Packets"
+ },
+ "wellness-essentials-brain-health-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials®, Brain Health Daily Packs, 30 Packets"
+ },
+ "wellness-essentials-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials® Daily Packs, 30 Packets"
+ },
+ "wellness-essentials-healthy-balance-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials®, Healthy Balance Daily Packs, 30 Packets"
+ },
+ "wellness-essentials-mens-vitality-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials® Daily Packs Men's Vitality, 30 Packets"
+ },
+ "wellness-essentials-womens-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials®, Women's Daily Packs, 30 Packets"
+ },
+ "wellness-essentials-womens-prime-daily-packs": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Wellness Essentials®, Daily Packs Women's Prime, 30 Packets"
+ },
+ "womens-weight-hormone-balance-supplement-stack": {
+  "source": "cleaned",
+  "reason": "Vitacost 没有这个商品"
+ },
+ "zinc-ag": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Zinc A.G.™, 20 mg, 60 Tablets"
+ },
+ "zinc-carosine-complex": {
+  "source": "vitacost",
+  "vitacost": "Metagenics, Zinc Carnosine Complex , 17 mg, 60 Tablets"
+ }
+}

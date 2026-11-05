@@ -10,7 +10,7 @@
  *   storefront/public/collection/*.png          (229 main images)
  * Writes derived files only:
  *   src/lib/data/metagenics/catalog.json        (trimmed catalog used by lib/api)
- *   public/products/*.png                       (copied main images)
+ *   public/products/*                           (copied main images, except the clean photos listed in product-images.json)
  *   src/lib/data/metagenics/reviews.json        (review texts found in the structured data)
  */
 import fs from "node:fs"
@@ -21,6 +21,8 @@ const batch = "2026-10-31"
 const normalized = path.join(root, "data/metagenics", batch, "normalized")
 const outDir = path.resolve("src/lib/data/metagenics")
 const imageOut = path.resolve("public/products")
+/** slug → where its photo in public/products comes from (Vitacost / cleaned / original) */
+const cleanImages = JSON.parse(fs.readFileSync(path.resolve("src/lib/data/metagenics/product-images.json"), "utf8"))
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, "utf8"))
 const products = readJson(path.join(normalized, "products.json"))
@@ -207,7 +209,10 @@ for (const p of products) {
 
   const imageSrc = home?.image ? path.join(root, "storefront/public", home.image) : undefined
   let image
-  if (imageSrc && fs.existsSync(imageSrc)) {
+  if (cleanImages[slug]) {
+    // replaced by a clean white-background photo (2026-11-05): keep it, don't copy the original over it
+    image = `/products/${slug}.jpg`
+  } else if (imageSrc && fs.existsSync(imageSrc)) {
     const file = `${slug}${path.extname(imageSrc)}`
     fs.copyFileSync(imageSrc, path.join(imageOut, file))
     image = `/products/${file}`

@@ -5,6 +5,7 @@
 ## 这个分支和 main 的区别
 
 - **数据**：来自 `Yuki-223/shopStore` 的采集数据（批次 2026-10-31）。`scripts/import-metagenics.mjs` 把它转成精简的 `src/lib/data/metagenics/catalog.json`，并复制 229 张主图到 `public/products/`。采集原件不做任何修改。
+- **商品图**（2026-11-05 换成白底干净图）：`public/products/<slug>.jpg`，每张图的来源记在 `src/lib/data/metagenics/product-images.json`：136 张是 vitacost.com 上同一商品的图（`vitacost`），87 张是我们的原图用 `scripts/clean-product-image.py` 去掉阴影（`cleaned`），6 张保留原图（`original`）。后端导入脚本重复运行时，图片有变化的商品会自动换图。
 - **语言**：默认进入英文站，商品内容是英文原文。仍然可以切换到中文界面，界面文字是中文、商品内容保持英文，价格换算成人民币。
 - **导航**：18 个健康分类合并成 8 个导航分组，分类页里再按健康分类细分。一个商品可以同时属于多个分类。
 - **商品详情**：可选容量和口味；可选单次购买或订阅（1/2/3 个月），订阅价来自采集数据；标签页依次是介绍、成分表（Supplement Facts）、用法与储存、注意事项、FAQ、评分。

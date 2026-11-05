@@ -10,7 +10,6 @@ import { CollectionSidebar } from "@/components/collection/collection-sidebar"
 import { CollectionToolbar } from "@/components/collection/collection-toolbar"
 import { getI18n } from "@/i18n/server"
 import { findCategory, getFacets, priceRange, searchProducts } from "@/lib/api"
-import homeImages from "@/lib/data/metagenics/home-images.json"
 import { parseProductQuery } from "@/lib/search-params"
 
 // Product data comes from the backend on every request (no static shell to show instantly).
@@ -26,8 +25,6 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/category/[
   const category = await resolveCategory((await params).slug)
   return { title: category?.name }
 }
-
-const cleanImage = (slug: string) => (homeImages as Record<string, { image: string }>)[slug]?.image
 
 /**
  * Every product-list page (categories, product lines, forms, deals, search results) laid out like
@@ -48,8 +45,8 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   const title = query.q ? t("catalog.resultsFor", { q: query.q }) : (brand ?? sub ?? category.name)
   const subtitle = !query.q && (brand || sub) ? category.name : undefined
   const labels = Object.fromEntries([...facets.brands, ...facets.subcategories, ...facets.forms].map((f) => [f.value, f.label]))
-  // banner shots: the first products of this list that have a clean (white-background) photo
-  const shots = result.items.map((p) => cleanImage(p.slug)).filter((x): x is string => !!x)
+  // banner shots: the first products of this list (all product photos are clean white-background shots)
+  const shots = result.items.map((p) => p.image).filter((x): x is string => !!x)
 
   return (
     <div className="container-page pt-[30px]">

@@ -3,8 +3,7 @@ import Image from "next/image"
 /**
  * Collection banner in the spirit of vitacost.com's (theirs are photos with the title painted in,
  * 1300×317): a light panel with the collection name in Roboto Slab on the left and up to three
- * product shots on the right. Only clean white-background photos are used for the shots
- * (homepage override images); with none available the banner shows the title alone.
+ * product shots on the right (the first products of the list); with none the banner shows the title alone.
  */
 export function CollectionBanner({ title, subtitle, images }: { title: string; subtitle?: string; images: string[] }) {
   const shots = images.slice(0, 3)
@@ -22,7 +21,7 @@ export function CollectionBanner({ title, subtitle, images }: { title: string; s
               className="relative size-[230px] overflow-hidden rounded-md bg-white shadow-[0_6px_18px_rgba(0,0,0,0.08)]"
               style={{ transform: `rotate(${[-7, 2, 8][i]}deg) translateY(${[10, -12, 14][i]}px)` }}
             >
-              <Image src={src} alt="" fill sizes="230px" className="object-contain p-3" />
+              <Image src={src} alt="" fill sizes="230px" unoptimized={/^https?:/.test(src)} className="object-contain p-3" />
             </div>
           ))}
         </div>

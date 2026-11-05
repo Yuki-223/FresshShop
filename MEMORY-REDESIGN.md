@@ -12,11 +12,12 @@
 | 导航栏 + 全站字体（Roboto Slab 标题 / Helvetica 正文）+ 搜索框阴影 | ✅ | `src/components/layout/vc-header/`、`src/lib/nav.ts`、`globals.css` |
 | 首页轮播图 + 后端优惠（OCT26DAILY、满 $30 包邮） | ✅ | `src/components/home/vc-slideshow/`、`backend/scripts/import-metagenics.mjs` |
 | 首页圆形分类 Explore More（6 个） | ✅ | `src/components/home/explore-circles.tsx`、`public/circles/` |
-| 首页 6 排商品行 + 首页干净商品图（44/52） | ✅ | `src/components/home/vc-carousel/`、`public/home-products/`、`home-images.json` |
+| 首页 6 排商品行 | ✅ | `src/components/home/vc-carousel/` |
 | 页脚 + 11 个占位页 | ✅ | `src/components/layout/site-footer.tsx`、`src/lib/data/pages.ts` |
 | 所有商品列表页（collection 风格） | ✅ | `src/components/collection/`、`category/[slug]/page.tsx` |
+| 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 
-**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：商品详情页、真正的账户页、全站商品图（用户会把自己采集的图导入数据库）、中文界面字体、是否再做一次从零 clone 测试。
+**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：商品详情页、真正的账户页、中文界面字体、是否再做一次从零 clone 测试。
 
 **继续工作前**：后端在云端后台最多跑 2 小时就会被系统停掉（已经发生过 3 次）。先 `cd backend && pnpm start:local`（后台运行，等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。数据都在 `backend/.local/postgres`，不会丢。
 
@@ -195,7 +196,7 @@ Vitacost 首页从上到下依次是：
   - **继续用我们自己的图（8 个）**：StayStrong+ 的 3 个商品、Ceriva、Essential Nutrition Shake、OmegaGenics Fish Oil Mega 10（Vitacost 没有这些商品）；Power Nutrition Shake（我们默认是 Mixed Berry，他们只有 Chocolate）、UltraClear Plus pH（我们默认是 Pineapple Banana，他们只有 Vanilla）。口味不同时不换，避免图上印的口味和"+"加进购物车的不一样。
 - 结果：首页 52 个不同商品里有 44 个换成 Vitacost 的图（60 张卡片里有 50 张）。
 - 实现：
-  - 图片在 `public/home-products/<slug>.jpg`（从 Shopify CDN 下载，`?width=600`，一共 2.3MB）。
+  - （已被"全站商品图"取代，下面两行是当时的做法）图片在 `public/home-products/<slug>.jpg`（从 Shopify CDN 下载，`?width=600`，一共 2.3MB）。
   - 对照表 `src/lib/data/metagenics/home-images.json` 的格式是 `{slug: {image, vitacost: 对应的 Vitacost 标题}}`。
   - 首页 `page.tsx` 的 `withHomeImage()` 只在首页把 `product.image` 换掉；商品页、分类页、购物车都不受影响。
 - 验证结果：60 个图片地址都能打开；没翻页的卡片图片是延迟加载，翻页后全部加载完成；控制台没有报错。
@@ -241,6 +242,22 @@ Vitacost 首页从上到下依次是：
   - 列表页加购正常；中文页、头部搜索结果、订阅、组合装、多条件组合筛选都正常。
   - 完整走查通过（订单 #13）。走查脚本已经改成先展开 "Form" 再点 Capsules。
 
+#### 全站商品图：✅ 已完成（2026-11-05）
+- 用户觉得列表页的图"太脏"（我们的原图瓶子下面有蓝灰色阴影和倒影），选了方案 **B**：能在 Vitacost 找到同一商品的用他们的图，找不到的把我们的图用程序去阴影。
+- 结果（229 个，每个都人工看过对比图）：
+  - **136 个用 Vitacost 的图**（含首页之前换过的 44 个）。按名字、规格、口味逐个核对；规格不同但我们也卖那个规格的算对上（例如 Lipo-Gen 我们默认 90 粒，图是 270 粒）。
+  - **87 个用我们的图去阴影**：76 个 Vitacost 没有；6 个 Vitacost 的图是旧包装（Exhilarin、GlutaClear、Lipotain、MetaFiber、GLA 240、Tran-Q Sleep），为了和新包装统一不用；其余是包装、口味、剂量对不上（规矩和首页一样：图上印的要和加进购物车的一致）。
+  - **6 个保留原图**：原图是白底照片（不是透明底），程序分不清白色背景和白色瓶盖，去阴影会把瓶盖和标签抠掉，所以不动。
+- 去阴影的方法：我们的原图大多是透明底 PNG，瓶子不透明、阴影半透明。把透明度低于 180 的像素去掉，180–250 之间做平滑过渡，然后居中放在白色正方形上（四周留约 6%）。脚本是 `scripts/clean-product-image.py`。
+- 实现：
+  - 229 张图统一成 `public/products/<slug>.jpg`（原来的 PNG 删掉了，图片总大小从 20MB 降到 8.5MB）；`catalog.json` 里的图片路径同步改成 `.jpg`。
+  - 新增 `src/lib/data/metagenics/product-images.json`：记录每张图的来源（`vitacost` + 对应的 Vitacost 标题 / `cleaned` + 原因 / `original` + 原因）。
+  - **删掉了首页的临时覆盖**：`home-images.json`、`public/home-products/`、首页 `withHomeImage()`。列表页横幅现在直接用列表里前 3 个商品的图。
+  - 后端导入脚本：重复运行时，比较数据库里的图和仓库里的文件是否一样，不一样就上传新图并更新商品（第一次运行更新了 217 + 6 个，再运行是 0 个）。上传时按扩展名设置图片类型（原来写死成 PNG）。
+  - 根目录的 `scripts/import-metagenics.mjs`（从 shopStore 重新生成 catalog 的脚本）会跳过 `product-images.json` 里的商品，不会用原图覆盖干净图。
+- 注意：开着 `pnpm start:local`（medusa develop）时修改 `backend/scripts/` 里的文件会让后端自动重启几秒钟。
+- 验证：全部商品 10 页共 229 张图都能加载；首页、分类页、详情页没有坏图；控制台没有报错；完整走查通过（订单 #14），测试评论已删除。
+
 #### 第 3 步里讨论过的问题（全部已解决）
 1. 圆形分类的文字 → B（用我们的分类名），6 个圆圈。
 2. 商品行放什么 → 6 排（Best Sellers / UltraFlora / Sports / Brain / Weight / Top Rated）。
@@ -256,7 +273,7 @@ Vitacost 首页从上到下依次是：
 ### 以后的步骤（还没讨论细节）
 - **商品详情页**要不要也改成 Vitacost 风格？（改的话，详情页底部的 "Frequently bought together" 也一起决定——它现在还用旧的 `ProductCard`。）
 - **真正的账户页**：用户明确说过想要（登录、注册、历史订单；Medusa 支持）。现在账户图标、页脚的 Account Login / Order History 都链接到占位页。
-- **全站商品图**：用户会把自己采集的图片导入数据库，改数据库后全站统一；到时候首页的 `home-images.json` 覆盖和列表页横幅的取图逻辑可以删掉或改掉。
+- 商品图分辨率：去阴影的 87 张大多来自 294px 的原图，在详情页的大图里有点模糊。以后如果用户导入自己采集的高清图，按 `product-images.json` 替换 `public/products/<slug>.jpg`，再运行后端导入脚本就会自动换图。
 - **中文界面字体**：中文标题要不要用思源宋体（现在是思源黑体）。
 - **从零 clone 测试**：用户问过本地能否复刻，我提议再完整测一次，用户还没回答。
 - 列表页的"网格 / 列表"视图切换去掉了（旧代码还在），以后想要可以加回来。
@@ -305,3 +322,4 @@ Vitacost 首页从上到下依次是：
   - 用户还问过"现在下载到本地能不能得到一样的结果"：检查过，上次从零 clone 测试之后没有新增依赖或安装步骤，所有图片都已经提交，**按 README 操作就能复刻**。小差别有三点：Mac 上是真正的 Helvetica（云端是相似的替代字体）；本地没有测试订单；第一次运行需要联网下载依赖和 Roboto Slab。提议过再做一次完整的从零测试，用户还没回答。
 - 2026-11-05：**所有商品列表页改成 Vitacost collection 风格**（新积木，详情页底部推荐卡片不变）。
 - 2026-11-05：后端第 3 次被系统停掉（没有自动重启）。整理了这份文件：加了"当前状态速览"，清理了过时的待办清单。
+- 2026-11-05：**全站商品图换成白底干净图**（136 张 Vitacost + 87 张去阴影 + 6 张原图），去掉了首页的临时图片覆盖。
