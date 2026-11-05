@@ -3,6 +3,15 @@ import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
 import { VcSlideshow } from "@/components/home/vc-slideshow/vc-slideshow"
 import { getI18n } from "@/i18n/server"
 import { getByCategory, getByProductLine, getMostReviewed, getTopRated, listCategories } from "@/lib/api"
+import homeImages from "@/lib/data/metagenics/home-images.json"
+import type { Product } from "@/types"
+
+/**
+ * Homepage-only image override: clean white-background photos of the same Metagenics products
+ * from vitacost.com (public/home-products/). Temporary — once the collected product images are
+ * imported into the backend, product.image itself will be clean and this can go.
+ */
+const withHomeImage = (p: Product): Product => ({ ...p, image: (homeImages as Record<string, { image: string }>)[p.slug]?.image ?? p.image })
 
 /**
  * Homepage laid out like vitacost.com: hero slideshow, "Explore More" circles, then six
@@ -58,7 +67,7 @@ export default async function HomePage() {
       {/* Six full-width shelves, green first */}
       <div className="mt-12">
         {shelves.map((s, i) => (
-          <VcCarousel key={s.href} title={s.title} products={s.products} shopAllHref={s.href} green={i % 2 === 0} />
+          <VcCarousel key={s.href} title={s.title} products={s.products.map(withHomeImage)} shopAllHref={s.href} green={i % 2 === 0} />
         ))}
       </div>
     </>

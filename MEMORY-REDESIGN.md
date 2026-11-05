@@ -170,9 +170,23 @@ Vitacost 首页从上到下依次是：
   - 6 个 Shop all 的商品数都对。
   - 完整走查通过（订单 #11），控制台没有报错。
 
+#### 首页商品图：✅ 已完成（2026-11-05）
+- 用户决定：**现在只换首页 6 排的图**。全站的图以后由用户把**自己采集的图片导入数据库**，改数据库就能统一，到时候首页的覆盖可以删掉。
+- 数据来源：Vitacost 是 Shopify 网站，`https://www.vitacost.com/collections/metagenics/products.json?limit=250` 可以一次拿到 203 个 Metagenics 商品的标题和图片（第 2 页是空的）。
+- 匹配方法：按商品名的词重合度打分，再比默认规格的数量（如 120 Tablets）和口味，打分脚本在会话 scratchpad 里（`match.py`，没有放进仓库），**然后人工逐个检查**：
+  - 手动改正了 2 个：Rapid Relief → "Rapid Relief, Body Soreness, 20 Softgels"（之前错配成 HerWellness Rapid *Period* Relief）；UltraFlora Triplebiotic with Akkermansia → "UltraFlora Triplebiotic, Gut Health"（之前错配成 Healthy Weight）。
+  - **继续用我们自己的图（8 个）**：StayStrong+ 的 3 个商品、Ceriva、Essential Nutrition Shake、OmegaGenics Fish Oil Mega 10（Vitacost 没有这些商品）；Power Nutrition Shake（我们默认是 Mixed Berry，他们只有 Chocolate）、UltraClear Plus pH（我们默认是 Pineapple Banana，他们只有 Vanilla）。口味不同时不换，避免图上印的口味和"+"加进购物车的不一样。
+- 结果：首页 52 个不同商品里有 44 个换成 Vitacost 的图（60 张卡片里有 50 张）。
+- 实现：
+  - 图片在 `public/home-products/<slug>.jpg`（从 Shopify CDN 下载，`?width=600`，一共 2.3MB）。
+  - 对照表 `src/lib/data/metagenics/home-images.json` 的格式是 `{slug: {image, vitacost: 对应的 Vitacost 标题}}`。
+  - 首页 `page.tsx` 的 `withHomeImage()` 只在首页把 `product.image` 换掉；商品页、分类页、购物车都不受影响。
+- 验证结果：60 个图片地址都能打开；没翻页的卡片图片是延迟加载，翻页后全部加载完成；控制台没有报错。
+
 #### 之后还要讨论的（按顺序，一个一个问）
 1. ~~圆形分类的文字~~ ✅
 2. ~~商品行放什么~~ ✅（上面）
+3. ~~商品行的图片~~ ✅（下面"首页商品图"一节）
 2. 商品行：放几行、每行标题和放什么商品（Vitacost 是 "Vitacost Best Sellers"、"California Gold Nutrition Favorites"、"Sport Supplements"、"Trending Products"，背景白色和浅绿色交替）。对应到我们，可以是评价最多、某个产品系列精选（如 UltraFlora）、运动、评分最高等。
 3. 商品行的图片：是否换成 Vitacost 上 Metagenics 商品的干净图？怎么匹配（按商品名）？匹配不上的怎么办？只换首页，还是全站都换？
 4. 商品卡片上的"+"一键加购：有多个规格的商品，点"+"加哪个规格（比如默认规格、单次购买）？
@@ -226,4 +240,5 @@ Vitacost 首页从上到下依次是：
   - 已决定：圆形分类原样用 Vitacost 的 6 张图，点击跳转到我们的链接。
   - 用户本来说要开新对话，后来决定在原对话继续。用户选了 B、保持 6 个圆圈，**圆形分类已完成**。
   - 下一步：讨论商品行（上面列表的第 2 项起）。
-- 2026-11-05：**6 排商品行完成**（见上面"商品行"一节）。下一步：讨论商品图片要不要换成 Vitacost 上 Metagenics 的干净图（列表第 3 项）。
+- 2026-11-05：**6 排商品行完成**（见上面"商品行"一节）。
+- 2026-11-05：**首页商品图换成 Vitacost 的干净图**（只换首页，44/52 个）。全站的图以后由用户导入数据库。下一步：讨论列表第 4 项起（"+"规格已经按默认处理了，可以跳过，直接问标题样式、页脚）。
