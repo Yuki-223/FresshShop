@@ -13,7 +13,8 @@ export const SORT_OPTIONS: { value: SortKey; label: MessageKey }[] = [
 
 export type ViewMode = "grid" | "list"
 
-export const PAGE_SIZE = 9
+/** 4 columns × 6 rows, as on vitacost.com collection pages */
+export const PAGE_SIZE = 24
 
 const list = (v: string | string[] | undefined) => (v == null ? [] : Array.isArray(v) ? v : [v])
 const first = (v: string | string[] | undefined) => list(v)[0]

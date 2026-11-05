@@ -1,0 +1,29 @@
+/* Price range on the Vitacost-style collection sidebar: two native range inputs share one
+   track; only their thumbs take pointer events. Thumbs are white 22px circles with a dark ring,
+   as on vitacost.com. */
+.vc-range::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid #121212;
+  background: #fff;
+  cursor: pointer;
+}
+
+.vc-range::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #121212;
+  background: #fff;
+  cursor: pointer;
+}
+
+.vc-range::-webkit-slider-runnable-track,
+.vc-range::-moz-range-track {
+  background: transparent;
+}

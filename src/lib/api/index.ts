@@ -191,6 +191,8 @@ export async function getFacets(group: string, locale: Locale) {
       .map(([value, n]) => ({ value, label: value, count: n }))
       .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value)),
     forms: [...count((p) => [p.form])].map(([value, n]) => ({ value, label: formLabel(value, locale), count: n })).sort((a, b) => b.count - a.count),
+    /** star buckets as the rating filter uses them: 4 → 4.0–4.99 (Vitacost-style sidebar shows these counts) */
+    ratings: [5, 4, 3, 2, 1].map((n) => ({ value: n, count: scope.filter((p) => p.rating && p.rating.value >= n && p.rating.value < n + 1).length })),
     toggles: {
       stock: scope.filter((p) => p.variants.some((v) => v.available)).length,
       subscribe: scope.filter((p) => p.variants.some((v) => v.subscriptions.some((s) => s.savePercent > 0))).length,

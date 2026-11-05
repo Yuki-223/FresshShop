@@ -1,15 +1,16 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Suspense } from "react"
-import { CatalogPagination } from "@/components/catalog/catalog-pagination"
-import { AppliedFilters, FilterBar, ViewToggle } from "@/components/catalog/filter-bar"
-import { FilterSidebar } from "@/components/catalog/filter-sidebar"
-import { Breadcrumbs } from "@/components/common/breadcrumbs"
+import { AppliedFilters } from "@/components/catalog/filter-bar"
 import { ButtonLink } from "@/components/common/button-link"
-import { ProductCard } from "@/components/product/product-card"
-import { ProductListItem } from "@/components/product/product-list-item"
+import { CollectionBanner } from "@/components/collection/collection-banner"
+import { CollectionCard } from "@/components/collection/collection-card"
+import { CollectionPagination } from "@/components/collection/collection-pagination"
+import { CollectionSidebar } from "@/components/collection/collection-sidebar"
+import { CollectionToolbar } from "@/components/collection/collection-toolbar"
 import { getI18n } from "@/i18n/server"
 import { findCategory, getFacets, priceRange, searchProducts } from "@/lib/api"
+import homeImages from "@/lib/data/metagenics/home-images.json"
 import { parseProductQuery } from "@/lib/search-params"
 
 // Product data comes from the backend on every request (no static shell to show instantly).
@@ -26,6 +27,14 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/category/[
   return { title: category?.name }
 }
 
+const cleanImage = (slug: string) => (homeImages as Record<string, { image: string }>)[slug]?.image
+
+/**
+ * Every product-list page (categories, product lines, forms, deals, search results) laid out like
+ * a vitacost.com collection page: banner, collapsible filter sidebar, in-collection search,
+ * count + sort, 4-column grid with full-width "Add to cart" buttons, centred page numbers.
+ * Filtering is unchanged: the URL is the single source of truth (lib/search-params.ts).
+ */
 export default async function CategoryPage({ params, searchParams }: PageProps<"/[lang]/category/[slug]">) {
   const { t, locale } = await getI18n()
   const { slug } = await params
@@ -33,56 +42,63 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   if (!category) notFound()
 
   const query = parseProductQuery(await searchParams, slug)
-  const [result, facets] = await Promise.all([searchProducts(query, locale), getFacets(slug, locale)])
-  const title = query.q ? t("catalog.resultsFor", { q: query.q }) : category.name
+  const [result, facets, bounds] = await Promise.all([searchProducts(query, locale), getFacets(slug, locale), priceRange(locale)])
+  const sub = query.subcategory ? facets.subcategories.find((s) => s.value === query.subcategory)?.label : undefined
+  const brand = query.brands?.length === 1 ? query.brands[0] : undefined
+  const title = query.q ? t("catalog.resultsFor", { q: query.q }) : (brand ?? sub ?? category.name)
+  const subtitle = !query.q && (brand || sub) ? category.name : undefined
   const labels = Object.fromEntries([...facets.brands, ...facets.subcategories, ...facets.forms].map((f) => [f.value, f.label]))
+  // banner shots: the first products of this list that have a clean (white-background) photo
+  const shots = result.items.map((p) => cleanImage(p.slug)).filter((x): x is string => !!x)
 
   return (
-    <div className="container-page">
-      <Breadcrumbs items={[{ label: category.name, href: `/category/${slug}` }]} />
+    <div className="container-page pt-[30px]">
+      <CollectionBanner title={title} subtitle={subtitle} images={shots} />
 
-      <div className="flex items-center justify-between pt-4">
-        <h1 className="text-[32px] font-semibold text-ink">{title}</h1>
-        <ViewToggle view={query.view} total={result.total} />
-      </div>
-      <div className="mt-6">
-        <FilterBar counts={facets.toggles} />
-        <AppliedFilters labels={labels} />
-      </div>
-
-      <div className="mt-16 grid grid-cols-[230px_1fr] gap-8">
-        <FilterSidebar categorySlug={slug} subcategories={facets.subcategories} brands={facets.brands} forms={facets.forms} priceBounds={await priceRange(locale)} />
+      <div className="mt-10 grid grid-cols-[272px_1fr] px-[42px]">
+        <div className="pl-3.5">
+          <Suspense>
+            <CollectionSidebar
+              categorySlug={slug}
+              subcategories={facets.subcategories}
+              brands={facets.brands}
+              forms={facets.forms}
+              ratings={facets.ratings}
+              toggles={facets.toggles}
+              priceBounds={bounds}
+            />
+          </Suspense>
+        </div>
 
         <section aria-label={t("catalog.productsLabel")}>
+          <Suspense>
+            <CollectionToolbar total={result.total} />
+            <AppliedFilters labels={labels} />
+          </Suspense>
+
           {result.items.length === 0 ? (
-            <div className="flex flex-col items-center rounded-xl border border-dashed border-line py-24 text-center">
-              <p className="font-heading text-lg font-semibold text-ink">{t("catalog.noResultsTitle")}</p>
-              <p className="mt-2 text-sm text-ink-muted">{t("catalog.noResultsBody")}</p>
+            <div className="mt-8 flex flex-col items-center border border-dashed border-[#d9d9d9] py-24 text-center">
+              <p className="text-lg font-bold text-[#121212]">{t("catalog.noResultsTitle")}</p>
+              <p className="mt-2 text-sm text-[#6b6b6b]">{t("catalog.noResultsBody")}</p>
               <ButtonLink href={`/category/${slug}`} variant="outline" className="mt-6">
                 {t("catalog.resetFilters")}
               </ButtonLink>
             </div>
-          ) : query.view === "list" ? (
-            <div className="space-y-8">
-              {result.items.map((p) => (
-                <ProductListItem key={p.id} product={p} />
-              ))}
-            </div>
           ) : (
-            <div className="grid grid-cols-3 gap-8">
+            <div className="mt-5 grid grid-cols-4 gap-x-2 gap-y-[26px]">
               {result.items.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <CollectionCard key={p.id} product={p} />
               ))}
             </div>
           )}
+
+          <div className="mt-8">
+            <Suspense>
+              <CollectionPagination page={result.page} pageCount={result.pageCount} />
+            </Suspense>
+          </div>
         </section>
       </div>
-
-      {result.total > 0 && (
-        <Suspense>
-          <CatalogPagination page={result.page} pageCount={result.pageCount} pageSize={result.pageSize} total={result.total} />
-        </Suspense>
-      )}
     </div>
   )
 }

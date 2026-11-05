@@ -198,6 +198,32 @@ Vitacost 首页从上到下依次是：
 - **顺手修复：分类页的页码被 "Show more products" 按钮挡住了**。原因是 229 个商品 ÷ 每页 9 个 = 26 页，全部列出来超出了左边 1/3 栏的宽度（换成 Helvetica 后更宽）。改成省略式：`pageWindow()` 显示第一页、最后一页和当前页前后各 2 页，比如 `1 2 3 4 5 … 26`、`1 … 11 12 13 14 15 … 26`。实测页码右边到 495px，按钮左边从 616px 开始，不再重叠。
 - 完整走查通过（订单 #12），测试评论已删除。
 
+#### 商品列表页（collection 风格）：✅ 已完成（2026-11-05）
+- 用户给了 Vitacost 的 `https://www.vitacost.com/collections/glp-1-formula` 作参考，要求把我们的列表页改成那样。
+- 讨论：给用户解释了分类页是"积木拼起来的"（Breadcrumbs / 标题+ViewToggle / FilterBar / AppliedFilters / FilterSidebar / ProductCard 或 ProductListItem / CatalogPagination），数据来自网址参数。**所有列表页共用一个模板**（`category/[slug]`）：分类、子分类、产品系列、剂型、Deals、Top Rated、Best Sellers、头部搜索结果、首页圆圈和 Shop all 都会一起变。商品详情页不变。
+- 用户选 **A：做一套新积木**。旧积木不删；`ProductCard` 继续用在商品详情页底部的"Frequently bought together"（实测那里还是 4 个 "Buy now"）。用说明图（同一张卡片用在两个地方 → A/B 两种做法）向用户解释过。
+- 原站实测（这些页面由 Boost Commerce 插件渲染，class 前缀是 `boost-sd__`）：
+  - 横幅图 1300×317（标题直接画在图里）。
+  - 左侧筛选栏宽 244（外层 272，离横幅左边 42），每个筛选项下边线 `#e8e8e1`，上下 padding 25，▸ 加 14px 标题；展开后是勾选框行，数量 "(n)" 是灰色；Brand 带一个 "Search Options" 搜索框；Price 是两个 "$" 输入框加滑块，下面有 5 个刻度数字；Price 和 Review Ratings 默认展开。
+  - 右侧：方角搜索框（944×34，1px `#7d7d7d` 边框），下面一行左边 "37 Products"、右边 "Sort By: Best Selling"。
+  - 每行 4 个，卡片 230 宽，横向间距 8，纵向间距 26，无边框，图片 1:1；下面依次是 vendor（12px）、标题（12px/18，两行）、绿色星星 16px + 评价数 13px、价格 16px、整条按钮（36 高，圆角 4，15px，字间距 1px，背景 `#8fc042`）。
+  - 翻页：底部居中的 "1 2 ›"；每页 24 个。
+- 实现（`src/components/collection/`）：
+  - `collection-banner.tsx`：浅色面板 `#f3f4f1`，高 330；左边是 Roboto Slab 56px 的标题，选了子分类或单个品牌时加一行副标题（所属分组名）；右边最多 3 张商品图，**只用有干净图的商品**（首页的 `home-images.json`），轻微倾斜放在白卡上；没有干净图时只显示标题。
+  - `collection-sidebar.tsx` + `collection.css`（双滑块样式）：分类（子分类）、Brand（产品系列 + 搜索框）、Specialties（订阅更省、组合装）、Price、Availability（有货）、Form、Review Ratings（5→1 星，带数量）。**网址参数和旧 FilterSidebar 完全一样**（sub / brand / form / rating / min / max / stock / subscribe / bundle）。有筛选条件的那一项会自动展开。
+  - `collection-toolbar.tsx`：本分类搜索（写 `?q=`）、"N Products"、Sort By（原生 select）。
+  - `collection-card.tsx`：vendor 显示产品系列，没有系列时写 "Metagenics"；价格显示**最低价**，不同规格价格不一样时前面加 "From"（和价格排序、价格筛选保持一致——一开始用了默认规格的价格，按价格排序时第一个显示 $33.95、第二个 $17.95，已修正）；按钮加入默认规格、单次购买，缺货时是灰色 "Out of stock"。
+  - `collection-pagination.tsx`：复用 `pageWindow()`，居中，前后有箭头，当前页加下划线。
+  - `category/[slug]/page.tsx`：去掉了面包屑、ViewToggle 和列表视图（Vitacost 没有）；`AppliedFilters` 沿用旧组件。
+  - 数据层：`getFacets()` 新增 `ratings`（按整星分桶，和评分筛选的规则一致）；`PAGE_SIZE` 从 9 改成 24。
+  - 字典新增 `collection.*`（中英文）。
+- 验证结果：
+  - 体重管理 42 个；勾选 UltraFlora 后 3 个；再加 4 星仍是 3 个；Clear all 回到 72 个。
+  - 全部商品 229 个，页码显示 "1 2 3 4 5 … 10"；按价格从低到高排序正确（15.95 → 17.95…）；第 2 页正常。
+  - 在 gut-detox 里搜 fiber 得到 4 个；价格上限 $20 得到 6 个。
+  - 列表页加购正常；中文页、头部搜索结果、订阅、组合装、多条件组合筛选都正常。
+  - 完整走查通过（订单 #13）。走查脚本已经改成先展开 "Form" 再点 Capsules。
+
 #### 之后还要讨论的（按顺序，一个一个问）
 1. ~~圆形分类的文字~~ ✅
 2. ~~商品行放什么~~ ✅（上面）
@@ -259,3 +285,4 @@ Vitacost 首页从上到下依次是：
 - 2026-11-05：**首页商品图换成 Vitacost 的干净图**（只换首页，44/52 个）。全站的图以后由用户导入数据库。
 - 2026-11-05：**页脚换成 Vitacost 风格**，新增 11 个占位页；修复了分类页页码重叠的问题。
   - 用户还问过"现在下载到本地能不能得到一样的结果"：检查过，上次从零 clone 测试之后没有新增依赖或安装步骤，所有图片都已经提交，**按 README 操作就能复刻**。小差别有三点：Mac 上是真正的 Helvetica（云端是相似的替代字体）；本地没有测试订单；第一次运行需要联网下载依赖和 Roboto Slab。提议过再做一次完整的从零测试，用户还没回答。
+- 2026-11-05：**所有商品列表页改成 Vitacost collection 风格**（新积木，详情页底部推荐卡片不变）。
