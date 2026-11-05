@@ -1,15 +1,17 @@
 import { CountPill } from "@/components/common/pills"
 import { LinkListSidebar } from "@/components/common/link-list-sidebar"
 import { SectionHeader } from "@/components/common/section-header"
+import { ExploreCircles } from "@/components/home/explore-circles"
 import { VcSlideshow } from "@/components/home/vc-slideshow/vc-slideshow"
 import { ProductGrid } from "@/components/product/product-card"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
-import { getBundles, getByCategory, getMostReviewed, getTopRated, listHealthCategories, listProductTags } from "@/lib/api"
+import { getBundles, getByCategory, getMostReviewed, getTopRated, listCategories, listHealthCategories, listProductTags } from "@/lib/api"
 
 export default async function HomePage() {
   const { t, locale } = await getI18n()
-  const [health, mostReviewed, topRated, bundles, sleep, lines] = await Promise.all([
+  const [groups, health, mostReviewed, topRated, bundles, sleep, lines] = await Promise.all([
+    listCategories(locale),
     listHealthCategories(locale),
     getMostReviewed(locale, 3),
     getTopRated(locale, 3),
@@ -24,14 +26,28 @@ export default async function HomePage() {
 
   return (
     <div className="container-page space-y-32 pt-4">
-      {/* Hero slideshow (Vitacost banners; the offers they show — OCT26DAILY, free shipping over $30 — exist in the backend) */}
-      <VcSlideshow
-        slides={[
-          { id: "probiotics", image: "/banners/probiotics.jpg", alt: t("home.slideProbiotics"), href: "/category/gut-detox?sub=digestion-and-probiotics" },
-          { id: "supplement-sale", image: "/banners/supplement-sale.jpg", alt: t("home.slideSale"), href: "/category/all?sort=popular" },
-          { id: "free-shipping", image: "/banners/free-shipping.jpg", alt: t("home.slideFreeShipping"), href: "/category/all" },
-        ]}
-      />
+      {/* Slideshow + "Explore More" circles sit close together, as on vitacost.com */}
+      <div className="space-y-3">
+        {/* Hero slideshow (Vitacost banners; the offers they show — OCT26DAILY, free shipping over $30 — exist in the backend) */}
+        <VcSlideshow
+          slides={[
+            { id: "probiotics", image: "/banners/probiotics.jpg", alt: t("home.slideProbiotics"), href: "/category/gut-detox?sub=digestion-and-probiotics" },
+            { id: "supplement-sale", image: "/banners/supplement-sale.jpg", alt: t("home.slideSale"), href: "/category/all?sort=popular" },
+            { id: "free-shipping", image: "/banners/free-shipping.jpg", alt: t("home.slideFreeShipping"), href: "/category/all" },
+          ]}
+        />
+        <ExploreCircles
+          title={t("home.exploreMore")}
+          items={[
+            ...(["vitamins-wellness", "joint-sports", "gut-detox", "women-men-kids", "brain-mood-sleep"] as const).map((slug) => ({
+              image: `/circles/${slug}.jpg`,
+              label: groups.find((g) => g.slug === slug)!.name,
+              href: `/category/${slug}`,
+            })),
+            { image: "/circles/deals.jpg", label: t("home.seeAllDeals"), href: "/category/all?subscribe=1" },
+          ]}
+        />
+      </div>
 
       <section className="grid grid-cols-[1fr_3fr] gap-8">
         <LinkListSidebar

@@ -71,6 +71,8 @@ export const en = {
     productTags: "Popular product lines",
   },
   home: {
+    exploreMore: "Explore More",
+    seeAllDeals: "See All Deals",
     slideshow: "Featured offers",
     slideOf: "{current} of {total}",
     slidePrevious: "Previous slide",

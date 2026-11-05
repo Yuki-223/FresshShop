@@ -69,6 +69,8 @@ export const zh: Dictionary = {
     productTags: "热门产品系列",
   },
   home: {
+    exploreMore: "探索更多",
+    seeAllDeals: "查看全部优惠",
     slideshow: "精选优惠",
     slideOf: "第 {current} 张，共 {total} 张",
     slidePrevious: "上一张",

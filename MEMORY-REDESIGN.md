@@ -112,7 +112,7 @@ Vitacost 首页从上到下依次是：
   - Vitacost 原来的 6 个圆圈：Supplements（胶原蛋白粉）、Sports（Orgain 蛋白粉）、Grocery（玉米片）、Personal Care（Rael 女性护理）、Pets（宠物关节咀嚼片）、See all deals（"See all deals"文字图）。圆圈下的文字是 Helvetica 18px。
   - 实现时要从 vitacost.com 首页把这 6 张图下载到 `public/` 里自己托管（CDN 链接会过期）。
 
-#### 圆形分类：⏳ 等用户回答的问题
+#### 圆形分类：文字问题（✅ 用户选了 B）
 **圆圈下面的文字用他们的还是我们的？**
 - **A. 用他们的文字**（Supplements / Sports / Grocery / Personal Care / Pets / See all deals）：最像原站，但我们没有 Grocery、Pets 这些分类，点进去会对不上。
 - **B. 换成我们的分类名（推荐）**，按图的内容找最接近的分类：
@@ -128,8 +128,15 @@ Vitacost 首页从上到下依次是：
 
   我们有 8 个分组，只有 6 个位置，Heart & Metabolism 和 Immune Health 放不进来（顶部 Categories 菜单里都有）。用户选 B 的话，表里任何一行都可以改。
 
+#### 圆形分类：✅ 已完成（2026-11-05）
+- 用户选 **B**（文字用我们的分类名），并且**保持 6 个圆圈**。Heart & Metabolism、Immune Health、Bundles 这 3 个分组没有圆圈，只在顶部 Categories 菜单里。之前写成"2 个放不进来"是错的，实际是 3 个，已向用户更正。
+- 实现：`src/components/home/explore-circles.tsx`（服务端组件）。图片在 `public/circles/`，文件名是 vitamins-wellness / joint-sports / gut-detox / women-men-kids / brain-mood-sleep / deals.jpg，从 vitacost.com 下载，360×360。字典新增 `home.exploreMore`、`home.seeAllDeals`。
+- 按原站实测：标题 Roboto Slab 24px 700，居中，在轮播控件下方 12px（首页里轮播和圆圈包在一个 `space-y-3` 的 div 里）；标题和图片间隔 30px；图片 170×170，间距 48px，整排居中，横坐标和原站完全一致（90、308、526……）；文字是 Helvetica 18px，字间距 0.6px，颜色 ink/75，在图片下方 30px，悬停时加下划线。
+- 我们的分类名比原站长，所以文字用 `-mx-6 whitespace-nowrap`，可以占用两侧间距，保持一行（每个 218px 宽）。
+- 6 个链接都实测能打开：Vitamins & Wellness 119 个商品、Joint & Sports 57、Gut & Detox 65、Women, Men & Kids 61、Brain, Mood & Sleep 63、See All Deals → 订阅商品 195。控制台没有报错。
+
 #### 之后还要讨论的（按顺序，一个一个问）
-1. 圆形分类的文字（上面那个问题）。
+1. ~~圆形分类的文字~~ ✅
 2. 商品行：放几行、每行标题和放什么商品（Vitacost 是 "Vitacost Best Sellers"、"California Gold Nutrition Favorites"、"Sport Supplements"、"Trending Products"，背景白色和浅绿色交替）。对应到我们，可以是评价最多、某个产品系列精选（如 UltraFlora）、运动、评分最高等。
 3. 商品行的图片：是否换成 Vitacost 上 Metagenics 商品的干净图？怎么匹配（按商品名）？匹配不上的怎么办？只换首页，还是全站都换？
 4. 商品卡片上的"+"一键加购：有多个规格的商品，点"+"加哪个规格（比如默认规格、单次购买）？
@@ -181,5 +188,5 @@ Vitacost 首页从上到下依次是：
 - 2026-11-04：**搜索框加阴影**（用户截图指出 Vitacost 的搜索框有阴影）。按原站实测：没有普通边框，用两层伪元素画出来：`::before` 是 `inset 0 1px 3px #ccc`；`::after` 是 1px `rgba(18,18,18,.15)` 边框加同样的内阴影，向内缩 1px。高 38px，圆角 25px，输入文字 16px，提示文字 `rgba(18,18,18,.5)`。聚焦时 `::after` 的边框颜色加深。
 - 2026-11-05：开始讨论**第 3 步（圆形分类 + 商品行）**。
   - 已决定：圆形分类原样用 Vitacost 的 6 张图，点击跳转到我们的链接。
-  - 等用户回答：圆圈下面的文字用 A（他们的）还是 B（我们的分类名）。
-  - 用户说会**开一个新对话**接着讨论。详情见上面"第 3 步"一节。
+  - 用户本来说要开新对话，后来决定在原对话继续。用户选了 B、保持 6 个圆圈，**圆形分类已完成**。
+  - 下一步：讨论商品行（上面列表的第 2 项起）。
