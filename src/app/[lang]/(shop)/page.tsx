@@ -1,33 +1,39 @@
-import { CountPill } from "@/components/common/pills"
-import { LinkListSidebar } from "@/components/common/link-list-sidebar"
-import { SectionHeader } from "@/components/common/section-header"
 import { ExploreCircles } from "@/components/home/explore-circles"
+import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
 import { VcSlideshow } from "@/components/home/vc-slideshow/vc-slideshow"
-import { ProductGrid } from "@/components/product/product-card"
-import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
-import { getBundles, getByCategory, getMostReviewed, getTopRated, listCategories, listHealthCategories, listProductTags } from "@/lib/api"
+import { getByCategory, getByProductLine, getMostReviewed, getTopRated, listCategories } from "@/lib/api"
 
+/**
+ * Homepage laid out like vitacost.com: hero slideshow, "Explore More" circles, then six
+ * full-width product shelves alternating light green and white.
+ */
 export default async function HomePage() {
   const { t, locale } = await getI18n()
-  const [groups, health, mostReviewed, topRated, bundles, sleep, lines] = await Promise.all([
+  const [groups, bestSellers, ultraFlora, sports, brain, weight, topRated] = await Promise.all([
     listCategories(locale),
-    listHealthCategories(locale),
-    getMostReviewed(locale, 3),
-    getTopRated(locale, 3),
-    getBundles(locale, 4),
-    getByCategory("sleep", locale, 4),
-    listProductTags(),
+    getMostReviewed(locale, 10),
+    getByProductLine("UltraFlora", locale, 10),
+    getByCategory("protein-and-sports-nutrition", locale, 10),
+    getByCategory("brain-and-cognitive-health", locale, 10),
+    getByCategory("weight-management", locale, 10),
+    getTopRated(locale, 10),
   ])
-  const healthLink = (value: string) => {
-    const h = health.find((x) => x.value === value)!
-    return { label: h.label, href: `/category/${h.group}?sub=${encodeURIComponent(h.value)}` }
-  }
+
+  // vitacost.com shelf → ours: Best Sellers, a brand's favourites, Sport, NAD+, GLP-1, Trending
+  const shelves = [
+    { title: t("home.shelfBestSellers"), products: bestSellers, href: "/category/all?sort=popular" },
+    { title: t("home.shelfUltraFlora"), products: ultraFlora, href: "/category/all?brand=UltraFlora" },
+    { title: t("home.shelfSports"), products: sports, href: "/category/joint-sports?sub=protein-and-sports-nutrition" },
+    { title: t("home.shelfBrain"), products: brain, href: "/category/brain-mood-sleep?sub=brain-and-cognitive-health" },
+    { title: t("home.shelfWeight"), products: weight, href: "/category/heart-metabolism?sub=weight-management" },
+    { title: t("home.shelfTopRated"), products: topRated, href: "/category/all?sort=rating" },
+  ]
 
   return (
-    <div className="container-page space-y-32 pt-4">
+    <>
       {/* Slideshow + "Explore More" circles sit close together, as on vitacost.com */}
-      <div className="space-y-3">
+      <div className="container-page space-y-3 pt-4">
         {/* Hero slideshow (Vitacost banners; the offers they show — OCT26DAILY, free shipping over $30 — exist in the backend) */}
         <VcSlideshow
           slides={[
@@ -49,51 +55,12 @@ export default async function HomePage() {
         />
       </div>
 
-      <section className="grid grid-cols-[1fr_3fr] gap-8">
-        <LinkListSidebar
-          title={t("home.bestSelling")}
-          links={["digestion-and-probiotics", "immune-health", "heart-health", "omega-3s-and-fish-oil", "magnesium"].map(healthLink)}
-          more={{ label: t("home.moreProducts"), href: "/category/all?sort=popular" }}
-        />
-        <ProductGrid products={mostReviewed} />
-      </section>
-
-      <section className="grid grid-cols-[1fr_3fr] gap-8">
-        <LinkListSidebar
-          title={t("home.topRated")}
-          links={lines.slice(0, 5).map((l) => ({ label: l.label, href: `/category/all?brand=${encodeURIComponent(l.value)}` }))}
-          more={{ label: t("home.moreProducts"), href: "/category/all?sort=rating" }}
-        />
-        <ProductGrid products={topRated} />
-      </section>
-
-      <section>
-        <SectionHeader title={t("home.healthGoals")} href="/category/all" linkLabel={t("home.moreCategories")} />
-        <div className="grid grid-cols-6 gap-4">
-          {health
-            .filter((h) => h.value !== "bundle-and-save")
-            .map((h) => (
-              <Link
-                key={h.value}
-                href={`/category/${h.group}?sub=${encodeURIComponent(h.value)}`}
-                className="group flex h-28 flex-col justify-between rounded-xl border border-line bg-card p-4 transition-colors hover:border-brand-light hover:bg-brand-soft"
-              >
-                <span className="font-heading text-sm font-semibold text-ink group-hover:text-brand-dark">{h.label}</span>
-                <CountPill className="w-fit">{t.plural("home.productCount", h.count)}</CountPill>
-              </Link>
-            ))}
-        </div>
-      </section>
-
-      <section className="border-t border-surface-2 pt-16">
-        <SectionHeader title={t("home.weeklyDeals")} href="/category/bundles" linkLabel={t("home.allDeals")} />
-        <ProductGrid products={bundles} columns={4} />
-      </section>
-
-      <section>
-        <SectionHeader title={t("home.sleepPicks")} href="/category/brain-mood-sleep?sub=sleep" linkLabel={t("home.allSleep")} />
-        <ProductGrid products={sleep} columns={4} />
-      </section>
-    </div>
+      {/* Six full-width shelves, green first */}
+      <div className="mt-12">
+        {shelves.map((s, i) => (
+          <VcCarousel key={s.href} title={s.title} products={s.products} shopAllHref={s.href} green={i % 2 === 0} />
+        ))}
+      </div>
+    </>
   )
 }

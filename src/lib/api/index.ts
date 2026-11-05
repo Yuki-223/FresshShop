@@ -220,6 +220,11 @@ export async function getByCategory(category: string, locale: Locale, limit = 3)
   return (await records()).filter((p) => p.categories.includes(category)).sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
 }
 
+/** Products of one product line (e.g. "UltraFlora"), most reviewed first. */
+export async function getByProductLine(line: string, locale: Locale, limit = 10) {
+  return (await records()).filter((p) => p.productLine === line).sort(sorters.popular).slice(0, limit).map((r) => toProduct(r, locale))
+}
+
 export async function getRelatedProducts(product: ProductDetail, locale: Locale, limit = 4) {
   const picked = (await getProductsBySlugs(product.related, locale)).slice(0, limit)
   if (picked.length >= limit) return picked

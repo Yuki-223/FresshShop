@@ -135,8 +135,44 @@ Vitacost 首页从上到下依次是：
 - 我们的分类名比原站长，所以文字用 `-mx-6 whitespace-nowrap`，可以占用两侧间距，保持一行（每个 218px 宽）。
 - 6 个链接都实测能打开：Vitamins & Wellness 119 个商品、Joint & Sports 57、Gut & Detox 65、Women, Men & Kids 61、Brain, Mood & Sleep 63、See All Deals → 订阅商品 195。控制台没有报错。
 
+#### 商品行：✅ 已完成（2026-11-05）
+- **Vitacost 首页其实有 6 排**（我第一次只看到 4 排，被用户指出）：Vitacost Best Sellers / California Gold Nutrition Favorites / Sport Supplements / NAD+ Formulas / GLP-1 Support / Trending Products。背景浅绿（#edf6de）和白色交替，第一排是绿色。
+- 用户同意的对应关系（每排 10 个商品，一屏 5 个）：
+
+  | # | Vitacost | 我们 | 数据 | Shop all |
+  |---|---|---|---|---|
+  | 1 | Best Sellers | Best Sellers | `getMostReviewed(10)` | `/category/all?sort=popular` |
+  | 2 | California Gold Favorites | UltraFlora Favorites | `getByProductLine("UltraFlora")`（新增） | `/category/all?brand=UltraFlora`（21 个） |
+  | 3 | Sport Supplements | Sports Nutrition | `getByCategory("protein-and-sports-nutrition")` | `/category/joint-sports?sub=…`（27） |
+  | 4 | NAD+ Formulas | Brain & Cognitive Health | `getByCategory("brain-and-cognitive-health")` | `/category/brain-mood-sleep?sub=…`（31） |
+  | 5 | GLP-1 Support | Weight Management | `getByCategory("weight-management")` | `/category/heart-metabolism?sub=…`（42） |
+  | 6 | Trending Products | Top Rated | `getTopRated(10)` | `/category/all?sort=rating` |
+
+- 用户说"按你说的做"，没讨论的三处我按默认处理，并告诉了用户：
+  1. 图片暂时用我们自己的商品图（换成 Vitacost 干净图是下一步）。
+  2. "+" 加入**默认规格、单次购买**（`defaultVariant` + `toCartLine(..., {type:"once"})`，复用 `useAddToCart`，会弹出提示）；缺货时 "+" 变灰不能点。
+  3. 首页原来的区块（Most reviewed / Top rated 侧栏 + 网格、Shop by health goal、Weekly deals、Sleep picks）**全部换成这 6 排**。首页现在只剩：轮播 → Explore More → 6 排商品。
+- 组件：用户先传了 `VcCarousel.zip`（只有 tsx），之后又单独上传了 `vc-carousel.css`（Release 资源 id 712651989）。`types.ts` 一直没传，我直接用我们的 `Product` 类型代替了 VcProduct。
+- 实现：`src/components/home/vc-carousel/vc-carousel.tsx` + `vc-carousel.css`。
+  - 只保留桌面端；去掉了加载、空、错误三种状态和滚动位置记忆（数据由服务端渲染，用不上）。
+  - 内容对齐 `.container-page`（max 1440，左右 45），卡片 254px 宽。
+  - 颜色用我们的变量：绿色背景是 `color-mix(brand 12%, white)`，"+"和 Shop all 用 `--brand`。
+  - 标题用 Roboto Slab 24px 700；商品名强制用 `--font-sans`（因为 h3 默认是衬线体）。
+  - 图片用 `object-fit: contain` 加白底（我们的图不是正方形棚拍图）。
+  - 字典新增 `home.shopAll`、`home.shelf*`。
+  - 6 排放在 `.container-page` 外面，这样背景能铺满整个宽度。
+- 验证结果：
+  - 6 排都是 10 个商品，背景交替正确。
+  - 悬停时 "+" 展开到 128px，显示 "Add to cart"。
+  - 右箭头翻页（scrollLeft 0 → 1096），翻页后出现左箭头。
+  - "+" 加购后购物车 0 → 1，弹出提示，抽屉里是单次购买。
+  - 点商品名进入商品页。
+  - 6 个 Shop all 的商品数都对。
+  - 完整走查通过（订单 #11），控制台没有报错。
+
 #### 之后还要讨论的（按顺序，一个一个问）
 1. ~~圆形分类的文字~~ ✅
+2. ~~商品行放什么~~ ✅（上面）
 2. 商品行：放几行、每行标题和放什么商品（Vitacost 是 "Vitacost Best Sellers"、"California Gold Nutrition Favorites"、"Sport Supplements"、"Trending Products"，背景白色和浅绿色交替）。对应到我们，可以是评价最多、某个产品系列精选（如 UltraFlora）、运动、评分最高等。
 3. 商品行的图片：是否换成 Vitacost 上 Metagenics 商品的干净图？怎么匹配（按商品名）？匹配不上的怎么办？只换首页，还是全站都换？
 4. 商品卡片上的"+"一键加购：有多个规格的商品，点"+"加哪个规格（比如默认规格、单次购买）？
@@ -190,3 +226,4 @@ Vitacost 首页从上到下依次是：
   - 已决定：圆形分类原样用 Vitacost 的 6 张图，点击跳转到我们的链接。
   - 用户本来说要开新对话，后来决定在原对话继续。用户选了 B、保持 6 个圆圈，**圆形分类已完成**。
   - 下一步：讨论商品行（上面列表的第 2 项起）。
+- 2026-11-05：**6 排商品行完成**（见上面"商品行"一节）。下一步：讨论商品图片要不要换成 Vitacost 上 Metagenics 的干净图（列表第 3 项）。
