@@ -15,6 +15,7 @@
 | 首页 6 排商品行 | ✅ | `src/components/home/vc-carousel/` |
 | 页脚 + 11 个占位页 | ✅ | `src/components/layout/site-footer.tsx`、`src/lib/data/pages.ts` |
 | 所有商品列表页（collection 风格） | ✅ | `src/components/collection/`、`category/[slug]/page.tsx` |
+| 列表页横幅换成 Vitacost 照片横幅（12 张，去掉了原图的文字和 logo） | ✅ | `public/collection-banners/`、`collection-banners.ts`、`collection-banner.tsx` |
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 
 **还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：商品详情页、真正的账户页、中文界面字体、是否再做一次从零 clone 测试。
@@ -324,3 +325,4 @@ Vitacost 首页从上到下依次是：
 - 2026-11-05：后端第 3 次被系统停掉（没有自动重启）。整理了这份文件：加了"当前状态速览"，清理了过时的待办清单。
 - 2026-11-05：**全站商品图换成白底干净图**（136 张 Vitacost + 87 张去阴影 + 6 张原图），去掉了首页的临时图片覆盖。
 - 2026-11-06：**列表页排序改成 Vitacost 的自定义下拉面板**（原来是浏览器自带的 select，展开是系统样式）：250px 白色面板，按钮下方 10px、右对齐，1px #eee 边框，选项 34px 高、当前项和悬停项加下划线；支持 Esc、点外部关闭和上下方向键。文字改成 "Sort by:"。搜索框只微调了提示文字颜色（#7a7a7a）和放大镜位置。排序选项还是我们原来的 5 个（Vitacost 是 Best selling / Relevance / 价格两种 / Newest / Top Rated）。
+- 2026-11-06：**列表页横幅换成 Vitacost 的照片横幅**。用户说"不匹配也可以，好看就行"。Vitacost 大部分分类页其实没有横幅，扫了 261 个分类页，找到 26 张照片横幅（1024×250 或 1441×200），中间都有标题文字或品牌 logo。用 `scripts/erase-banner-text.py`（OpenCV inpaint）把中间的字和 logo 抹掉，挑了 12 张效果干净、和保健品相关的（Bob's Red Mill、Garden of Life、New Chapter 的 logo 是大色块，抹不干净，没用；食品、个护、带别家瓶子的也没用），改成中性的文件名放在 `public/collection-banners/`。横幅组件改成整张照片（按 1024:250 铺满容器宽度，约 1350×330）+ Roboto Slab 52px 标题写在照片留空的地方（两边有图的居中，右边有图的靠左）。`collection-banners.ts` 按分组和部分子分类分配横幅，其他页面（全部商品、搜索、产品系列、剂型、Deals 等，都在 /category/all 下）用 spoons-beige。原来横幅右边的 3 张倾斜商品卡去掉了。

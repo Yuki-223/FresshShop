@@ -10,6 +10,7 @@ import { CollectionSidebar } from "@/components/collection/collection-sidebar"
 import { CollectionToolbar } from "@/components/collection/collection-toolbar"
 import { getI18n } from "@/i18n/server"
 import { findCategory, getFacets, priceRange, searchProducts } from "@/lib/api"
+import { collectionBanner } from "@/lib/data/metagenics/collection-banners"
 import { parseProductQuery } from "@/lib/search-params"
 
 // Product data comes from the backend on every request (no static shell to show instantly).
@@ -45,12 +46,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   const title = query.q ? t("catalog.resultsFor", { q: query.q }) : (brand ?? sub ?? category.name)
   const subtitle = !query.q && (brand || sub) ? category.name : undefined
   const labels = Object.fromEntries([...facets.brands, ...facets.subcategories, ...facets.forms].map((f) => [f.value, f.label]))
-  // banner shots: the first products of this list (all product photos are clean white-background shots)
-  const shots = result.items.map((p) => p.image).filter((x): x is string => !!x)
 
   return (
     <div className="container-page pt-[30px]">
-      <CollectionBanner title={title} subtitle={subtitle} images={shots} />
+      <CollectionBanner title={title} subtitle={subtitle} banner={collectionBanner(slug, query.subcategory)} />
 
       <div className="mt-10 grid grid-cols-[272px_1fr] px-[42px]">
         <div className="pl-3.5">
