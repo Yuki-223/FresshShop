@@ -7,6 +7,7 @@ import { CollectionBanner } from "@/components/collection/collection-banner"
 import { CollectionCard } from "@/components/collection/collection-card"
 import { CollectionPagination } from "@/components/collection/collection-pagination"
 import { CollectionSidebar } from "@/components/collection/collection-sidebar"
+import { RevealGrid } from "@/components/collection/reveal-grid"
 import { CollectionToolbar } from "@/components/collection/collection-toolbar"
 import { getI18n } from "@/i18n/server"
 import { findCategory, getFacets, priceRange, searchProducts } from "@/lib/api"
@@ -45,6 +46,8 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
   const brand = query.brands?.length === 1 ? query.brands[0] : undefined
   const title = query.q ? t("catalog.resultsFor", { q: query.q }) : (brand ?? sub ?? category.name)
   const subtitle = !query.q && (brand || sub) ? category.name : undefined
+  // identifies this exact list (category + filters + sort + page): a new one starts again at 8 cards
+  const pageKey = `${locale}:${slug}:${JSON.stringify(query)}`
   const labels = Object.fromEntries([...facets.brands, ...facets.subcategories, ...facets.forms].map((f) => [f.value, f.label]))
 
   return (
@@ -81,18 +84,23 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
               </ButtonLink>
             </div>
           ) : (
-            <div className="mt-5 grid grid-cols-4 gap-x-2 gap-y-[26px]">
+            // a row at a time (8, then 4 by 4 up to the page's 24); the page numbers follow the last row
+            <RevealGrid
+              key={pageKey}
+              storageKey={pageKey}
+              footer={
+                <div className="mt-8">
+                  <Suspense>
+                    <CollectionPagination page={result.page} pageCount={result.pageCount} />
+                  </Suspense>
+                </div>
+              }
+            >
               {result.items.map((p) => (
                 <CollectionCard key={p.id} product={p} />
               ))}
-            </div>
+            </RevealGrid>
           )}
-
-          <div className="mt-8">
-            <Suspense>
-              <CollectionPagination page={result.page} pageCount={result.pageCount} />
-            </Suspense>
-          </div>
         </section>
       </div>
     </div>
