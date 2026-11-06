@@ -227,7 +227,7 @@ export const en = {
     searchOptions: "Search Options",
     searchInCollection: "Search for products in this collection",
     productCount: { one: "{count} Product", other: "{count} Products" },
-    sortBy: "Sort By:",
+    sortBy: "Sort by:",
     previousPage: "Previous page",
     nextPage: "Next page",
   },
