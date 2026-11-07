@@ -29,10 +29,6 @@ export const infoPages: Record<string, { title: L10n; intro: L10n }> = {
     title: { en: "Sell on Market", zh: "入驻开店" },
     intro: { en: "Are you a supplement brand? Join our marketplace and sell directly to customers.", zh: "你是营养品牌吗？入驻我们的商城，直接把产品卖给消费者。" },
   },
-  account: {
-    title: { en: "Your account", zh: "我的账户" },
-    intro: { en: "Sign-in is not part of this demo. Your cart and wish list are saved in this browser.", zh: "此演示版本暂不支持登录，购物车和心愿单保存在当前浏览器中。" },
-  },
   returns: {
     title: { en: "Returns Centre", zh: "退换货中心" },
     intro: { en: "Not happy with a product? Contact us within 48 hours and we will refund or replace it.", zh: "对商品不满意？48 小时内联系我们，即可退款或换货。" },
@@ -85,13 +81,6 @@ export const infoPages: Record<string, { title: L10n; intro: L10n }> = {
   contact: {
     title: { en: "Contact Us", zh: "联系我们" },
     intro: { en: "Email us anytime at info@freshnesecom.com — we reply within one business day.", zh: "欢迎随时发邮件到 info@freshnesecom.com，我们会在一个工作日内回复。" },
-  },
-  orders: {
-    title: { en: "Order History", zh: "历史订单" },
-    intro: {
-      en: "Sign-in is not part of this demo yet, so past orders can't be listed here. Your order number is shown on the confirmation page after checkout.",
-      zh: "本演示暂不支持登录，所以这里还不能显示历史订单。下单后，确认页会显示订单号。",
-    },
   },
   "service-updates": {
     title: { en: "Service Updates", zh: "服务公告" },

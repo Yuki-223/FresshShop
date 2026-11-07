@@ -1,10 +1,12 @@
 import {
+  authenticate,
   configureStoreSearch,
   defineMiddlewares,
   validateAndTransformBody,
 } from "@medusajs/framework/http"
 import { AdminPostReviews } from "./admin/reviews/validators"
 import { StorePostPurchaseItem } from "./store/carts/[id]/purchase-items/validators"
+import { StorePostCustomerPassword } from "./store/customers/me/password/validators"
 import { StorePostReview } from "./store/reviews/validators"
 
 // The product index declares filterable `status` and `sales_channel_ids`, so
@@ -26,6 +28,11 @@ export default defineMiddlewares({
       method: ["POST"],
       matcher: "/store/carts/:id/purchase-items",
       middlewares: [validateAndTransformBody(StorePostPurchaseItem)],
+    },
+    {
+      method: ["POST"],
+      matcher: "/store/customers/me/password",
+      middlewares: [authenticate("customer", ["bearer"]), validateAndTransformBody(StorePostCustomerPassword)],
     },
     {
       method: ["POST"],

@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useI18n } from "@/i18n/client"
 import { localeConfig } from "@/i18n/config"
 import { Link, useRouter } from "@/i18n/navigation"
+import { getCheckoutPrefill } from "@/lib/account/actions"
 import { regions } from "@/lib/checkout/regions"
 import { checkoutDefaults, makeCheckoutSchema, type CheckoutValues } from "@/lib/checkout/schema"
 import { placeOrder, prepareCheckout, selectCarrier } from "@/lib/cart/actions"
@@ -105,6 +106,43 @@ export function CheckoutForm() {
     defaultValues: checkoutDefaults(region),
     mode: "onTouched",
   })
+
+  // signed in: fill email, name, phone and the default address (when it is in this store's country)
+  const [signedInAs, setSignedInAs] = useState<string | null | undefined>(undefined)
+  useEffect(() => {
+    let cancelled = false
+    getCheckoutPrefill()
+      .then((prefill) => {
+        if (cancelled) return
+        setSignedInAs(prefill?.email ?? null)
+        if (!prefill) return
+        const fill = (name: Parameters<typeof form.setValue>[0], value: string | null | undefined) => {
+          if (value && !form.getValues(name)) form.setValue(name, value)
+        }
+        const a = prefill.address
+        const first = a?.first_name || prefill.name.first
+        const last = a?.last_name || prefill.name.last
+        fill("email", prefill.email)
+        fill("phone", a?.phone || prefill.phone)
+        if (region.addressMode === "cn") fill("fullName", [last, first].filter(Boolean).join(""))
+        else {
+          fill("firstName", first)
+          fill("lastName", last)
+        }
+        if (a && a.country_code === country) {
+          fill("address", a.address_1)
+          fill("zip", a.postal_code)
+          if (region.addressMode === "cn") {
+            fill("province", a.province)
+            fill("prefecture", a.city)
+          } else fill("city", a.city)
+        }
+      })
+      .catch(() => !cancelled && setSignedInAs(null))
+    return () => {
+      cancelled = true
+    }
+  }, [form, region.addressMode, country])
   const { register, control, handleSubmit, formState } = form
   const errors = formState.errors
   const [shippingMethod, paymentMethod, shipToDifferent] = useWatch({
@@ -173,6 +211,20 @@ export function CheckoutForm() {
       <div className="grid grid-cols-[1fr_420px] gap-8">
         <form noValidate onSubmit={handleSubmit(onSubmit, onInvalid)}>
           <CheckoutSection title={t("checkout.billingInfo")} subtitle={t("checkout.billingInfoSub")} step={1}>
+            {signedInAs !== undefined && (
+              <p className="-mt-4 mb-6 rounded-xl bg-surface px-4 py-3 text-sm text-ink-soft">
+                {signedInAs ? (
+                  t("account.checkoutSignedIn", { email: signedInAs })
+                ) : (
+                  <>
+                    {t("account.checkoutSignIn")}{" "}
+                    <Link href="/account/login?next=/checkout" className="font-semibold text-brand hover:underline">
+                      {t("account.checkoutSignInLink")}
+                    </Link>
+                  </>
+                )}
+              </p>
+            )}
             <AddressFields region={region} />
             <Controller
               control={control}

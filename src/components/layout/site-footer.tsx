@@ -24,8 +24,8 @@ const columns: { title: MessageKey; links: { label: MessageKey; href: string }[]
   {
     title: "footer.myAccount",
     links: [
-      { label: "footer.accountLogin", href: "/account" },
-      { label: "footer.orderHistory", href: "/orders" },
+      { label: "footer.accountLogin", href: "/account/login" },
+      { label: "footer.orderHistory", href: "/account/orders" },
       { label: "footer.serviceUpdates", href: "/service-updates" },
       { label: "footer.privacyChoices", href: "/privacy-choices" },
       { label: "footer.doNotSell", href: "/do-not-sell" },

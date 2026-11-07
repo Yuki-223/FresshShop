@@ -65,6 +65,13 @@ pnpm dev                  # http://localhost:3000
 
 导航分类和页脚的产品系列来自本地的 `catalog.json`，属于网站结构，可以提前生成。商品数据在请求时从后端读取，并缓存 15 秒，所以后台改价后十几秒内商城就会更新。
 
+### 顾客账户
+
+- 右上角账户图标 → `/account/login`：邮箱 + 密码登录 / 注册（Medusa emailpass；本演示不能发邮件，所以没有"忘记密码"，个人资料里可以凭旧密码修改密码）。
+- 登录后是 `/account/...`：订单（列表和详情）、我的订阅（只显示，订阅为演示功能）、地址（增删改、设默认）、个人资料。头部显示 "Hi, 名字"。
+- 不登录也能结账；登录后结账会自动填邮箱、电话和默认地址，订单归到账户下。登录前下的订单不会出现在账户里。
+- 登录状态存在 httpOnly cookie `freshshop_customer_token` 里（Medusa 的 JWT，一天后过期）。
+
 ### 首页轮播和优惠
 
 - 首页顶部是 Vitacost 风格的轮播图（`src/components/home/vc-slideshow/`），用的是 vitacost.com 的 3 张 banner（`public/banners/`）。

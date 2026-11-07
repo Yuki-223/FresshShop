@@ -33,10 +33,15 @@ export class MedusaError extends Error {
   }
 }
 
-export async function medusa<T>(route: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+/** `token`: a signed-in customer's JWT (lib/account), sent as a bearer token. */
+export async function medusa<T>(route: string, init: { method?: string; body?: unknown; token?: string } = {}): Promise<T> {
   const response = await fetch(`${MEDUSA_URL}${route}`, {
     method: init.method ?? (init.body === undefined ? "GET" : "POST"),
-    headers: { "x-publishable-api-key": await publishableKey(), "content-type": "application/json" },
+    headers: {
+      "x-publishable-api-key": await publishableKey(),
+      "content-type": "application/json",
+      ...(init.token ? { authorization: `Bearer ${init.token}` } : {}),
+    },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
     cache: "no-store",
   })

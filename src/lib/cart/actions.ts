@@ -5,6 +5,7 @@
  * holds an httpOnly cookie with the cart id and calls these actions.
  */
 import { cookies } from "next/headers"
+import { customerToken } from "@/lib/account/actions"
 import { medusa, MedusaError, storeRegion } from "@/lib/medusa/server"
 import type { CartItem } from "@/types"
 import type { AddToCartInput, CarrierOption, CartView, PlacedOrder, PlaceOrderInput } from "./types"
@@ -189,6 +190,10 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
   const carrier = carriers.find((c) => c.id === input.carrier)
   if (!carrier) throw new Error(`Carrier ${input.carrier} is not available for this address`)
   await medusa(`/store/carts/${id}/shipping-methods`, { body: { option_id: carrier.optionId } })
+
+  // signed in: the cart (and so the order) becomes the customer's, so it shows up under "Orders"
+  const token = await customerToken()
+  if (token) await medusa(`/store/carts/${id}/customer`, { body: {}, token })
 
   const { payment_collection } = await medusa<{ payment_collection: { id: string } }>("/store/payment-collections", { body: { cart_id: id } })
   await medusa(`/store/payment-collections/${payment_collection.id}/payment-sessions`, { body: { provider_id: "pp_system_default" } })

@@ -1,6 +1,6 @@
 import { Suspense } from "react"
-import { UserRound } from "lucide-react"
 import { CartButton } from "@/components/cart/cart-drawer"
+import { AccountLink, AccountLinkFallback } from "@/components/layout/account-link"
 import { LanguageSwitcher, LanguageSwitcherFallback } from "@/components/layout/language-switcher"
 import { VcHeader } from "@/components/layout/vc-header/vc-header"
 import { VcSearch, VcSearchFallback } from "@/components/layout/vc-header/vc-search"
@@ -36,9 +36,9 @@ export async function SiteHeader() {
           <Suspense fallback={<LanguageSwitcherFallback />}>
             <LanguageSwitcher className="mr-3 text-xs" />
           </Suspense>
-          <Link href="/account" aria-label={t("header.account")} className="vch__icon-btn">
-            <UserRound className="size-[22px]" strokeWidth={1.5} />
-          </Link>
+          <Suspense fallback={<AccountLinkFallback />}>
+            <AccountLink />
+          </Suspense>
           <CartButton />
         </>
       }
