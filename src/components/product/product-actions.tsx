@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart, Plus } from "lucide-react"
+import { Heart } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { useHydrated } from "@/hooks/use-hydrated"
@@ -24,30 +24,6 @@ export function useAddToCart() {
       toast.error(error instanceof Error ? error.message : String(error))
     }
   }
-}
-
-/** Compact "Buy now" button used on every product card. */
-export function BuyNowButton({ line, disabled, className }: { line: CartLineInput; disabled?: boolean; className?: string }) {
-  const { t } = useI18n()
-  const addToCart = useAddToCart()
-  const pending = useCart((s) => s.pending)
-  return (
-    <Button size="sm" className={className} disabled={disabled || pending} onClick={() => addToCart(line)}>
-      {disabled ? t("product.outOfStock") : t("product.buyNow")}
-    </Button>
-  )
-}
-
-export function AddToCartButton({ line, quantity, disabled }: { line: CartLineInput; quantity: number; disabled?: boolean }) {
-  const { t } = useI18n()
-  const addToCart = useAddToCart()
-  const pending = useCart((s) => s.pending)
-  return (
-    <Button disabled={disabled || pending} onClick={() => addToCart(line, quantity)}>
-      <Plus className="size-4" strokeWidth={3} />
-      {disabled ? t("product.outOfStock") : t("product.addToCart")}
-    </Button>
-  )
 }
 
 export function WishlistButton({

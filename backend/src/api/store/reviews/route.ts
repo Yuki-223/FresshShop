@@ -7,7 +7,11 @@ import type { StorePostReviewType } from "./validators"
 
 const PUBLIC_FIELDS = ["id", "product_id", "author_name", "location", "rating", "title", "content", "source", "published_at"] as const
 
-/** GET /store/reviews?product_id=…&limit=10&offset=0 — approved reviews (newest first) + rating summary. */
+/**
+ * GET /store/reviews?product_id=…&limit=10&offset=0 — approved reviews (newest first) + rating summary
+ * + `breakdown`: how many of the approved written reviews have 5, 4, 3, 2 and 1 stars (the collected
+ * rating summary has no per-star counts, so the storefront's bar chart is based on written reviews only).
+ */
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const productId = String(req.query.product_id ?? "")
   if (!productId) throw new MedusaError(MedusaError.Types.INVALID_DATA, "product_id is required")
@@ -19,7 +23,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     { product_id: productId, status: "approved" },
     { select: [...PUBLIC_FIELDS], skip: offset, take: limit, order: { published_at: "DESC" } },
   )
-  res.json({ reviews, count, limit, offset, summary: await ratingSummary(req.scope, productId) })
+  const ratings = await service.listReviews({ product_id: productId, status: "approved" }, { select: ["rating"] })
+  const breakdown = [5, 4, 3, 2, 1].map((stars) => ({ stars, count: ratings.filter((r) => r.rating === stars).length }))
+  res.json({ reviews, count, limit, offset, summary: await ratingSummary(req.scope, productId), breakdown })
 }
 
 /** POST /store/reviews — a customer writes a review (auto-approved in this demo). */

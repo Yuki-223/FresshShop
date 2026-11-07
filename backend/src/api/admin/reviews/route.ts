@@ -23,3 +23,16 @@ export async function POST(req: MedusaRequest<AdminPostReviewsType>, res: Medusa
   )
   res.status(201).json({ reviews, count: reviews.length })
 }
+
+/** DELETE /admin/reviews?source=demo — removes every review of one source (used to remove the sample reviews). */
+export async function DELETE(req: MedusaRequest, res: MedusaResponse) {
+  const source = String(req.query.source ?? "")
+  if (!["collected", "customer", "demo"].includes(source)) {
+    res.status(400).json({ message: "source must be collected, customer or demo" })
+    return
+  }
+  const service: ReviewModuleService = req.scope.resolve(REVIEW_MODULE)
+  const ids = (await service.listReviews({ source }, { select: ["id"] })).map((r) => r.id)
+  if (ids.length) await service.deleteReviews(ids)
+  res.json({ deleted: ids.length })
+}

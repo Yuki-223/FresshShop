@@ -11,8 +11,8 @@ export interface ProductReview {
   rating: number
   title: string | null
   content: string
-  /** "collected" = imported from the brand website, "customer" = written in this store */
-  source: "collected" | "customer"
+  /** "collected" = imported from the brand website, "customer" = written in this store, "demo" = made-up sample */
+  source: "collected" | "customer" | "demo"
   published_at: string
 }
 
@@ -21,6 +21,8 @@ export interface ReviewPage {
   count: number
   /** merged rating: collected summary + approved customer reviews */
   summary: Rating | null
+  /** written reviews per star level (5 → 1); the collected rating summary has no per-star counts */
+  breakdown: { stars: number; count: number }[]
 }
 
 export interface SubmitReviewInput {

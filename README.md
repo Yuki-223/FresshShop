@@ -41,6 +41,7 @@ pnpm start:local          # 启动数据库 + 后端（保持运行）→ http:/
 cd backend
 pnpm import:metagenics    # 229 个商品、物流、优惠码（可以重复运行）
 pnpm import:reviews       # 20 条采集评论
+pnpm import:demo-reviews  # 演示用：每个商品 3–8 条示例评价（页面上标着 "Sample review"）
 node scripts/verify-metagenics.mjs   # 可选：检查结果，最后输出 OK
 ```
 
@@ -53,6 +54,7 @@ pnpm dev                  # http://localhost:3000
 ```
 
 - 后台登录：账号和密码在 `backend/.local/config.json`（不进 Git，每台机器各自生成）。
+- 示例评价是编的（只写口感、包装、发货这类日常内容，不写功效），数据库里标为 `demo`，不计入商品总分。全部删掉：`cd backend && node scripts/import-demo-reviews.mjs --remove`。
 - 以后再启动：只需要 `cd backend && pnpm start:local`，再在根目录 `pnpm dev`。数据保存在 `backend/.local/postgres`，重启后还在。
 - 端口固定：数据库 55433，后端 9000，商城 3000。
 

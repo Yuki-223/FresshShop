@@ -1,14 +1,11 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { notFound } from "next/navigation"
 import { Breadcrumbs } from "@/components/common/breadcrumbs"
-import { SoftBadge } from "@/components/common/pills"
-import { SectionHeader } from "@/components/common/section-header"
-import { ProductImage } from "@/components/product/product-image"
-import { SaveBadge } from "@/components/product/price"
-import { ProductGrid } from "@/components/product/product-card"
-import { ProductTabs } from "@/components/product/product-tabs"
+import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
+import { ProductDetails } from "@/components/product/product-details"
+import { ProductReviews } from "@/components/product/product-reviews"
 import { PurchasePanel } from "@/components/product/purchase-panel"
-import { Rating } from "@/components/product/rating"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
 import { getProductBySlug, getProductReviews, getRelatedProducts, listCategories, toListing } from "@/lib/api"
@@ -23,120 +20,97 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/product/[s
   return { title: product?.title, description: product?.description }
 }
 
-function SpecGrid({ rows }: { rows: [string, React.ReactNode][] }) {
-  return (
-    <dl className="grid grid-cols-[110px_1fr] gap-x-4 gap-y-3 text-sm">
-      {rows.map(([k, v]) => (
-        <div key={k} className="contents">
-          <dt className="text-ink-muted">{k}:</dt>
-          <dd className="text-ink">{v}</dd>
-        </div>
-      ))}
-    </dl>
-  )
-}
-
+/**
+ * Product page laid out like vitacost.com's (measured at 1440px): breadcrumbs; the title centred
+ * (26px regular, 2px dashed rule under it) with a "SKU · form · product line" line; a 585px white
+ * image box with a 1px hairline border next to the buy box; then "You Might Also Like" (the
+ * homepage shelf), "Details" (everything open) and "Customer Reviews".
+ */
 export default async function ProductPage({ params }: PageProps<"/[lang]/product/[slug]">) {
   const { t, locale } = await getI18n()
   const product = await getProductBySlug((await params).slug, locale)
   if (!product) notFound()
-  const [related, groups, reviews] = await Promise.all([getRelatedProducts(product, locale), listCategories(locale), getProductReviews(product)])
+  const [related, groups, reviews] = await Promise.all([getRelatedProducts(product, locale, 10), listCategories(locale), getProductReviews(product)])
   // backend summary = collected rating + approved customer reviews
-  const rating = reviews.summary ?? product.rating
+  const rating = reviews.summary ?? product.rating ?? null
   const firstCat = product.healthCategories[0]
   const group = groups.find((g) => g.subcategories.some((s) => s.value === firstCat?.value))
   // the purchase panel only needs listing data, not the long content
   const panelProduct: Product = toListing(product)
-
-  const rows: [string, React.ReactNode][] = [
-    [t("productPage.sku"), product.variants.map((v) => v.sku).join(", ")],
-    [t("productPage.form"), product.formLabel],
-    [
-      t("productPage.healthNeeds"),
-      <span key="h" className="flex flex-wrap gap-x-2">
-        {product.healthCategories.map((c) => {
-          const g = groups.find((x) => x.subcategories.some((s) => s.value === c.value))
-          return (
-            <Link key={c.value} href={`/category/${g?.slug ?? "all"}?sub=${encodeURIComponent(c.value)}`} className="underline hover:text-brand">
-              {c.label}
-            </Link>
-          )
-        })}
-      </span>,
-    ],
-    [
-      t("productPage.availability"),
-      <span key="a" className={product.available ? "text-brand" : "text-hot"}>
-        {product.available ? t("productPage.inStock") : t("product.outOfStock")}
-      </span>,
-    ],
+  // a bundle's collected facts are those of its first product only, so they don't go in "Key info"
+  const facts = product.isBundle ? undefined : product.supplementFacts
+  const keyInfo = [
+    ...(facts?.servingSize ? [{ label: t("productPage.servingSize"), value: facts.servingSize }] : []),
+    { label: t("productPage.form"), value: product.formLabel },
+    ...(product.productLine ? [{ label: t("productPage.productLine"), value: product.productLine }] : []),
   ]
-  if (product.productLine) rows.splice(1, 0, [t("productPage.productLine"), product.productLine])
-  if (product.supplementFacts?.servingSize) rows.push([t("productPage.servingSize"), product.supplementFacts.servingSize])
+  const skus = product.variants.map((v) => v.sku).join(", ")
 
   return (
-    <div className="container-page">
-      <Breadcrumbs
-        items={[
-          ...(group ? [{ label: group.name, href: `/category/${group.slug}` }] : []),
-          ...(firstCat && group ? [{ label: firstCat.label, href: `/category/${group.slug}?sub=${encodeURIComponent(firstCat.value)}` }] : []),
-          { label: product.title },
-        ]}
-      />
+    <>
+      <div className="container-page">
+        <Breadcrumbs
+          tone="link"
+          items={[
+            ...(group ? [{ label: group.name, href: `/category/${group.slug}` }] : []),
+            ...(firstCat && group ? [{ label: firstCat.label, href: `/category/${group.slug}?sub=${encodeURIComponent(firstCat.value)}` }] : []),
+            { label: product.title },
+          ]}
+        />
 
-      <div className="mt-4 grid grid-cols-2 gap-8">
-        <div>
-          <div className="sticky top-6">
-            <ProductImage src={product.image} alt={product.title} className="aspect-square" sizes="640px" priority>
-              <div className="absolute top-6 left-6 flex gap-3">
-                <SaveBadge percent={product.maxSave} />
-                {product.isBundle && <SoftBadge>{t("catalog.bundle")}</SoftBadge>}
-              </div>
-            </ProductImage>
-          </div>
+        <div className="mt-6 text-center">
+          <h1 className="inline-block border-b-2 border-dashed border-[#494949] pb-2.5 font-sans text-[26px] leading-tight font-normal tracking-[0.6px] text-[#121212]">
+            {product.title}
+          </h1>
+          <p className="mt-2 text-[13px] leading-[23px] tracking-[0.6px] text-[#121212]/65">
+            <span>
+              {t("productPage.sku")} #: {skus}
+            </span>
+            <span className="mx-2 text-[#121212]/30">|</span>
+            <span>{product.formLabel}</span>
+            {product.productLine && (
+              <>
+                <span className="mx-2 text-[#121212]/30">|</span>
+                <Link href={`/category/all?brand=${encodeURIComponent(product.productLine)}`} className="text-[#2970b5] hover:underline">
+                  {product.productLine}
+                </Link>
+              </>
+            )}
+          </p>
         </div>
 
-        <div>
-          <h1 className="text-[32px] leading-tight font-semibold text-ink">{product.title}</h1>
-          <div className="mt-2 flex items-center gap-2">
-            {rating ? (
-              <>
-                <Rating value={rating.value} tone="gold" size="md" />
-                <a href="#reviews" className="text-xs text-ink-muted underline">
-                  {rating.value.toFixed(1)} {t.plural("productPage.customerReviews", rating.count)}
-                </a>
-              </>
-            ) : (
-              <span className="text-xs text-ink-muted">{t("product.noRating")}</span>
-            )}
+        <div className="mt-10 grid grid-cols-[585fr_600fr] gap-[50px] px-[25px]">
+          <div>
+            <div className="relative aspect-square border border-[#121212]/[0.05] bg-white">
+              {product.image && (
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  fill
+                  priority
+                  sizes="585px"
+                  unoptimized={/^https?:/.test(product.image)}
+                  className="object-contain p-6"
+                />
+              )}
+            </div>
           </div>
-          {product.description && <p className="mt-6 font-heading text-[15px] font-medium text-ink">{product.description}</p>}
-          {product.summary && product.summary !== product.description && <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{product.summary}</p>}
-
-          <div className="mt-8">
-            <SpecGrid rows={rows} />
-          </div>
-
-          <div className="mt-8">
-            <PurchasePanel product={panelProduct} />
-          </div>
-
-          <div id="reviews">
-            <ProductTabs product={product} reviews={reviews} />
-          </div>
+          <PurchasePanel product={panelProduct} rating={rating} keyInfo={keyInfo} servingSize={facts?.servingSize} servings={facts?.servings} />
         </div>
       </div>
 
       {related.length > 0 && (
-        <section className="mt-24">
-          <SectionHeader
-            title={t("productPage.relatedProducts")}
-            href={group ? `/category/${group.slug}` : "/category/all"}
-            linkLabel={t("productPage.moreProducts")}
-          />
-          <ProductGrid products={related} columns={4} />
-        </section>
+        <div className="mt-16">
+          <VcCarousel title={t("productPage.youMightAlsoLike")} products={related} />
+        </div>
       )}
-    </div>
+
+      <div className="container-page pb-16">
+        <div className="px-[25px]">
+          <ProductDetails product={product} />
+          <ProductReviews productId={product.medusaId} sourceUrl={product.sourceUrl} initial={reviews} />
+        </div>
+      </div>
+    </>
   )
 }

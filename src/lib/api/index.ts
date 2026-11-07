@@ -241,7 +241,7 @@ export async function getRelatedProducts(product: ProductDetail, locale: Locale,
 
 /** First page of written reviews + the merged rating, for the product page (request-time). */
 export async function getProductReviews(product: ProductDetail): Promise<ReviewPage> {
-  if (!product.medusaId) return { reviews: [], count: 0, summary: product.rating ?? null }
+  if (!product.medusaId) return { reviews: [], count: 0, summary: product.rating ?? null, breakdown: [] }
   return loadReviews(product.medusaId, 0)
 }
 

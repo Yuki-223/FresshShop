@@ -14,7 +14,6 @@ import type { Product } from "@/types"
  * then vendor (12px), two-line title (12px/18px), green stars + review count (13px),
  * price (16px) and a full-width 36px "Add to cart" button (radius 4, 15px, letter-spacing 1px).
  * The button adds the default variant as a one-time purchase, like the homepage "+".
- * (The original ProductCard is kept for the product page's "Frequently bought together".)
  */
 export function CollectionCard({ product }: { product: Product }) {
   const { t, fmt } = useI18n()

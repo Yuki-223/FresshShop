@@ -11,7 +11,7 @@ export const AdminPostReviews = z.object({
         location: z.string().trim().max(120).optional(),
         title: z.string().trim().max(120).optional(),
         content: z.string().trim().min(1).max(4000),
-        source: z.enum(["collected", "customer"]).default("collected"),
+        source: z.enum(["collected", "customer", "demo"]).default("collected"),
         status: z.enum(["approved", "pending", "rejected"]).default("approved"),
         published_at: z.coerce.date(),
       }),

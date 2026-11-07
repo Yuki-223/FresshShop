@@ -8,7 +8,7 @@ export async function loadReviews(productId: string, offset = 0): Promise<Review
   const page = await medusa<ReviewPage>(
     `/store/reviews?product_id=${encodeURIComponent(productId)}&limit=${REVIEWS_PAGE_SIZE}&offset=${Math.max(0, offset)}`,
   )
-  return { reviews: page.reviews, count: page.count, summary: page.summary }
+  return { reviews: page.reviews, count: page.count, summary: page.summary, breakdown: page.breakdown ?? [] }
 }
 
 /** Saves a customer review and returns the first page again (with the new review on top) plus the new rating. */

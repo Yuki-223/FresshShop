@@ -15,10 +15,11 @@
 | 首页 6 排商品行 | ✅ | `src/components/home/vc-carousel/` |
 | 页脚 + 11 个占位页 | ✅ | `src/components/layout/site-footer.tsx`、`src/lib/data/pages.ts` |
 | 所有商品列表页（collection 风格） | ✅ | `src/components/collection/`、`category/[slug]/page.tsx` |
+| 商品详情页（Vitacost 风格）+ 示例评价 | ✅ | `product/[slug]/page.tsx`、`purchase-panel.tsx`、`product-details.tsx`、`product-reviews.tsx`、`backend/scripts/import-demo-reviews.mjs` |
 | 列表页横幅换成 Vitacost 照片横幅（12 张，去掉了原图的文字和 logo） | ✅ | `public/collection-banners/`、`collection-banners.ts`、`collection-banner.tsx` |
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 
-**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：商品详情页、真正的账户页、中文界面字体、是否再做一次从零 clone 测试。
+**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：真正的账户页、中文界面字体、是否再做一次从零 clone 测试。
 
 **继续工作前**：后端在云端后台最多跑 2 小时就会被系统停掉（已经发生过 3 次）。先 `cd backend && pnpm start:local`（后台运行，等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。数据都在 `backend/.local/postgres`，不会丢。
 
@@ -272,7 +273,6 @@ Vitacost 首页从上到下依次是：
 - 后端在后台跑满 2 小时会被系统停掉：2026-11-04 两次，2026-11-05 一次（做完列表页之后）。系统提示过：已经用了最长时限的后台任务，不要自动重启，等下次需要时再启动。数据还在数据库文件里。继续工作前先启动：`cd backend && pnpm start:local`（放在后台运行，等 `/health` 返回 OK），然后在根目录 `pnpm build && pnpm start`（或 `pnpm dev`）。
 
 ### 以后的步骤（还没讨论细节）
-- **商品详情页**要不要也改成 Vitacost 风格？（改的话，详情页底部的 "Frequently bought together" 也一起决定——它现在还用旧的 `ProductCard`。）
 - **真正的账户页**：用户明确说过想要（登录、注册、历史订单；Medusa 支持）。现在账户图标、页脚的 Account Login / Order History 都链接到占位页。
 - 商品图分辨率：去阴影的 87 张大多来自 294px 的原图，在详情页的大图里有点模糊。以后如果用户导入自己采集的高清图，按 `product-images.json` 替换 `public/products/<slug>.jpg`，再运行后端导入脚本就会自动换图。
 - **中文界面字体**：中文标题要不要用思源宋体（现在是思源黑体）。
@@ -327,3 +327,5 @@ Vitacost 首页从上到下依次是：
 - 2026-11-06：**列表页排序改成 Vitacost 的自定义下拉面板**（原来是浏览器自带的 select，展开是系统样式）：250px 白色面板，按钮下方 10px、右对齐，1px #eee 边框，选项 34px 高、当前项和悬停项加下划线；支持 Esc、点外部关闭和上下方向键。文字改成 "Sort by:"。搜索框只微调了提示文字颜色（#7a7a7a）和放大镜位置。排序选项还是我们原来的 5 个（Vitacost 是 Best selling / Relevance / 价格两种 / Newest / Top Rated）。
 - 2026-11-06：**列表页横幅换成 Vitacost 的照片横幅**。用户说"不匹配也可以，好看就行"。Vitacost 大部分分类页其实没有横幅，扫了 261 个分类页，找到 26 张照片横幅（1024×250 或 1441×200），中间都有标题文字或品牌 logo。用 `scripts/erase-banner-text.py`（OpenCV inpaint）把中间的字和 logo 抹掉，挑了 12 张效果干净、和保健品相关的（Bob's Red Mill、Garden of Life、New Chapter 的 logo 是大色块，抹不干净，没用；食品、个护、带别家瓶子的也没用），改成中性的文件名放在 `public/collection-banners/`。横幅组件改成整张照片（按 1024:250 铺满容器宽度，约 1350×330）+ Roboto Slab 52px 标题写在照片留空的地方（两边有图的居中，右边有图的靠左）。`collection-banners.ts` 按分组和部分子分类分配横幅，其他页面（全部商品、搜索、产品系列、剂型、Deals 等，都在 /category/all 下）用 spoons-beige。原来横幅右边的 3 张倾斜商品卡去掉了。
 - 2026-11-06：**列表页一行一行出现（用户设计）**：每页还是 24 个（和 Vitacost 一样），先显示 8 个（2 行），滚到离底部 300px 内再出 4 个（1 行，淡入上浮 0.45s），8→12→16→20→24，出完才显示页码，然后去下一页。数据还是一次拿 24 个，只是分批显示（真的每次请求 4 个会卡）；图片本来就是懒加载。高屏幕会自己一行行补满。已显示的数量按列表（语言+分类+筛选+排序+页码）存在 sessionStorage，返回时不会又从 8 个开始，浏览器能回到原来的位置（实测 1000/2100/3000 都回到原位）；同一个标签页里再次打开同一个列表也会直接显示上次看到的数量。代码：`src/components/collection/reveal-grid.tsx`、`collection.css` 的 `.vc-reveal`。走查通过（订单 #15）。
+- 2026-11-07：**商品详情页改成 Vitacost 风格**（用户逐项确认）：蓝色面包屑（›）；标题居中 26px 常规字重 + 2px 虚线 + "SKU # | 剂型 | 产品系列"；左边 585 白底细边框大图（去掉 Save 20% 标签）；右边购买区 "Our Price: $ ★ 数量"、**规格保留按钮**（用户：下拉要点两下，成本高）但改成 4px 圆角、选中绿边浅绿底、按钮里带价格；单次/订阅二选一保留；142×42 数量框 + 340×42 绿色 Add to cart；心愿单/对比改成按钮下的小文字链接；虚线下 Key info（每份用量、总份数按所选规格算 = 粒数 ÷ 每份粒数、剂型、产品系列；组合装不显示用量/份数，因为采集的成分表只是第一个商品的）。"You Might Also Like" 用首页商品行（相关商品最多 10 个）。Details 大框全部展开：左说明/用法/储存/注意事项/警告/FAQ，右成分表；注意事项原文里商品名和句子粘连（"Magnesium GlycinateKeep…"、组合装多段），按句首词拆开、商品名加粗。Customer Reviews：左总分 + 星级条形图（**只统计文字评价**，因为采集评分没有每星级数量；后端 `/store/reviews` 新增 `breakdown`）+ "Write a review"（原地展开表单），右评论列表 + "显示更多评论"。删掉了旧的标签页、`product-card.tsx`、`section-header.tsx`、`BuyNowButton/AddToCartButton` 和没人用的字典键。走查脚本已更新（价格选择器、评论区、Add to cart exact）。
+- 2026-11-07：**示例评价**（用户要求"为了好看先编一些"，选了 A：页面上标出来）。`backend/scripts/import-demo-reviews.mjs`（`pnpm import:demo-reviews`）：每个商品 3–8 条，共 1292 条，按商品 handle 做种子、结果固定；星级以 4–5 为主，评分低的商品多几条 3 星；只写口感、吞咽、冲调、包装、发货、订阅、回购，**不写功效**。存为 review source `demo`（新迁移 `Migration20261107090000` 放宽 check 约束），不计入总分（总分还是采集的）；页面日期旁有灰色小字 "Sample review / 示例评价"。`--remove` 一键全删（新的 `DELETE /admin/reviews?source=demo`）。README 的从零步骤已加上。走查通过（订单 #17）。
