@@ -7,7 +7,8 @@
  *   local catalog, so the header and footer can still be prerendered.
  *
  * Product content is the collected English source text for every locale;
- * only navigation/category/form labels are translated.
+ * only navigation/category/form labels are translated. Chinese search words are mapped to
+ * English ones (lib/search/zh-terms.ts).
  */
 import { localeConfig, type Locale } from "@/i18n/config"
 import { catalog, type CatalogProduct } from "@/lib/data/metagenics"
@@ -16,6 +17,7 @@ import { loadReviews } from "@/lib/reviews/actions"
 import type { ReviewPage } from "@/lib/reviews/types"
 import { categoryZh, formZh, navGroups } from "@/lib/data/metagenics/groups"
 import { infoPages } from "@/lib/data/pages"
+import { matchesZhQuery, zhQueryGroups } from "@/lib/search/zh-terms"
 import type { Category, Option, Paginated, Product, ProductDetail, ProductQuery } from "@/types"
 
 /** Products from the backend (request-time). */
@@ -128,15 +130,21 @@ function inGroup(r: CatalogProduct, group?: string) {
   return !!g && r.categories.some((c) => g.categories.includes(c))
 }
 
-function matches(r: CatalogProduct, q: ProductQuery, locale: Locale) {
+/**
+ * `zh`: the Chinese query cut into English word groups (lib/search/zh-terms.ts), or null.
+ * A Chinese query is also matched against the summary, since the product names are mostly brand names.
+ */
+function matches(r: CatalogProduct, q: ProductQuery, locale: Locale, zh: RegExp[][] | null) {
   if (!inGroup(r, q.category)) return false
   if (q.subcategory && !r.categories.includes(q.subcategory)) return false
   if (q.q) {
-    const needle = q.q.toLowerCase()
     const hay = [r.name, r.subtitle, r.productLine, r.form, ...r.categories.map((c) => categoryLabel(c, "en")), ...r.variants.map((v) => v.sku)]
       .join(" ")
       .toLowerCase()
-    if (!hay.includes(needle)) return false
+    if (zh) {
+      const zhLabels = [...r.categories.map((c) => categoryLabel(c, "zh")), formLabel(r.form, "zh")].join(" ")
+      if (!matchesZhQuery(zh, q.q, `${hay} ${r.summary ?? ""}`, zhLabels)) return false
+    } else if (!hay.includes(q.q.toLowerCase())) return false
   }
   if (q.brands?.length && !q.brands.includes(r.productLine ?? "")) return false
   if (q.forms?.length && !q.forms.includes(r.form)) return false
@@ -161,7 +169,8 @@ const sorters: Record<NonNullable<ProductQuery["sort"]>, (a: CatalogProduct, b: 
 
 export async function searchProducts(query: ProductQuery, locale: Locale): Promise<Paginated<Product>> {
   const pageSize = query.pageSize ?? 9
-  const filtered = (await records()).filter((p) => matches(p, query, locale)).sort(sorters[query.sort ?? "popular"])
+  const zh = query.q ? zhQueryGroups(query.q) : null
+  const filtered = (await records()).filter((p) => matches(p, query, locale, zh)).sort(sorters[query.sort ?? "popular"])
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize))
   const page = Math.min(Math.max(1, query.page ?? 1), pageCount)
   return {
