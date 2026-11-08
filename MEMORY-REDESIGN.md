@@ -21,7 +21,7 @@
 | 列表页横幅换成 Vitacost 照片横幅（12 张，去掉了原图的文字和 logo） | ✅ | `public/collection-banners/`、`collection-banners.ts`、`collection-banner.tsx` |
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 
-**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：中文界面字体、排序里的 "Most popular" 要不要改名成 "Best selling"（问过，用户还没回答）。
+**已定不改**（2026-11-08 用户决定）：中文界面字体保持思源黑体，排序的 "Most popular" 不改名。改造工作到此告一段落，没有待办。
 
 **继续工作前**：云端的后台进程最多跑 2 小时就会被系统停掉（前后端都被停过很多次）。用 Bash 的 `run_in_background` 启动（普通 `&` 启动的进程会被收掉）：先 `cd backend && pnpm start:local`（等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。被停掉后系统提示不要自动重启，等下次需要时再启动。数据都在 `backend/.local/postgres`，不会丢。数据库结构有新迁移时先跑 `pnpm setup:local`（可以重复运行）。
 
@@ -86,7 +86,7 @@ Vitacost 首页从上到下依次是：
   - 其他文字（正文、导航、搜索框、商品名、按钮、页脚）用 **Helvetica, Arial, sans-serif**（系统字体，不用下载）。
   - 这是 2026-11-04 用 getComputedStyle 实测的结果：Vitacost 的 `--font-heading-family` 是 "Roboto Slab", serif；`--font-body-family` 是 Helvetica, Arial, sans-serif。
   - 现在的字体是 Poppins（标题）、Open Sans（正文）、Noto Sans SC（中文），定义在 `src/app/globals.css` 和 `src/app/[lang]/layout.tsx`。
-- **中文先不管**，以后再考虑中文标题要不要用思源宋体。
+- **中文字体不换**：用户 2026-11-08 决定中文标题保持思源黑体，不用思源宋体。
 
 ## 计划
 
@@ -276,10 +276,8 @@ Vitacost 首页从上到下依次是：
 #### 环境提醒
 - 后端在后台跑满 2 小时会被系统停掉：2026-11-04 两次，2026-11-05 一次（做完列表页之后）。系统提示过：已经用了最长时限的后台任务，不要自动重启，等下次需要时再启动。数据还在数据库文件里。继续工作前先启动：`cd backend && pnpm start:local`（放在后台运行，等 `/health` 返回 OK），然后在根目录 `pnpm build && pnpm start`（或 `pnpm dev`）。
 
-### 以后的步骤（还没讨论细节）
+### 以后可选的步骤（用户没要求，想做再提）
 - 商品图分辨率：去阴影的 87 张大多来自 294px 的原图，在详情页的大图里有点模糊。以后如果用户导入自己采集的高清图，按 `product-images.json` 替换 `public/products/<slug>.jpg`，再运行后端导入脚本就会自动换图。
-- **中文界面字体**：中文标题要不要用思源宋体（现在是思源黑体）。
-- **从零 clone 测试**：用户问过本地能否复刻，我提议再完整测一次，用户还没回答。
 - 列表页的"网格 / 列表"视图切换去掉了（旧代码还在），以后想要可以加回来。
 
 ## 进度
