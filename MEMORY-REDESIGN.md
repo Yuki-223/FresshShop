@@ -21,7 +21,7 @@
 | 列表页横幅换成 Vitacost 照片横幅（12 张，去掉了原图的文字和 logo） | ✅ | `public/collection-banners/`、`collection-banners.ts`、`collection-banner.tsx` |
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 
-**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：中文界面字体、是否再做一次从零 clone 测试（推荐：数据库、导入脚本、账户都改过）、排序里的 "Most popular" 要不要改名成 "Best selling"（问过，用户还没回答）。
+**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：中文界面字体、排序里的 "Most popular" 要不要改名成 "Best selling"（问过，用户还没回答）。
 
 **继续工作前**：云端的后台进程最多跑 2 小时就会被系统停掉（前后端都被停过很多次）。用 Bash 的 `run_in_background` 启动（普通 `&` 启动的进程会被收掉）：先 `cd backend && pnpm start:local`（等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。被停掉后系统提示不要自动重启，等下次需要时再启动。数据都在 `backend/.local/postgres`，不会丢。数据库结构有新迁移时先跑 `pnpm setup:local`（可以重复运行）。
 
@@ -339,3 +339,5 @@ Vitacost 首页从上到下依次是：
   - 头部：登录后图标旁显示 "Hi, 名字"（`account-link.tsx`，放在 Suspense 里）。页脚 Account Login → /account/login，Order History → /account/orders；删掉了 pages.ts 里的 account、orders 占位页。
   - 结账：登录时 `placeOrder` 先 `POST /store/carts/:id/customer` 把购物车转给顾客；结账页自动填邮箱、电话（地址没有就用资料里的）、名字和默认地址（国家和当前语言的配送国一致时），顶部显示"已登录：邮箱"，没登录显示"有账户？登录"。
   - 验证：注册、密码错误、短密码、地址增删改设默认、改资料、改密码（旧密码错/对）、退出、受保护页跳转并跳回、登录下单（订单 FR-00019 出现在订单和订阅里）、中文版、别人订单 404；原来的游客走查也通过（订单 #20）。注意：后台进程要用 run_in_background 启动，普通 `&` 启动的会被收掉。
+- 2026-11-08：**从零 clone 测试通过**（用户要求）。在 `/home/user/fresh-test/` clone `metagenics`（`84bad95`），严格按 README：后端 `pnpm install` → `setup:local` → `start:local`；`import:metagenics`（229 个新建）、`import:reviews`（20 条）、`import:demo-reviews`（1292 条）、`verify-metagenics.mjs` 输出 OK；商城 `pnpm install` → `pnpm dev`。游客走查通过（订单 FR-00001），账户全流程测试通过（FR-00002），首页/列表/详情/评论截图和原环境一致、没有坏图，dev 日志没有警告（只有测试浏览器提前离开页面造成的 2 条 ECONNRESET，无害）。
+  - **云端测试的坑**（和仓库无关）：第一次 clone 到 scratchpad（`/tmp/claude-0/...`，权限 700），`setup:local` 报 `spawn initdb EACCES`。原因：云端以 root 运行，脚本改用 `postgres` 用户启动数据库，而它进不了 700 的目录。clone 到 `/home/user/...` 就正常。普通用户电脑上不会遇到。
