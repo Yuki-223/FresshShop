@@ -315,6 +315,8 @@ export const en = {
     searchInCollection: "Search for products in this collection",
     productCount: { one: "{count} Product", other: "{count} Products" },
     sortBy: "Sort by:",
+    viewAs: "View",
+    saveUpTo: "Subscribe & save up to {percent}%",
     previousPage: "Previous page",
     nextPage: "Next page",
   },

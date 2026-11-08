@@ -4,7 +4,7 @@ import { Suspense } from "react"
 import { AppliedFilters } from "@/components/catalog/filter-bar"
 import { ButtonLink } from "@/components/common/button-link"
 import { CollectionBanner } from "@/components/collection/collection-banner"
-import { CollectionCard } from "@/components/collection/collection-card"
+import { CollectionCard, CollectionRow } from "@/components/collection/collection-card"
 import { CollectionPagination } from "@/components/collection/collection-pagination"
 import { CollectionSidebar } from "@/components/collection/collection-sidebar"
 import { RevealGrid } from "@/components/collection/reveal-grid"
@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/category/[
  * Every product-list page (categories, product lines, forms, deals, search results) laid out like
  * a vitacost.com collection page: banner, collapsible filter sidebar, in-collection search,
  * count + sort, 4-column grid with full-width "Add to cart" buttons, centred page numbers.
+ * ?view=list shows the same products as rows (image | details | price + button) instead.
  * Filtering is unchanged: the URL is the single source of truth (lib/search-params.ts).
  */
 export default async function CategoryPage({ params, searchParams }: PageProps<"/[lang]/category/[slug]">) {
@@ -88,6 +89,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
             <RevealGrid
               key={pageKey}
               storageKey={pageKey}
+              layout={query.view}
               footer={
                 <div className="mt-8">
                   <Suspense>
@@ -96,9 +98,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps<"
                 </div>
               }
             >
-              {result.items.map((p) => (
-                <CollectionCard key={p.id} product={p} />
-              ))}
+              {result.items.map((p) => (query.view === "list" ? <CollectionRow key={p.id} product={p} /> : <CollectionCard key={p.id} product={p} />))}
             </RevealGrid>
           )}
         </section>

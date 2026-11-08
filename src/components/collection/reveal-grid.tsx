@@ -16,8 +16,19 @@ const DELAY = 220 // ms between rows when several are due at once (tall screens,
  * The number shown is remembered per list (sessionStorage), so going back from a product page
  * shows the same cards and the browser can restore the scroll position.
  * Give the component a `key` that changes with the page / filters to start again at 8.
+ * `layout="list"` stacks the items (list-view rows) instead of the 4-column grid; the counts stay the same.
  */
-export function RevealGrid({ children, footer, storageKey }: { children: React.ReactNode; footer?: React.ReactNode; storageKey: string }) {
+export function RevealGrid({
+  children,
+  footer,
+  storageKey,
+  layout = "grid",
+}: {
+  children: React.ReactNode
+  footer?: React.ReactNode
+  storageKey: string
+  layout?: "grid" | "list"
+}) {
   const items = Children.toArray(children)
   const total = items.length
   const [shown, setShown] = useState(Math.min(FIRST, total))
@@ -69,7 +80,7 @@ export function RevealGrid({ children, footer, storageKey }: { children: React.R
 
   return (
     <>
-      <div className="mt-5 grid grid-cols-4 gap-x-2 gap-y-[26px]">
+      <div className={layout === "list" ? "mt-2" : "mt-5 grid grid-cols-4 gap-x-2 gap-y-[26px]"}>
         {items.slice(0, shown).map((item, i) => (
           <div key={(item as React.ReactElement).key ?? i} className={i >= animateFrom ? "vc-reveal" : undefined}>
             {item}

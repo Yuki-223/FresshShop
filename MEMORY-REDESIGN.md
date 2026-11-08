@@ -278,7 +278,6 @@ Vitacost 首页从上到下依次是：
 
 ### 以后可选的步骤（用户没要求，想做再提）
 - 商品图分辨率：去阴影的 87 张大多来自 294px 的原图，在详情页的大图里有点模糊。以后如果用户导入自己采集的高清图，按 `product-images.json` 替换 `public/products/<slug>.jpg`，再运行后端导入脚本就会自动换图。
-- 列表页的"网格 / 列表"视图切换去掉了（旧代码还在），以后想要可以加回来。
 
 ## 进度
 
@@ -339,3 +338,4 @@ Vitacost 首页从上到下依次是：
   - 验证：注册、密码错误、短密码、地址增删改设默认、改资料、改密码（旧密码错/对）、退出、受保护页跳转并跳回、登录下单（订单 FR-00019 出现在订单和订阅里）、中文版、别人订单 404；原来的游客走查也通过（订单 #20）。注意：后台进程要用 run_in_background 启动，普通 `&` 启动的会被收掉。
 - 2026-11-08：**从零 clone 测试通过**（用户要求）。在 `/home/user/fresh-test/` clone `metagenics`（`84bad95`），严格按 README：后端 `pnpm install` → `setup:local` → `start:local`；`import:metagenics`（229 个新建）、`import:reviews`（20 条）、`import:demo-reviews`（1292 条）、`verify-metagenics.mjs` 输出 OK；商城 `pnpm install` → `pnpm dev`。游客走查通过（订单 FR-00001），账户全流程测试通过（FR-00002），首页/列表/详情/评论截图和原环境一致、没有坏图，dev 日志没有警告（只有测试浏览器提前离开页面造成的 2 条 ECONNRESET，无害）。
   - **云端测试的坑**（和仓库无关）：第一次 clone 到 scratchpad（`/tmp/claude-0/...`，权限 700），`setup:local` 报 `spawn initdb EACCES`。原因：云端以 root 运行，脚本改用 `postgres` 用户启动数据库，而它进不了 700 的目录。clone 到 `/home/user/...` 就正常。普通用户电脑上不会遇到。
+- 2026-11-08：**列表页加回"网格 / 列表"切换**（用户先看了效果图再同意）。排序右边一条细竖线后面两个 18px 图标，当前的是品牌绿。列表视图每个商品一行：170px 图 | 系列名、16px 半粗标题、星级、两行简介、"剂型 | 全部规格" | 20px 价格、绿色"订阅最多省 X%"、同样的 Add to cart。写在网址 `?view=list`，翻页、筛选、排序都保留；一行行出现的规则不变（8 → 每次 4 → 24 后页码）。代码：`collection-card.tsx` 的 `CollectionRow`（和卡片共用星级、价格、按钮），`collection-toolbar.tsx` 的 `ViewSwitch`，`RevealGrid` 的 `layout`。旧的 `catalog/filter-bar.tsx` 里没用的 `ViewToggle` 删掉了。

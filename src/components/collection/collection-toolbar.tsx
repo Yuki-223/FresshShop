@@ -4,7 +4,8 @@ import { Search } from "lucide-react"
 import { useEffect, useId, useRef, useState } from "react"
 import { useQueryState } from "@/hooks/use-query-state"
 import { useI18n } from "@/i18n/client"
-import { SORT_OPTIONS } from "@/lib/search-params"
+import { SORT_OPTIONS, type ViewMode } from "@/lib/search-params"
+import { cn } from "@/lib/utils"
 
 /**
  * Above the grid on vitacost.com collection pages (Boost Commerce, measured at 1440px):
@@ -15,6 +16,7 @@ import { SORT_OPTIONS } from "@/lib/search-params"
  *   10px below, right-aligned, 1px #eee border, 5px padding, no shadow; options are 34px rows
  *   (14px, padding 9px 20px), the current one and the hovered one underlined.
  * The search narrows the current category (URL ?q=), the sort writes ?sort= like the original FilterBar.
+ * Our addition: grid / list view icons after the sort (?view=list; kept by paging, filters and sort).
  */
 export function CollectionToolbar({ total }: { total: number }) {
   const { t } = useI18n()
@@ -48,12 +50,15 @@ export function CollectionToolbar({ total }: { total: number }) {
 
       <div className="mt-5 flex items-center justify-between text-sm text-[#121212]">
         <p className="leading-[25.2px] tracking-[0.6px]">{t.plural("collection.productCount", total)}</p>
-        <SortMenu
-          label={t("collection.sortBy")}
-          value={current.value}
-          options={SORT_OPTIONS.map((o) => ({ value: o.value, label: t(o.label) }))}
-          onChange={(value) => set({ sort: value === "popular" ? null : value })}
-        />
+        <div className="flex items-center gap-[22px]">
+          <SortMenu
+            label={t("collection.sortBy")}
+            value={current.value}
+            options={SORT_OPTIONS.map((o) => ({ value: o.value, label: t(o.label) }))}
+            onChange={(value) => set({ sort: value === "popular" ? null : value })}
+          />
+          <ViewSwitch view={params.get("view") === "list" ? "list" : "grid"} onChange={(v) => set({ view: v === "grid" ? null : v }, { resetPage: false })} />
+        </div>
       </div>
     </div>
   )
@@ -160,6 +165,49 @@ function SortMenu({
             </li>
           ))}
         </ul>
+      )}
+    </div>
+  )
+}
+
+/** Two square icons, the current one in the brand colour; a thin rule separates them from the sort. */
+function ViewSwitch({ view, onChange }: { view: ViewMode; onChange: (view: ViewMode) => void }) {
+  const { t } = useI18n()
+  const item = (mode: ViewMode, label: string, icon: React.ReactNode) => (
+    <button
+      type="button"
+      aria-pressed={view === mode}
+      aria-label={label}
+      title={label}
+      onClick={() => view !== mode && onChange(mode)}
+      className={cn("grid size-6 place-items-center", view === mode ? "text-brand" : "text-[#9a9a9a] hover:text-[#121212]")}
+    >
+      {icon}
+    </button>
+  )
+  return (
+    <div role="group" aria-label={t("collection.viewAs")} className="flex h-5 items-center gap-1.5 border-l border-[#dddddd] pl-[22px]">
+      {item(
+        "grid",
+        t("catalog.gridView"),
+        <svg viewBox="0 0 18 18" className="size-[18px]" fill="currentColor" aria-hidden="true">
+          <rect x="1" y="1" width="7" height="7" />
+          <rect x="10" y="1" width="7" height="7" />
+          <rect x="1" y="10" width="7" height="7" />
+          <rect x="10" y="10" width="7" height="7" />
+        </svg>,
+      )}
+      {item(
+        "list",
+        t("catalog.listView"),
+        <svg viewBox="0 0 18 18" className="size-[18px]" fill="currentColor" aria-hidden="true">
+          <rect x="1" y="1.5" width="4" height="4" />
+          <rect x="7" y="2.5" width="10" height="2" />
+          <rect x="1" y="7" width="4" height="4" />
+          <rect x="7" y="8" width="10" height="2" />
+          <rect x="1" y="12.5" width="4" height="4" />
+          <rect x="7" y="13.5" width="10" height="2" />
+        </svg>,
       )}
     </div>
   )

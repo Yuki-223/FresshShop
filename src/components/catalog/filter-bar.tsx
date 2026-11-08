@@ -1,13 +1,13 @@
 "use client"
 
-import { LayoutGrid, List, X } from "lucide-react"
+import { X } from "lucide-react"
 import { CountPill } from "@/components/common/pills"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useQueryState } from "@/hooks/use-query-state"
 import { useI18n } from "@/i18n/client"
 import type { MessageKey } from "@/i18n/dictionary"
-import { SORT_OPTIONS, type ViewMode } from "@/lib/search-params"
+import { SORT_OPTIONS } from "@/lib/search-params"
 import { cn } from "@/lib/utils"
 
 const TOGGLES: { key: "stock" | "subscribe" | "bundle"; label: MessageKey }[] = [
@@ -111,31 +111,6 @@ export function AppliedFilters({ labels }: { labels: Record<string, string> }) {
       >
         {t("catalog.clearAll")}
       </button>
-    </div>
-  )
-}
-
-export function ViewToggle({ view, total }: { view: ViewMode; total: number }) {
-  const { t } = useI18n()
-  const { set } = useQueryState()
-  const item = (mode: ViewMode, Icon: typeof List, label: string) => (
-    <button
-      type="button"
-      aria-pressed={view === mode}
-      onClick={() => set({ view: mode === "grid" ? null : mode }, { resetPage: false })}
-      className={cn("flex items-center gap-1.5 text-xs", view === mode ? "text-ink" : "text-ink-muted hover:text-ink")}
-    >
-      <Icon className={cn("size-4", view === mode && "text-brand")} strokeWidth={1.5} />
-      {label}
-    </button>
-  )
-  return (
-    <div className="flex items-center gap-6">
-      {item("grid", LayoutGrid, t("catalog.gridView"))}
-      {item("list", List, t("catalog.listView"))}
-      <span className="flex items-center gap-1.5 text-xs text-ink-muted">
-        <CountPill>{total}</CountPill> {t("catalog.productsLabel")}
-      </span>
     </div>
   )
 }
