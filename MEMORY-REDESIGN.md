@@ -3,7 +3,7 @@
 > 这是"改造"专用的记忆文件，和 `MEMORY.md`（项目从头到现在的总记录）分开。新对话先读 `MEMORY.md` 了解项目，再读这份了解改造进度。
 > 分支：`metagenics`（保健品版）。只改英文界面，中文暂时不管。
 
-## 当前状态速览（2026-11-05 更新，新对话先看这里）
+## 当前状态速览（2026-11-08 更新，新对话先看这里）
 
 **已经改成 Vitacost 风格的（都在 `metagenics` 分支，已推送）：**
 
@@ -15,14 +15,17 @@
 | 首页 6 排商品行 | ✅ | `src/components/home/vc-carousel/` |
 | 页脚 + 11 个占位页 | ✅ | `src/components/layout/site-footer.tsx`、`src/lib/data/pages.ts` |
 | 所有商品列表页（collection 风格） | ✅ | `src/components/collection/`、`category/[slug]/page.tsx` |
+| 列表页排序下拉面板 + 商品一行一行出现（8 个起，每次 4 个，满 24 个出页码） | ✅ | `collection-toolbar.tsx`、`reveal-grid.tsx` |
 | 顾客账户（登录注册、订单、订阅、地址、资料） | ✅ | `src/app/[lang]/(shop)/account/`、`src/lib/account/`、`src/components/account/` |
 | 商品详情页（Vitacost 风格）+ 示例评价 | ✅ | `product/[slug]/page.tsx`、`purchase-panel.tsx`、`product-details.tsx`、`product-reviews.tsx`、`backend/scripts/import-demo-reviews.mjs` |
 | 列表页横幅换成 Vitacost 照片横幅（12 张，去掉了原图的文字和 logo） | ✅ | `public/collection-banners/`、`collection-banners.ts`、`collection-banner.tsx` |
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 
-**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：中文界面字体、是否再做一次从零 clone 测试。
+**还没改的 / 待讨论**（详见本文末尾"以后的步骤"）：中文界面字体、是否再做一次从零 clone 测试（推荐：数据库、导入脚本、账户都改过）、排序里的 "Most popular" 要不要改名成 "Best selling"（问过，用户还没回答）。
 
-**继续工作前**：后端在云端后台最多跑 2 小时就会被系统停掉（已经发生过 3 次）。先 `cd backend && pnpm start:local`（后台运行，等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。数据都在 `backend/.local/postgres`，不会丢。
+**继续工作前**：云端的后台进程最多跑 2 小时就会被系统停掉（前后端都被停过很多次）。用 Bash 的 `run_in_background` 启动（普通 `&` 启动的进程会被收掉）：先 `cd backend && pnpm start:local`（等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。被停掉后系统提示不要自动重启，等下次需要时再启动。数据都在 `backend/.local/postgres`，不会丢。数据库结构有新迁移时先跑 `pnpm setup:local`（可以重复运行）。
+
+**用户的 Windows 电脑**：用户在自己电脑上让本地 agent 跑这个项目（启动脚本 `spawn("pnpm")` 在 Windows 上要加 shell，那边的 agent 负责修）。拉新代码后：有新迁移就在 backend 跑 `pnpm setup:local`；示例评价用 `pnpm import:demo-reviews` 导入。
 
 ## 用户的沟通习惯（和 MEMORY.md 一致）
 
