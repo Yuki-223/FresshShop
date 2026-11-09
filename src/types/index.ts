@@ -96,6 +96,10 @@ export interface ProductDetail extends Product {
   warnings?: string
   faq: ProductQA[]
   related: string[]
+  /** photo gallery: the main image first, then neutral photos (Supplement Facts label, directions) */
+  gallery: string[]
+  /** the brand's marketing images, shown under "From the Brand" */
+  promo: string[]
 }
 
 export type SortKey = "popular" | "name" | "price-asc" | "price-desc" | "rating"

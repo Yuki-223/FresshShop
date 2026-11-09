@@ -21,7 +21,7 @@ const batch = "2026-10-31"
 const normalized = path.join(root, "data/metagenics", batch, "normalized")
 const outDir = path.resolve("src/lib/data/metagenics")
 const imageOut = path.resolve("public/products")
-/** slug → where its photo in public/products comes from (Vitacost / cleaned / original) */
+/** slug → where its photo in public/products comes from (see scripts/build-product-gallery.py); listed photos are kept */
 const cleanImages = JSON.parse(fs.readFileSync(path.resolve("src/lib/data/metagenics/product-images.json"), "utf8"))
 
 const readJson = (p) => JSON.parse(fs.readFileSync(p, "utf8"))

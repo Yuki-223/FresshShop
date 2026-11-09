@@ -16,6 +16,7 @@ import { remoteProducts } from "@/lib/data/metagenics/remote"
 import { loadReviews } from "@/lib/reviews/actions"
 import type { ReviewPage } from "@/lib/reviews/types"
 import { categoryZh, formZh, navGroups } from "@/lib/data/metagenics/groups"
+import productGallery from "@/lib/data/metagenics/product-gallery.json"
 import { infoPages } from "@/lib/data/pages"
 import { matchesZhQuery, zhQueryGroups } from "@/lib/search/zh-terms"
 import type { Category, Option, Paginated, Product, ProductDetail, ProductQuery } from "@/types"
@@ -64,7 +65,11 @@ function toProduct(r: CatalogProduct, locale: Locale): Product {
   }
 }
 
+/** Extra photos and brand images per product (public/products/<slug>/), see scripts/build-product-gallery.py. */
+const galleries = productGallery as Record<string, { gallery: string[]; promo: string[] }>
+
 function toDetail(r: CatalogProduct, locale: Locale): ProductDetail {
+  const extra = galleries[r.slug]
   return {
     ...toProduct(r, locale),
     content: r.description,
@@ -75,13 +80,15 @@ function toDetail(r: CatalogProduct, locale: Locale): ProductDetail {
     warnings: r.warnings,
     faq: r.faq,
     related: r.related,
+    gallery: [...(r.image ? [r.image] : []), ...(extra?.gallery ?? [])],
+    promo: extra?.promo ?? [],
   }
 }
 
 /** Drop the long detail content (description, FAQ, facts) — e.g. before passing a product to a client component. */
 export function toListing(p: ProductDetail): Product {
-  const { content, faq, supplementFacts, related, directions, storage, cautions, warnings, ...listing } = p
-  void [content, faq, supplementFacts, related, directions, storage, cautions, warnings]
+  const { content, faq, supplementFacts, related, directions, storage, cautions, warnings, gallery, promo, ...listing } = p
+  void [content, faq, supplementFacts, related, directions, storage, cautions, warnings, gallery, promo]
   return listing
 }
 

@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
-import Image from "next/image"
 import { notFound } from "next/navigation"
 import { Breadcrumbs } from "@/components/common/breadcrumbs"
 import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
 import { ProductDetails } from "@/components/product/product-details"
+import { ProductGallery } from "@/components/product/product-gallery"
+import { ProductPromo } from "@/components/product/product-promo"
 import { ProductReviews } from "@/components/product/product-reviews"
 import { PurchasePanel } from "@/components/product/purchase-panel"
 import { Link } from "@/i18n/navigation"
@@ -23,8 +24,9 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/product/[s
 /**
  * Product page laid out like vitacost.com's (measured at 1440px): breadcrumbs; the title centred
  * (26px regular, 2px dashed rule under it) with a "SKU · form · product line" line; a 585px white
- * image box with a 1px hairline border next to the buy box; then "You Might Also Like" (the
- * homepage shelf), "Details" (everything open) and "Customer Reviews".
+ * image box with a 1px hairline border and a row of thumbnails next to the buy box; then "You Might
+ * Also Like" (the homepage shelf), "From the Brand" (the brand's marketing images, our addition),
+ * "Details" (everything open) and "Customer Reviews".
  */
 export default async function ProductPage({ params }: PageProps<"/[lang]/product/[slug]">) {
   const { t, locale } = await getI18n()
@@ -80,21 +82,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         </div>
 
         <div className="mt-10 grid grid-cols-[585fr_600fr] gap-[50px] px-[25px]">
-          <div>
-            <div className="relative aspect-square border border-[#121212]/[0.05] bg-white">
-              {product.image && (
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  fill
-                  priority
-                  sizes="585px"
-                  unoptimized={/^https?:/.test(product.image)}
-                  className="object-contain p-6"
-                />
-              )}
-            </div>
-          </div>
+          <ProductGallery images={product.gallery} alt={product.title} />
           <PurchasePanel product={panelProduct} rating={rating} keyInfo={keyInfo} servingSize={facts?.servingSize} servings={facts?.servings} />
         </div>
       </div>
@@ -107,6 +95,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
 
       <div className="container-page pb-16">
         <div className="px-[25px]">
+          <ProductPromo images={product.promo} title={product.title} />
           <ProductDetails product={product} />
           <ProductReviews productId={product.medusaId} sourceUrl={product.sourceUrl} initial={reviews} />
         </div>

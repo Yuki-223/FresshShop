@@ -5,7 +5,11 @@
 ## 这个分支和 main 的区别
 
 - **数据**：来自 `Yuki-223/shopStore` 的采集数据（批次 2026-10-31）。`scripts/import-metagenics.mjs` 把它转成精简的 `src/lib/data/metagenics/catalog.json`，并复制 229 张主图到 `public/products/`。采集原件不做任何修改。
-- **商品图**（2026-11-05 换成白底干净图）：`public/products/<slug>.jpg`，每张图的来源记在 `src/lib/data/metagenics/product-images.json`：136 张是 vitacost.com 上同一商品的图（`vitacost`），87 张是我们的原图用 `scripts/clean-product-image.py` 去掉阴影（`cleaned`），6 张保留原图（`original`）。后端导入脚本重复运行时，图片有变化的商品会自动换图。
+- **商品图**（2026-11-09 换成高清图 + 相册）：用户采集的 Metagenics 图片包（2026-10-31，约 1.2 GB，不在仓库里）经 `scripts/build-product-gallery.py` 处理：
+  - 主图 `public/products/<slug>.jpg`：217 个是采集的透明底大图去阴影后的 800px 白底图；12 个采集图自带阴影，保留之前的干净图（来自 vitacost.com 或旧图去阴影）。来源记在 `src/lib/data/metagenics/product-images.json`。
+  - 详情页相册 `public/products/<slug>/g<n>.webp`：只放中性的图——营养成分表、服用方法、手拿药片/包装的照片、无麸质等标志。
+  - "From the Brand / 图文介绍" `public/products/<slug>/p<n>.webp`：品牌宣传图（功效说明、顾客评价、医生照片等），放在详情页 Details 上面。
+  - 对照表 `src/lib/data/metagenics/product-gallery.json`。重新生成：`python3 scripts/build-product-gallery.py <图片包>/2026-10-31`（需要 Pillow 和 tesseract），然后在 backend/ 运行 `pnpm import:metagenics` 上传新主图（只换有变化的）。
 - **语言**：默认进入英文站，商品内容是英文原文。仍然可以切换到中文界面，界面文字是中文、商品内容保持英文，价格换算成人民币。
 - **导航**：18 个健康分类合并成 8 个导航分组，分类页里再按健康分类细分。一个商品可以同时属于多个分类。
 - **商品详情**：可选容量和口味；可选单次购买或订阅（1/2/3 个月），订阅价来自采集数据；标签页依次是介绍、成分表（Supplement Facts）、用法与储存、注意事项、FAQ、评分。
