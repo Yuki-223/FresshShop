@@ -23,6 +23,7 @@ Writes
   public/products/<slug>.jpg               main photo, 800px, shadow removed, white background
   public/products/<slug>/g<n>.webp         gallery photos, 1000px
   public/products/<slug>/p<n>.webp         brand images, 1000px
+  public/products/<slug>/v-<sku>.jpg       front photo of another size / flavour, 800px
   src/lib/data/metagenics/product-gallery.json   {slug: {gallery: [...], promo: [...]}}
   src/lib/data/metagenics/product-images.json    where each main photo came from
 
@@ -134,6 +135,7 @@ def main():
 
     data = REPO / "src/lib/data/metagenics"
     previous = json.loads((data / "product-images.json").read_text())
+    by_slug = {p["slug"]: p for p in catalog}
     galleries = {}
     for p in catalog:
         slug, sku = p["slug"], p["variants"][0]["sku"]
@@ -203,7 +205,21 @@ def main():
             im.thumbnail((1000, 1000))
             im.save(folder / name, quality=80)
             target.append(f"/products/{slug}/{name}")
-        out_gallery[slug] = {"gallery": gallery, "promo": promo}
+        # other sizes / flavours: their own front photo (e.g. the 180-capsule bottle) when the
+        # collection has a different cut-out for them; the rest of the gallery is shared
+        variants = {}
+        for v in by_slug[slug]["variants"][1:]:
+            own = sorted((r["position"], it["localPath"]) for it in downloaded for r in it["relations"]
+                         if r["role"] == "variant_gallery_image" and r["productUrl"].rstrip("/").split("/")[-1] == slug and r.get("sku") == v["sku"])
+            vf = next((path for _, path in own if M[path]["cut"] and M[path]["w"] >= 800), None)
+            if vf and vf != front:
+                folder.mkdir(exist_ok=True)
+                img = clean(ROOT / vf)
+                img.thumbnail((800, 800))
+                name = f"v-{re.sub(r'[^A-Za-z0-9_-]', '', v['sku'])}.jpg"
+                img.save(folder / name, quality=86)
+                variants[v["sku"]] = f"/products/{slug}/{name}"
+        out_gallery[slug] = {"gallery": gallery, "promo": promo, **({"variants": variants} if variants else {})}
         print(slug, "gallery", 1 + len(gallery), "promo", len(promo), file=sys.stderr)
 
     (data / "product-gallery.json").write_text(json.dumps(out_gallery, indent=1) + "\n")

@@ -3,10 +3,9 @@ import { notFound } from "next/navigation"
 import { Breadcrumbs } from "@/components/common/breadcrumbs"
 import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
 import { ProductDetails } from "@/components/product/product-details"
-import { ProductGallery } from "@/components/product/product-gallery"
 import { ProductPromo } from "@/components/product/product-promo"
 import { ProductReviews } from "@/components/product/product-reviews"
-import { PurchasePanel } from "@/components/product/purchase-panel"
+import { ProductHero } from "@/components/product/product-hero"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
 import { getProductBySlug, getProductReviews, getRelatedProducts, listCategories, toListing } from "@/lib/api"
@@ -82,8 +81,15 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         </div>
 
         <div className="mt-10 grid grid-cols-[585fr_600fr] gap-[50px] px-[25px]">
-          <ProductGallery images={product.gallery} alt={product.title} />
-          <PurchasePanel product={panelProduct} rating={rating} keyInfo={keyInfo} servingSize={facts?.servingSize} servings={facts?.servings} />
+          <ProductHero
+            product={panelProduct}
+            gallery={product.gallery}
+            variantImages={product.variantImages}
+            rating={rating}
+            keyInfo={keyInfo}
+            servingSize={facts?.servingSize}
+            servings={facts?.servings}
+          />
         </div>
       </div>
 

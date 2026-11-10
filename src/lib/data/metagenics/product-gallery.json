@@ -21,14 +21,20 @@
    "/products/adreset/p6.webp",
    "/products/adreset/p7.webp",
    "/products/adreset/p8.webp"
-  ]
+  ],
+  "variants": {
+   "ADRES180": "/products/adreset/v-ADRES180.jpg"
+  }
  },
  "advaclear": {
   "gallery": [
    "/products/advaclear/g1.webp",
    "/products/advaclear/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "ADV126": "/products/advaclear/v-ADV126.jpg"
+  }
  },
  "alpha-lipoic-acid": {
   "gallery": [
@@ -138,7 +144,10 @@
    "/products/bone-builder-extra-strength/g1.webp",
    "/products/bone-builder-extra-strength/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "CAL1000180": "/products/bone-builder-extra-strength/v-CAL1000180.jpg"
+  }
  },
  "bone-builder-magnesium": {
   "gallery": [
@@ -149,7 +158,10 @@
    "/products/bone-builder-magnesium/p1.webp",
    "/products/bone-builder-magnesium/p2.webp",
    "/products/bone-builder-magnesium/p3.webp"
-  ]
+  ],
+  "variants": {
+   "CA024180": "/products/bone-builder-magnesium/v-CA024180.jpg"
+  }
  },
  "bone-builder-plus": {
   "gallery": [
@@ -160,7 +172,10 @@
    "/products/bone-builder-plus/p1.webp",
    "/products/bone-builder-plus/p2.webp",
    "/products/bone-builder-plus/p3.webp"
-  ]
+  ],
+  "variants": {
+   "CALACAP180": "/products/bone-builder-plus/v-CALACAP180.jpg"
+  }
  },
  "bone-builder-prime": {
   "gallery": [
@@ -236,7 +251,10 @@
    "/products/candibactin-br/p8.webp",
    "/products/candibactin-br/p9.webp",
    "/products/candibactin-br/p10.webp"
-  ]
+  ],
+  "variants": {
+   "CA038180": "/products/candibactin-br/v-CA038180.jpg"
+  }
  },
  "cardiogenics-intensive-care": {
   "gallery": [
@@ -302,7 +320,11 @@
   "gallery": [
    "/products/clear-change-10-day/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "CLEARB": "/products/clear-change-10-day/v-CLEARB.jpg",
+   "CLEARC": "/products/clear-change-10-day/v-CLEARC.jpg"
+  }
  },
  "clear-change-28-day": {
   "gallery": [],
@@ -360,7 +382,10 @@
    "/products/coq10-st-100/p8.webp",
    "/products/coq10-st-100/p9.webp",
    "/products/coq10-st-100/p10.webp"
-  ]
+  ],
+  "variants": {
+   "CQ005120": "/products/coq10-st-100/v-CQ005120.jpg"
+  }
  },
  "coq10-st-200": {
   "gallery": [
@@ -397,7 +422,10 @@
    "/products/creatine-up/p3.webp",
    "/products/creatine-up/p4.webp",
    "/products/creatine-up/p5.webp"
-  ]
+  ],
+  "variants": {
+   "CREUP60": "/products/creatine-up/v-CREUP60.jpg"
+  }
  },
  "daily-detox-support-pracstack": {
   "gallery": [
@@ -454,7 +482,10 @@
   "gallery": [
    "/products/essential-nutrition-shake/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "UMCRICE": "/products/essential-nutrition-shake/v-UMCRICE.jpg"
+  }
  },
  "estrofactors": {
   "gallery": [
@@ -604,7 +635,10 @@
    "/products/hemagenics/p1.webp",
    "/products/hemagenics/p2.webp",
    "/products/hemagenics/p3.webp"
-  ]
+  ],
+  "variants": {
+   "HEMA180": "/products/hemagenics/v-HEMA180.jpg"
+  }
  },
  "hersynergy": {
   "gallery": [
@@ -625,7 +659,10 @@
    "/products/herwellness-estrovera/p4.webp",
    "/products/herwellness-estrovera/p5.webp",
    "/products/herwellness-estrovera/p6.webp"
-  ]
+  ],
+  "variants": {
+   "ES90": "/products/herwellness-estrovera/v-ES90.jpg"
+  }
  },
  "herwellness-naturally-balanced": {
   "gallery": [
@@ -716,7 +753,10 @@
   "gallery": [
    "/products/indole-3-carbinol/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "I3CCAP180": "/products/indole-3-carbinol/v-I3CCAP180.jpg"
+  }
  },
  "inflavonoid-intensive-care": {
   "gallery": [
@@ -740,7 +780,10 @@
   ],
   "promo": [
    "/products/intrinsi-vitamin-b12-folate/p1.webp"
-  ]
+  ],
+  "variants": {
+   "INTR180": "/products/intrinsi-vitamin-b12-folate/v-INTR180.jpg"
+  }
  },
  "kaprex": {
   "gallery": [
@@ -756,7 +799,10 @@
   "gallery": [
    "/products/ketogenic-shake/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "KSC14": "/products/ketogenic-shake/v-KSC14.jpg"
+  }
  },
  "l-carnitine": {
   "gallery": [
@@ -774,7 +820,10 @@
   "gallery": [
    "/products/lipo-gen/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "LIPO270": "/products/lipo-gen/v-LIPO270.jpg"
+  }
  },
  "lipotain": {
   "gallery": [
@@ -797,7 +846,10 @@
    "/products/magactive-3-in-1-magnesium-chews/p8.webp",
    "/products/magactive-3-in-1-magnesium-chews/p9.webp",
    "/products/magactive-3-in-1-magnesium-chews/p10.webp"
-  ]
+  ],
+  "variants": {
+   "MAGMG120": "/products/magactive-3-in-1-magnesium-chews/v-MAGMG120.jpg"
+  }
  },
  "magactive-magnesium-muscle-powder": {
   "gallery": [
@@ -815,7 +867,10 @@
    "/products/magactive-magnesium-muscle-powder/p8.webp",
    "/products/magactive-magnesium-muscle-powder/p9.webp",
    "/products/magactive-magnesium-muscle-powder/p10.webp"
-  ]
+  ],
+  "variants": {
+   "MAGM30": "/products/magactive-magnesium-muscle-powder/v-MAGM30.jpg"
+  }
  },
  "magactive-magnesium-night-powder": {
   "gallery": [
@@ -833,7 +888,10 @@
    "/products/magactive-magnesium-night-powder/p8.webp",
    "/products/magactive-magnesium-night-powder/p9.webp",
    "/products/magactive-magnesium-night-powder/p10.webp"
-  ]
+  ],
+  "variants": {
+   "MAGN30": "/products/magactive-magnesium-night-powder/v-MAGN30.jpg"
+  }
  },
  "magactive-magnesium-relax-powder": {
   "gallery": [
@@ -851,7 +909,10 @@
    "/products/magactive-magnesium-relax-powder/p7.webp",
    "/products/magactive-magnesium-relax-powder/p8.webp",
    "/products/magactive-magnesium-relax-powder/p9.webp"
-  ]
+  ],
+  "variants": {
+   "MAGR30": "/products/magactive-magnesium-relax-powder/v-MAGR30.jpg"
+  }
  },
  "magnesium-citrate": {
   "gallery": [
@@ -877,7 +938,10 @@
    "/products/magnesium-glycinate-extra-strength/p8.webp",
    "/products/magnesium-glycinate-extra-strength/p9.webp",
    "/products/magnesium-glycinate-extra-strength/p10.webp"
-  ]
+  ],
+  "variants": {
+   "MAGGES180": "/products/magnesium-glycinate-extra-strength/v-MAGGES180.jpg"
+  }
  },
  "magnesium-glycinate": {
   "gallery": [
@@ -895,7 +959,10 @@
    "/products/magnesium-glycinate/p9.webp",
    "/products/magnesium-glycinate/p10.webp",
    "/products/magnesium-glycinate/p11.webp"
-  ]
+  ],
+  "variants": {
+   "MAGG240": "/products/magnesium-glycinate/v-MAGG240.jpg"
+  }
  },
  "magtein-magnesium-l-threonate": {
   "gallery": [
@@ -936,7 +1003,10 @@
   "gallery": [
    "/products/metaglycemx/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "MGLYX120": "/products/metaglycemx/v-MGLYX120.jpg"
+  }
  },
  "metakids-multivitamin": {
   "gallery": [
@@ -951,7 +1021,10 @@
   ],
   "promo": [
    "/products/metakids-nutrition-powder/p1.webp"
-  ]
+  ],
+  "variants": {
+   "SHAKECKID": "/products/metakids-nutrition-powder/v-SHAKECKID.jpg"
+  }
  },
  "metakids-vitamin-d3": {
   "gallery": [
@@ -1098,7 +1171,10 @@
    "/products/myocalm-plus/g1.webp",
    "/products/myocalm-plus/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "MY042": "/products/myocalm-plus/v-MY042.jpg"
+  }
  },
  "myocalm": {
   "gallery": [
@@ -1114,7 +1190,10 @@
    "/products/myocalm/p6.webp",
    "/products/myocalm/p7.webp",
    "/products/myocalm/p8.webp"
-  ]
+  ],
+  "variants": {
+   "MY040": "/products/myocalm/v-MY040.jpg"
+  }
  },
  "niatain": {
   "gallery": [
@@ -1168,7 +1247,10 @@
    "/products/omegagenics-fish-oil-epa-1200/p5.webp",
    "/products/omegagenics-fish-oil-epa-1200/p6.webp",
    "/products/omegagenics-fish-oil-epa-1200/p7.webp"
-  ]
+  ],
+  "variants": {
+   "EPAEE90": "/products/omegagenics-fish-oil-epa-1200/v-EPAEE90.jpg"
+  }
  },
  "omegagenics-fish-oil-epa-dha-1000": {
   "gallery": [
@@ -1236,7 +1318,10 @@
    "/products/omegagenics-fish-oil-epa-dha-500/p4.webp",
    "/products/omegagenics-fish-oil-epa-dha-500/p5.webp",
    "/products/omegagenics-fish-oil-epa-dha-500/p6.webp"
-  ]
+  ],
+  "variants": {
+   "EPAXN240": "/products/omegagenics-fish-oil-epa-dha-500/v-EPAXN240.jpg"
+  }
  },
  "omegagenics-fish-oil-epa-dha-720": {
   "gallery": [
@@ -1254,7 +1339,11 @@
    "/products/omegagenics-fish-oil-epa-dha-720/p8.webp",
    "/products/omegagenics-fish-oil-epa-dha-720/p9.webp",
    "/products/omegagenics-fish-oil-epa-dha-720/p10.webp"
-  ]
+  ],
+  "variants": {
+   "EPAL7120": "/products/omegagenics-fish-oil-epa-dha-720/v-EPAL7120.jpg",
+   "EPAL7240": "/products/omegagenics-fish-oil-epa-dha-720/v-EPAL7240.jpg"
+  }
  },
  "omegagenics-fish-oil-mega-10": {
   "gallery": [
@@ -1323,7 +1412,10 @@
    "/products/perfect-protein-pea-rice/p4.webp",
    "/products/perfect-protein-pea-rice/p5.webp",
    "/products/perfect-protein-pea-rice/p6.webp"
-  ]
+  ],
+  "variants": {
+   "PPROC30": "/products/perfect-protein-pea-rice/v-PPROC30.jpg"
+  }
  },
  "perfect-protein-whey": {
   "gallery": [
@@ -1336,7 +1428,10 @@
    "/products/perfect-protein-whey/p4.webp",
    "/products/perfect-protein-whey/p5.webp",
    "/products/perfect-protein-whey/p6.webp"
-  ]
+  ],
+  "variants": {
+   "PPROWC30": "/products/perfect-protein-whey/v-PPROWC30.jpg"
+  }
  },
  "perimine": {
   "gallery": [
@@ -1405,7 +1500,11 @@
    "/products/phytomulti-multivitamin/p8.webp",
    "/products/phytomulti-multivitamin/p9.webp",
    "/products/phytomulti-multivitamin/p10.webp"
-  ]
+  ],
+  "variants": {
+   "PHY": "/products/phytomulti-multivitamin/v-PHY.jpg",
+   "PHY120": "/products/phytomulti-multivitamin/v-PHY120.jpg"
+  }
  },
  "phytomulti-superfoods": {
   "gallery": [
@@ -1439,7 +1538,10 @@
   "gallery": [
    "/products/power-nutrition-shake/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "UMDSC": "/products/power-nutrition-shake/v-UMDSC.jpg"
+  }
  },
  "probioplex-intensive-care": {
   "gallery": [
@@ -1470,7 +1572,10 @@
    "/products/rapid-relief/p5.webp",
    "/products/rapid-relief/p6.webp",
    "/products/rapid-relief/p7.webp"
-  ]
+  ],
+  "variants": {
+   "RR60": "/products/rapid-relief/v-RR60.jpg"
+  }
  },
  "renagen-dtx": {
   "gallery": [
@@ -1493,7 +1598,10 @@
    "/products/serenagen/p6.webp",
    "/products/serenagen/p7.webp",
    "/products/serenagen/p8.webp"
-  ]
+  ],
+  "variants": {
+   "SE180": "/products/serenagen/v-SE180.jpg"
+  }
  },
  "serosyn": {
   "gallery": [
@@ -1533,21 +1641,30 @@
    "/products/spectrazyme-betaine-hci-pepsin/g1.webp",
    "/products/spectrazyme-betaine-hci-pepsin/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "SPMETG270": "/products/spectrazyme-betaine-hci-pepsin/v-SPMETG270.jpg"
+  }
  },
  "spectrazyme-complete-enzymes": {
   "gallery": [
    "/products/spectrazyme-complete-enzymes/g1.webp",
    "/products/spectrazyme-complete-enzymes/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "SPZ180": "/products/spectrazyme-complete-enzymes/v-SPZ180.jpg"
+  }
  },
  "spectrazyme-gluten-digest-enzymes": {
   "gallery": [
    "/products/spectrazyme-gluten-digest-enzymes/g1.webp",
    "/products/spectrazyme-gluten-digest-enzymes/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "SPG": "/products/spectrazyme-gluten-digest-enzymes/v-SPG.jpg"
+  }
  },
  "spectrazyme-pancreatic-enzymes-extra-strength": {
   "gallery": [
@@ -1561,7 +1678,10 @@
    "/products/spectrazyme-pancreatic-enzymes/g1.webp",
    "/products/spectrazyme-pancreatic-enzymes/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "SPPAN270": "/products/spectrazyme-pancreatic-enzymes/v-SPPAN270.jpg"
+  }
  },
  "spm-active-one-daily": {
   "gallery": [
@@ -1580,7 +1700,11 @@
    "/products/spm-active-one-daily/p9.webp",
    "/products/spm-active-one-daily/p10.webp",
    "/products/spm-active-one-daily/p11.webp"
-  ]
+  ],
+  "variants": {
+   "SPMAD30": "/products/spm-active-one-daily/v-SPMAD30.jpg",
+   "SPMAD60": "/products/spm-active-one-daily/v-SPMAD60.jpg"
+  }
  },
  "spm-active": {
   "gallery": [
@@ -1599,7 +1723,10 @@
    "/products/spm-active/p9.webp",
    "/products/spm-active/p10.webp",
    "/products/spm-active/p11.webp"
-  ]
+  ],
+  "variants": {
+   "SPMA120": "/products/spm-active/v-SPMA120.jpg"
+  }
  },
  "staystrong-4-in-1-collagen-chews": {
   "gallery": [
@@ -1653,7 +1780,10 @@
    "/products/staystrong-joint-muscle-collagen-creatine-powder/p8.webp",
    "/products/staystrong-joint-muscle-collagen-creatine-powder/p9.webp",
    "/products/staystrong-joint-muscle-collagen-creatine-powder/p10.webp"
-  ]
+  ],
+  "variants": {
+   "SSPJM7": "/products/staystrong-joint-muscle-collagen-creatine-powder/v-SSPJM7.jpg"
+  }
  },
  "sulforaclear": {
   "gallery": [
@@ -1718,7 +1848,12 @@
    "/products/ultra-glucose-control/p1.webp",
    "/products/ultra-glucose-control/p2.webp",
    "/products/ultra-glucose-control/p3.webp"
-  ]
+  ],
+  "variants": {
+   "UGV": "/products/ultra-glucose-control/v-UGV.jpg",
+   "UGCC14": "/products/ultra-glucose-control/v-UGCC14.jpg",
+   "UGC": "/products/ultra-glucose-control/v-UGC.jpg"
+  }
  },
  "ultra-potent-c-1000-vitamin-c": {
   "gallery": [
@@ -1788,20 +1923,31 @@
   "promo": [
    "/products/ultraclear-plus-detox-powder/p1.webp",
    "/products/ultraclear-plus-detox-powder/p2.webp"
-  ]
+  ],
+  "variants": {
+   "UCPPB": "/products/ultraclear-plus-detox-powder/v-UCPPB.jpg",
+   "UCP": "/products/ultraclear-plus-detox-powder/v-UCP.jpg"
+  }
  },
  "ultraclear-plus-ph-detox-powder": {
   "gallery": [
    "/products/ultraclear-plus-ph-detox-powder/g1.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "UCPPH": "/products/ultraclear-plus-ph-detox-powder/v-UCPPH.jpg"
+  }
  },
  "ultraclear-renew-detox-powder": {
   "gallery": [
    "/products/ultraclear-renew-detox-powder/g1.webp",
    "/products/ultraclear-renew-detox-powder/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "UCRENEWB": "/products/ultraclear-renew-detox-powder/v-UCRENEWB.jpg",
+   "UCRENEWC": "/products/ultraclear-renew-detox-powder/v-UCRENEWC.jpg"
+  }
  },
  "ultraflora-3-in-1-probiotic": {
   "gallery": [
@@ -1855,7 +2001,11 @@
    "/products/ultraflora-balance-probiotic/p11.webp",
    "/products/ultraflora-balance-probiotic/p12.webp",
    "/products/ultraflora-balance-probiotic/p13.webp"
-  ]
+  ],
+  "variants": {
+   "UFDF60": "/products/ultraflora-balance-probiotic/v-UFDF60.jpg",
+   "UFDF120": "/products/ultraflora-balance-probiotic/v-UFDF120.jpg"
+  }
  },
  "ultraflora-biomepro-probiotic": {
   "gallery": [
@@ -1934,7 +2084,10 @@
    "/products/ultraflora-fiber-prebiotic-probiotic/p11.webp",
    "/products/ultraflora-fiber-prebiotic-probiotic/p12.webp",
    "/products/ultraflora-fiber-prebiotic-probiotic/p13.webp"
-  ]
+  ],
+  "variants": {
+   "UFFPP7": "/products/ultraflora-fiber-prebiotic-probiotic/v-UFFPP7.jpg"
+  }
  },
  "ultraflora-healthy-weight-akkermansia": {
   "gallery": [
@@ -2000,7 +2153,10 @@
   "promo": [
    "/products/ultraflora-kids-probiotic/p1.webp",
    "/products/ultraflora-kids-probiotic/p2.webp"
-  ]
+  ],
+  "variants": {
+   "UFCHEWKID120": "/products/ultraflora-kids-probiotic/v-UFCHEWKID120.jpg"
+  }
  },
  "ultraflora-night-rest-digest": {
   "gallery": [
@@ -2018,7 +2174,10 @@
    "/products/ultraflora-night-rest-digest/p8.webp",
    "/products/ultraflora-night-rest-digest/p9.webp",
    "/products/ultraflora-night-rest-digest/p10.webp"
-  ]
+  ],
+  "variants": {
+   "UFRD30": "/products/ultraflora-night-rest-digest/v-UFRD30.jpg"
+  }
  },
  "ultraflora-probiotic-plus-multivitamin": {
   "gallery": [],
@@ -2113,7 +2272,12 @@
    "/products/ultragi-replenish/p3.webp",
    "/products/ultragi-replenish/p4.webp",
    "/products/ultragi-replenish/p5.webp"
-  ]
+  ],
+  "variants": {
+   "UGIRC30": "/products/ultragi-replenish/v-UGIRC30.jpg",
+   "UGIRV14": "/products/ultragi-replenish/v-UGIRV14.jpg",
+   "UGIRV30": "/products/ultragi-replenish/v-UGIRV30.jpg"
+  }
  },
  "ultrainflamx-plus-360": {
   "gallery": [
@@ -2126,7 +2290,15 @@
    "/products/ultrainflamx-plus-360/p4.webp",
    "/products/ultrainflamx-plus-360/p5.webp",
    "/products/ultrainflamx-plus-360/p6.webp"
-  ]
+  ],
+  "variants": {
+   "UX2360PB14": "/products/ultrainflamx-plus-360/v-UX2360PB14.jpg",
+   "UX2360OR14": "/products/ultrainflamx-plus-360/v-UX2360OR14.jpg",
+   "UX2360PB30": "/products/ultrainflamx-plus-360/v-UX2360PB30.jpg",
+   "UX2360M30": "/products/ultrainflamx-plus-360/v-UX2360M30.jpg",
+   "UX236014": "/products/ultrainflamx-plus-360/v-UX236014.jpg",
+   "UX2360M14": "/products/ultrainflamx-plus-360/v-UX2360M14.jpg"
+  }
  },
  "ultrameal-advanced-protein": {
   "gallery": [
@@ -2137,7 +2309,11 @@
    "/products/ultrameal-advanced-protein/p1.webp",
    "/products/ultrameal-advanced-protein/p2.webp",
    "/products/ultrameal-advanced-protein/p3.webp"
-  ]
+  ],
+  "variants": {
+   "UMAPC": "/products/ultrameal-advanced-protein/v-UMAPC.jpg",
+   "UMAPP": "/products/ultrameal-advanced-protein/v-UMAPP.jpg"
+  }
  },
  "ultrameal-cardio-360": {
   "gallery": [
@@ -2145,7 +2321,10 @@
   ],
   "promo": [
    "/products/ultrameal-cardio-360/p1.webp"
-  ]
+  ],
+  "variants": {
+   "UMC360PRC": "/products/ultrameal-cardio-360/v-UMC360PRC.jpg"
+  }
  },
  "vasotensin": {
   "gallery": [
@@ -2169,7 +2348,10 @@
    "/products/vitamin-b-complex/p7.webp",
    "/products/vitamin-b-complex/p8.webp",
    "/products/vitamin-b-complex/p9.webp"
-  ]
+  ],
+  "variants": {
+   "GL023": "/products/vitamin-b-complex/v-GL023.jpg"
+  }
  },
  "vitamin-d3-10-000-k": {
   "gallery": [
@@ -2240,7 +2422,10 @@
    "/products/vitamin-d3-5000/p3.webp",
    "/products/vitamin-d3-5000/p4.webp",
    "/products/vitamin-d3-5000/p5.webp"
-  ]
+  ],
+  "variants": {
+   "D5000": "/products/vitamin-d3-5000/v-D5000.jpg"
+  }
  },
  "vitamin-d3-liquid": {
   "gallery": [
@@ -2355,7 +2540,10 @@
    "/products/zinc-ag/g1.webp",
    "/products/zinc-ag/g2.webp"
   ],
-  "promo": []
+  "promo": [],
+  "variants": {
+   "ZN026": "/products/zinc-ag/v-ZN026.jpg"
+  }
  },
  "zinc-carosine-complex": {
   "gallery": [

@@ -66,7 +66,7 @@ function toProduct(r: CatalogProduct, locale: Locale): Product {
 }
 
 /** Extra photos and brand images per product (public/products/<slug>/), see scripts/build-product-gallery.py. */
-const galleries = productGallery as Record<string, { gallery: string[]; promo: string[] }>
+const galleries = productGallery as Record<string, { gallery: string[]; promo: string[]; variants?: Record<string, string> }>
 
 function toDetail(r: CatalogProduct, locale: Locale): ProductDetail {
   const extra = galleries[r.slug]
@@ -82,13 +82,14 @@ function toDetail(r: CatalogProduct, locale: Locale): ProductDetail {
     related: r.related,
     gallery: [...(r.image ? [r.image] : []), ...(extra?.gallery ?? [])],
     promo: extra?.promo ?? [],
+    variantImages: extra?.variants ?? {},
   }
 }
 
 /** Drop the long detail content (description, FAQ, facts) — e.g. before passing a product to a client component. */
 export function toListing(p: ProductDetail): Product {
-  const { content, faq, supplementFacts, related, directions, storage, cautions, warnings, gallery, promo, ...listing } = p
-  void [content, faq, supplementFacts, related, directions, storage, cautions, warnings, gallery, promo]
+  const { content, faq, supplementFacts, related, directions, storage, cautions, warnings, gallery, promo, variantImages, ...listing } = p
+  void [content, faq, supplementFacts, related, directions, storage, cautions, warnings, gallery, promo, variantImages]
   return listing
 }
 

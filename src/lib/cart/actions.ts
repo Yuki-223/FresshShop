@@ -9,6 +9,7 @@ import { customerToken } from "@/lib/account/actions"
 import { medusa, MedusaError, storeRegion } from "@/lib/medusa/server"
 import type { CartItem } from "@/types"
 import type { AddToCartInput, CarrierOption, CartView, PlacedOrder, PlaceOrderInput } from "./types"
+import { variantImage } from "@/lib/data/metagenics/variant-image"
 
 const COOKIE = "freshshop_cart_id"
 const CART_FIELDS =
@@ -57,7 +58,7 @@ function toView(cart: MedusaCart): CartView {
         productId: i.product_handle ?? "",
         slug: i.product_handle ?? "",
         title: { en: i.product_title ?? "", zh: i.product_title ?? "" },
-        image: i.thumbnail ?? undefined,
+        image: variantImage(i.product_handle, i.variant_sku) ?? i.thumbnail ?? undefined,
         sku: i.variant_sku ?? "",
         variantLabel: i.variant_title ?? "",
         price: amount(i.unit_price),

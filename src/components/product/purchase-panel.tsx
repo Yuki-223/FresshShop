@@ -77,6 +77,7 @@ export function PurchasePanel({
   keyInfo,
   servingSize,
   servings,
+  onVariantChange,
 }: {
   product: Product
   rating: Rating | null
@@ -85,6 +86,8 @@ export function PurchasePanel({
   /** from the supplement facts (they describe the first size): "1 Tablet", "120" */
   servingSize?: string
   servings?: string
+  /** tells the gallery which size / flavour is selected */
+  onVariantChange?: (variant: Variant) => void
 }) {
   const { t, fmt } = useI18n()
   const addToCart = useAddToCart()
@@ -108,6 +111,7 @@ export function PurchasePanel({
       product.variants.find((v) => (size ? v.size === size : v.flavor === flavor)) ??
       variant
     setVariant(next)
+    onVariantChange?.(next)
     if (!next.subscriptions.some((o) => o.months === months)) setMonths(bestOffer(next)?.months ?? 1)
     if (!next.subscriptions.length) setMode("once")
   }

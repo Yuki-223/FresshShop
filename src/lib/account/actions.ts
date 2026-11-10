@@ -7,6 +7,7 @@
  */
 import { cookies } from "next/headers"
 import { medusa, MedusaError } from "@/lib/medusa/server"
+import { variantImage } from "@/lib/data/metagenics/variant-image"
 import type { AccountResult, AddressInput, Customer, OrderDetail, OrderLine, OrderSummary, Subscription } from "./types"
 
 const COOKIE = "freshshop_customer_token"
@@ -185,7 +186,7 @@ const toLine = (i: MedusaOrderItem): OrderLine => ({
   id: i.id,
   title: i.title,
   handle: i.product_handle,
-  thumbnail: i.thumbnail,
+  thumbnail: variantImage(i.product_handle, i.variant_sku) ?? i.thumbnail,
   variant: i.variant_title ?? "",
   sku: i.variant_sku ?? "",
   quantity: i.quantity,
@@ -201,7 +202,7 @@ const toSummary = (o: MedusaOrder): OrderSummary => ({
   status: o.status,
   total: Number(o.total),
   itemCount: o.items.reduce((n, i) => n + i.quantity, 0),
-  thumbnails: o.items.map((i) => i.thumbnail).filter((x): x is string => !!x),
+  thumbnails: o.items.map((i) => variantImage(i.product_handle, i.variant_sku) ?? i.thumbnail).filter((x): x is string => !!x),
 })
 
 /** All of the customer's orders, newest first. */

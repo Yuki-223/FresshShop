@@ -9,6 +9,7 @@
   - 主图 `public/products/<slug>.jpg`：217 个是采集的透明底大图去阴影后的 800px 白底图；12 个采集图自带阴影，保留之前的干净图（来自 vitacost.com 或旧图去阴影）。来源记在 `src/lib/data/metagenics/product-images.json`。
   - 详情页相册 `public/products/<slug>/g<n>.webp`：只放中性的图——营养成分表、服用方法、手拿药片/包装的照片、无麸质等标志。
   - "From the Brand / 图文介绍" `public/products/<slug>/p<n>.webp`：品牌宣传图（功效说明、顾客评价、医生照片等），放在详情页 Details 上面。
+  - 其他规格的正面照 `public/products/<slug>/v-<sku>.jpg`（57 个商品 74 张）：详情页选这个规格时大图换成它，购物车和订单里也显示它。
   - 对照表 `src/lib/data/metagenics/product-gallery.json`。重新生成：`python3 scripts/build-product-gallery.py <图片包>/2026-10-31`（需要 Pillow 和 tesseract），然后在 backend/ 运行 `pnpm import:metagenics` 上传新主图（只换有变化的）。
 - **语言**：默认进入英文站，商品内容是英文原文。仍然可以切换到中文界面，界面文字是中文、商品内容保持英文，价格换算成人民币。
 - **导航**：18 个健康分类合并成 8 个导航分组，分类页里再按健康分类细分。一个商品可以同时属于多个分类。

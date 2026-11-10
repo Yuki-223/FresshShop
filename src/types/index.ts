@@ -100,6 +100,8 @@ export interface ProductDetail extends Product {
   gallery: string[]
   /** the brand's marketing images, shown under "From the Brand" */
   promo: string[]
+  /** front photo of sizes / flavours other than the default one (sku → image) */
+  variantImages: Record<string, string>
 }
 
 export type SortKey = "popular" | "name" | "price-asc" | "price-desc" | "rating"
