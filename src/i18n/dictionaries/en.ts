@@ -31,6 +31,10 @@ export const en = {
     allOf: "All {name}",
     categoriesNav: "Categories",
     switchLanguage: "Switch language",
+    suggestions: "Suggested products",
+    suggestAll: { one: "See {count} result", other: "See all {count} results" },
+    suggestHint: "↑↓ to choose, Enter to open",
+    suggestNone: "No products found for “{q}”",
   },
   nav: {
     mainNav: "Main navigation",

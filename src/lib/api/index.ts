@@ -190,6 +190,36 @@ export async function searchProducts(query: ProductQuery, locale: Locale): Promi
   }
 }
 
+export type Suggestion = Pick<Product, "slug" | "title" | "productLine" | "image" | "price"> & { multiPrice: boolean }
+
+/**
+ * Search-as-you-type (header search box): the same matching as searchProducts, but products whose
+ * name contains the search words come first ("鱼油" → the Fish Oil bottles before SPM Active One
+ * Daily, which only mentions omega-3 in its summary); within each tier the most popular first.
+ */
+export async function suggestProducts(term: string, locale: Locale, limit = 6): Promise<{ items: Suggestion[]; total: number }> {
+  const q = term.trim()
+  if (!q) return { items: [], total: 0 }
+  const zh = zhQueryGroups(q)
+  const inName = (r: CatalogProduct) =>
+    zh ? zh.length > 0 && zh.every((alts) => alts.some((re) => re.test(r.name))) : r.name.toLowerCase().includes(q.toLowerCase())
+  const found = (await records())
+    .filter((r) => matches(r, { q }, locale, zh))
+    .map((r) => ({ r, tier: inName(r) ? 0 : 1 }))
+    .sort((a, b) => a.tier - b.tier || sorters.popular(a.r, b.r))
+  return {
+    total: found.length,
+    items: found.slice(0, limit).map(({ r }) => ({
+      slug: r.slug,
+      title: r.name,
+      productLine: r.productLine,
+      image: r.image,
+      price: Math.min(...r.variants.map((v) => v.price)),
+      multiPrice: new Set(r.variants.map((v) => v.price)).size > 1,
+    })),
+  }
+}
+
 /** Facet counts for the sidebar, computed on the navigation-group scope only. */
 export async function getFacets(group: string, locale: Locale) {
   const scope = (await records()).filter((p) => inGroup(p, group))

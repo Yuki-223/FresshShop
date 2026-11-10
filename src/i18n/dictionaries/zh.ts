@@ -29,6 +29,10 @@ export const zh: Dictionary = {
     allOf: "全部{name}",
     categoriesNav: "商品分类",
     switchLanguage: "切换语言",
+    suggestions: "推荐商品",
+    suggestAll: { one: "查看全部 {count} 件商品", other: "查看全部 {count} 件商品" },
+    suggestHint: "按 ↑↓ 选择，回车打开",
+    suggestNone: "没有找到与“{q}”相关的商品",
   },
   nav: {
     mainNav: "主导航",

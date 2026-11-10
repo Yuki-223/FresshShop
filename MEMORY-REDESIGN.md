@@ -22,12 +22,12 @@
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
 | 列表页"网格 / 列表"切换（`?view=list`） | ✅ | `collection-toolbar.tsx`（`ViewSwitch`）、`collection-card.tsx`（`CollectionRow`）、`reveal-grid.tsx` |
 | 中文搜索（约 150 个中文词 → 英文词对照） | ✅ | `src/lib/search/zh-terms.ts`、`src/lib/api/index.ts`（`matches`） |
+| 搜索栏边打字边出商品（下拉框 6 个 + 查看全部） | ✅ | `src/components/layout/vc-header/vc-search.tsx`、`src/lib/search/actions.ts`、`src/lib/api/index.ts`（`suggestProducts`） |
 | 高清商品图（217 张主图）+ 详情页相册（中性图）+ "From the Brand / 图文介绍"（宣传图）+ 换规格换图（74 张） | ✅ | `scripts/build-product-gallery.py`、`public/products/<slug>/`、`product-gallery.json`、`product-hero.tsx`、`product-gallery.tsx`、`product-promo.tsx`、`variant-image.ts` |
 
 **已定不改**（2026-11-08 用户决定）：中文界面字体保持思源黑体，排序的 "Most popular" 不改名。
 
 **可选、用户还没决定的**（2026-11-09/10 提过）：
-- 搜索栏"边打字边出商品"（即时搜索建议）：讲过做法，用户说"先停一停"，没决定做不做。要做的话先出效果图。
 - 中文版其他改进（都没做）：翻译商品简介（B）、翻译全部商品内容（C）、首页轮播图做中文版（D）。用户只选了 A（中文搜索，已完成）。
 
 **图片包**：用户给的 Metagenics 采集图片包（WeTransfer，1.18 GB zip，另一个 chat 用 Ego Lite 采集，采集时去掉了 CDN 的 `?width=` 参数所以是 2000～4000px 原图）下载解压在云端 `/home/user/downloads/wetransfer/extracted/metagenics/2026-10-31`，不在仓库里，容器回收后就没了（链接可能也会过期）。仓库里已经有处理好的全部图片（`public/products` 83 MB），本地运行不需要图片包；只有要重新生成图片时才需要（`python3 scripts/build-product-gallery.py <图片包>/2026-10-31`，需要 Pillow + tesseract）。
@@ -351,3 +351,4 @@ Vitacost 首页从上到下依次是：
 - 2026-11-08：**列表页加回"网格 / 列表"切换**（用户先看了效果图再同意）。排序右边一条细竖线后面两个 18px 图标，当前的是品牌绿。列表视图每个商品一行：170px 图 | 系列名、16px 半粗标题、星级、两行简介、"剂型 | 全部规格" | 20px 价格、绿色"订阅最多省 X%"、同样的 Add to cart。写在网址 `?view=list`，翻页、筛选、排序都保留；一行行出现的规则不变（8 → 每次 4 → 24 后页码）。代码：`collection-card.tsx` 的 `CollectionRow`（和卡片共用星级、价格、按钮），`collection-toolbar.tsx` 的 `ViewSwitch`，`RevealGrid` 的 `layout`。旧的 `catalog/filter-bar.tsx` 里没用的 `ViewToggle` 删掉了。
 - 2026-11-08：**中文搜索**（用户选了方案 A）。商品数据只有英文，原来搜"鱼油"等中文都是 0 件。现在 `src/lib/search/zh-terms.ts` 有约 150 个中文词 → 英文词/词根的对照表，查询按最长词切开，每个词要匹配它的任一英文说法（中文查询还会搜简介 summary 和中文分类/剂型名）；"的""推荐"这类不认识的字忽略，同时输入的英文/数字也要匹配。英文词按词首匹配，末尾加 `$` 表示整词（"men$" 不会匹配 menstrual）。实测：鱼油 17、益生菌 48、镁 22、维生素D 10、睡眠 22、男性 14、"鱼油 1000" 2、你好 0。英文搜索不变。以后要加词直接往 `ZH_TERMS` 里加。
 - 2026-11-09：**高清商品图 + 详情页相册 + 图文介绍**。用户给了 WeTransfer 链接（采集的 Metagenics 图片包 1.18 GB，下载解压在 `/home/user/downloads/wetransfer/extracted/metagenics/2026-10-31`，不在仓库）。用户选择：先看样图（C）→ 相册要干净、宣传图放下面（B）→ 相册放正面照 + 成分表 + 服用方法（A）。`scripts/build-product-gallery.py`：每个商品取默认规格的相册（120px 缩略图并到大图），用 tesseract 识别图片上三分之一的标题分类：facts / directions / photo（无标题浅底照片）→ 相册；其余 → promo；小的 "#1 Doctor Recommended" 透明徽章丢掉；"Clinically tested" 等徽章和几张漏判的图在 `OVERRIDES` 里人工改成 promo（看过接触表）。主图只用透明底大图去阴影（217 个）；12 个没有透明底图的采集照自带阴影，保留旧的干净图。结果：相册 1～5 张（大多 3 张），113 个商品没有宣传图（那块不显示）。图片总共 79 MB（webp 1000px）。代码：`product-gallery.tsx`（大图 + 6 个一排缩略图 + 箭头 + "3 / 4"）、`product-promo.tsx`（两列方图，标题 "From the Brand / 图文介绍"，注明图片和文字由 Metagenics 提供）、`ProductDetail.gallery/promo`（`lib/api` 从 `product-gallery.json` 读）。后端已重新导入（imagesUpdated 217）。2026-11-10 补上**换规格换图**（用户要求）：57 个商品的其他规格有自己的透明底正面照（共 74 张，`public/products/<slug>/v-<sku>.jpg`，`product-gallery.json` 的 `variants`）；详情页 `product-hero.tsx` 把所选规格从购买区传给相册，大图换成该规格的瓶子（相册其余图共用）；购物车、结账和账户订单的行图片按 handle + SKU 查 `lib/data/metagenics/variant-image.ts`（后端只知道主图）。
+- 2026-11-10：**搜索栏边打字边出商品**（先出效果图，用户同意）。停手 0.2 秒后通过服务器动作 `suggest()` 查询（复用 `matches`，中文搜索规则照样生效），旧的慢回答丢掉；中文 1 个字就查，英文至少 2 个字母。下拉框：6 个商品（小图、系列名、商品名、起价，英文加粗匹配部分）+"查看全部 N 件商品"+操作提示；↑↓ 选、回车打开、Esc 只关下拉框不清空文字（浏览器默认会清空 search 框）、点外面关闭。排序是用户同意的建议：**只在下拉框里**，名字里含搜索词的排前面，同档再按受欢迎；列表页排序不变（搜"鱼油"不再先出 SPM Active One Daily）。实测：鱼油 17、镁 22、男性 14、你好"没有找到"，无控制台错误。
