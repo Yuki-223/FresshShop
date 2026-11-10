@@ -3,7 +3,7 @@
 > 这是"改造"专用的记忆文件，和 `MEMORY.md`（项目从头到现在的总记录）分开。新对话先读 `MEMORY.md` 了解项目，再读这份了解改造进度。
 > 分支：`metagenics`（保健品版）。只改英文界面，中文暂时不管。
 
-## 当前状态速览（2026-11-08 更新，新对话先看这里）
+## 当前状态速览（2026-11-10 更新，新对话先看这里）
 
 **已经改成 Vitacost 风格的（都在 `metagenics` 分支，已推送）：**
 
@@ -20,8 +20,19 @@
 | 商品详情页（Vitacost 风格）+ 示例评价 | ✅ | `product/[slug]/page.tsx`、`purchase-panel.tsx`、`product-details.tsx`、`product-reviews.tsx`、`backend/scripts/import-demo-reviews.mjs` |
 | 列表页横幅换成 Vitacost 照片横幅（12 张，去掉了原图的文字和 logo） | ✅ | `public/collection-banners/`、`collection-banners.ts`、`collection-banner.tsx` |
 | 全站商品图换成白底干净图（229 张） | ✅ | `public/products/*.jpg`、`product-images.json`、`backend/scripts/import-metagenics.mjs` |
+| 列表页"网格 / 列表"切换（`?view=list`） | ✅ | `collection-toolbar.tsx`（`ViewSwitch`）、`collection-card.tsx`（`CollectionRow`）、`reveal-grid.tsx` |
+| 中文搜索（约 150 个中文词 → 英文词对照） | ✅ | `src/lib/search/zh-terms.ts`、`src/lib/api/index.ts`（`matches`） |
+| 高清商品图（217 张主图）+ 详情页相册（中性图）+ "From the Brand / 图文介绍"（宣传图）+ 换规格换图（74 张） | ✅ | `scripts/build-product-gallery.py`、`public/products/<slug>/`、`product-gallery.json`、`product-hero.tsx`、`product-gallery.tsx`、`product-promo.tsx`、`variant-image.ts` |
 
-**已定不改**（2026-11-08 用户决定）：中文界面字体保持思源黑体，排序的 "Most popular" 不改名。改造工作到此告一段落，没有待办。
+**已定不改**（2026-11-08 用户决定）：中文界面字体保持思源黑体，排序的 "Most popular" 不改名。
+
+**可选、用户还没决定的**（2026-11-09/10 提过）：
+- 搜索栏"边打字边出商品"（即时搜索建议）：讲过做法，用户说"先停一停"，没决定做不做。要做的话先出效果图。
+- 中文版其他改进（都没做）：翻译商品简介（B）、翻译全部商品内容（C）、首页轮播图做中文版（D）。用户只选了 A（中文搜索，已完成）。
+
+**图片包**：用户给的 Metagenics 采集图片包（WeTransfer，1.18 GB zip，另一个 chat 用 Ego Lite 采集，采集时去掉了 CDN 的 `?width=` 参数所以是 2000～4000px 原图）下载解压在云端 `/home/user/downloads/wetransfer/extracted/metagenics/2026-10-31`，不在仓库里，容器回收后就没了（链接可能也会过期）。仓库里已经有处理好的全部图片（`public/products` 83 MB），本地运行不需要图片包；只有要重新生成图片时才需要（`python3 scripts/build-product-gallery.py <图片包>/2026-10-31`，需要 Pillow + tesseract）。
+
+**用户本地更新到最新**：`git pull origin metagenics` → backend `pnpm start:local` → 另一个终端 backend `pnpm import:metagenics`（本地数据库里还是旧主图，会换 217 张，显示 `"imagesUpdated":217`）→ 根目录 `pnpm dev`。已在聊天里告诉用户，等用户反馈。
 
 **继续工作前**：云端的后台进程最多跑 2 小时就会被系统停掉（前后端都被停过很多次）。用 Bash 的 `run_in_background` 启动（普通 `&` 启动的进程会被收掉）：先 `cd backend && pnpm start:local`（等 `/health` 返回 OK），再在根目录 `pnpm build && pnpm start`。被停掉后系统提示不要自动重启，等下次需要时再启动。数据都在 `backend/.local/postgres`，不会丢。数据库结构有新迁移时先跑 `pnpm setup:local`（可以重复运行）。
 
