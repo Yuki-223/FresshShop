@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/http"
 import { AdminPostReviews } from "./admin/reviews/validators"
 import { StorePostPurchaseItem } from "./store/carts/[id]/purchase-items/validators"
+import { StorePostBrowsingHistory } from "./store/customers/me/browsing-history/validators"
 import { StorePostCustomerPassword } from "./store/customers/me/password/validators"
 import { StorePostReview } from "./store/reviews/validators"
 
@@ -33,6 +34,16 @@ export default defineMiddlewares({
       method: ["POST"],
       matcher: "/store/customers/me/password",
       middlewares: [authenticate("customer", ["bearer"]), validateAndTransformBody(StorePostCustomerPassword)],
+    },
+    // browsing history: always the signed-in customer's own
+    {
+      matcher: "/store/customers/me/browsing-history*",
+      middlewares: [authenticate("customer", ["bearer"])],
+    },
+    {
+      method: ["POST"],
+      matcher: "/store/customers/me/browsing-history",
+      middlewares: [validateAndTransformBody(StorePostBrowsingHistory)],
     },
     {
       method: ["POST"],

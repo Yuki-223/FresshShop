@@ -16,5 +16,7 @@ module.exports = defineConfig({
   modules: [
     // product reviews (src/modules/review)
     { resolve: "./src/modules/review" },
+    // "recently viewed" products of signed-in customers (src/modules/browsing-history)
+    { resolve: "./src/modules/browsing-history" },
   ],
 })

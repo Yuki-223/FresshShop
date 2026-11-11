@@ -4,6 +4,8 @@ import { useState } from "react"
 import { useI18n } from "@/i18n/client"
 import { Link, useRouter } from "@/i18n/navigation"
 import { signIn, signUp } from "@/lib/account/actions"
+import { mergeGuestHistory } from "@/lib/history/actions"
+import { useGuestHistory } from "@/lib/store/history"
 import { cn } from "@/lib/utils"
 import { AccountInput } from "./fields"
 
@@ -34,6 +36,13 @@ export function AuthForm({ next, initialMode }: { next: string; initialMode: "si
       if (!result.ok) {
         setError(result.error === "invalid" ? t("account.invalidLogin") : result.error === "exists" ? t("account.emailExists") : result.error)
         return
+      }
+      // this browser's guest "recently viewed" goes into the account; kept here if that fails
+      const guest = useGuestHistory.getState()
+      if (guest.items.length > 0) {
+        try {
+          if (await mergeGuestHistory(guest.items)) guest.clear()
+        } catch {}
       }
       router.replace(next)
       router.refresh()

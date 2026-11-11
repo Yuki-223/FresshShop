@@ -227,6 +227,7 @@ chown postgres .medusa-local && chmod 711 .medusa-local   # config.json 仍是 r
 
 ## 可能的下一步（还没做）
 
+- **2026-11-11 用户要的三件事**，按顺序做：① 浏览记录（已完成，见 `MEMORY-REDESIGN.md` 速览表）② 物流跟踪：Medusa 后台已能"创建发货"填运单号和跟踪链接（`fulfillment_label` 表），缺前台订单详情页的展示；没有真实快递接口，物流轨迹只能演示 ③ 订单管理（顾客端）：状态进度条、取消订单、申请退货、再买一次。后台订单管理 Medusa 自带。②③ 还没和用户讨论细节。
 - **后端搬进 FresshShop + 评论功能**：7 件全部完成。
 - 用户正在把 1.2 GB 图库作为 Release 上传到 FresshShop。
 - 给保健品版换站名和配色（目前还叫 Freshnesecom、用绿色主题）。

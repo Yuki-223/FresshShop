@@ -1,3 +1,4 @@
+import { RecentlyViewed } from "@/components/history/recently-viewed"
 import { ExploreCircles } from "@/components/home/explore-circles"
 import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
 import { VcSlideshow } from "@/components/home/vc-slideshow/vc-slideshow"
@@ -59,6 +60,8 @@ export default async function HomePage() {
         {shelves.map((s, i) => (
           <VcCarousel key={s.href} title={s.title} products={s.products} shopAllHref={s.href} green={i % 2 === 0} />
         ))}
+        {/* the visitor's own "Recently viewed" (hidden until something was viewed); green continues the alternation */}
+        <RecentlyViewed green={shelves.length % 2 === 0} />
       </div>
     </>
   )

@@ -132,6 +132,13 @@ export async function getProductsBySlugs(slugs: string[], locale: Locale) {
   return slugs.map((s) => all.find((p) => p.slug === s)).filter((r): r is CatalogProduct => !!r).map((r) => toProduct(r, locale))
 }
 
+/** Products by Medusa id, in the order asked (unknown ids are left out). */
+export async function getProductsByMedusaIds(ids: string[], locale: Locale) {
+  const all = await records()
+  const byId = new Map(all.filter((r) => r.medusaId).map((r) => [r.medusaId!, r]))
+  return ids.map((id) => byId.get(id)).filter((r): r is CatalogProduct => !!r).map((r) => toProduct(r, locale))
+}
+
 function inGroup(r: CatalogProduct, group?: string) {
   if (!group || group === "all") return true
   const g = navGroups.find((x) => x.slug === group)

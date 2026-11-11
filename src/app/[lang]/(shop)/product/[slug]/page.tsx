@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Breadcrumbs } from "@/components/common/breadcrumbs"
+import { RecentlyViewed } from "@/components/history/recently-viewed"
+import { RecordView } from "@/components/history/record-view"
 import { VcCarousel } from "@/components/home/vc-carousel/vc-carousel"
 import { ProductDetails } from "@/components/product/product-details"
 import { ProductPromo } from "@/components/product/product-promo"
@@ -106,6 +108,10 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
           <ProductReviews productId={product.medusaId} sourceUrl={product.sourceUrl} initial={reviews} />
         </div>
       </div>
+
+      {/* the visitor's other recently viewed products; this view is recorded after the page loads */}
+      <RecentlyViewed exclude={product.medusaId} />
+      <RecordView productId={product.medusaId} />
     </>
   )
 }

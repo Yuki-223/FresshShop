@@ -24,6 +24,7 @@
 | 中文搜索（约 150 个中文词 → 英文词对照） | ✅ | `src/lib/search/zh-terms.ts`、`src/lib/api/index.ts`（`matches`） |
 | 搜索栏边打字边出商品（下拉框 6 个 + 查看全部） | ✅ | `src/components/layout/vc-header/vc-search.tsx`、`src/lib/search/actions.ts`、`src/lib/api/index.ts`（`suggestProducts`） |
 | 高清商品图（217 张主图）+ 详情页相册（中性图）+ "From the Brand / 图文介绍"（宣传图）+ 换规格换图（74 张） | ✅ | `scripts/build-product-gallery.py`、`public/products/<slug>/`、`product-gallery.json`、`product-hero.tsx`、`product-gallery.tsx`、`product-promo.tsx`、`variant-image.ts` |
+| 浏览记录（2026-11-11）：登录用户存后端（`browsing_history` 表，最多 100 个，同一商品只留最新时间），游客存浏览器、登录/注册时合并；首页底部和商品页底部的"最近看过"（最多 10 个，不含当前商品）；账户里"浏览记录"页（今天/昨天/更早、单条删除、全部清空） | ✅ | `backend/src/modules/browsing-history/`、`backend/src/api/store/customers/me/browsing-history/`、`src/lib/history/`、`src/lib/store/history.ts`、`src/components/history/`、`account/(member)/history/` |
 
 **已定不改**（2026-11-08 用户决定）：中文界面字体保持思源黑体，排序的 "Most popular" 不改名。
 

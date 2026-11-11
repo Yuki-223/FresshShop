@@ -56,3 +56,21 @@ and runs with `pnpm setup:local` (or `pnpm exec medusa db:migrate`).
 
 `summary` = the rating collected from the source site (`product.metadata.rating`, which already counts the collected
 reviews) merged with approved reviews written by our customers.
+
+## Browsing history (`src/modules/browsing-history`)
+
+Custom Medusa module with a `browsing_history` table (`customer_id`, `product_id`, `viewed_at`; one row per customer
+and product). Only the newest 100 products per customer are kept. The migration is in
+`src/modules/browsing-history/migrations/` — after pulling, run `pnpm setup:local` (or `pnpm exec medusa db:migrate`).
+
+All routes need a signed-in customer (bearer token) and only touch that customer's own history:
+
+| Route | Purpose |
+|---|---|
+| `GET /store/customers/me/browsing-history?limit=100&offset=0` | viewed products, newest first |
+| `POST /store/customers/me/browsing-history` | `{ items: [{ product_id, viewed_at? }] }` (1–100) — records a view, or merges a guest's history after sign-in; a product seen again keeps the later time |
+| `DELETE /store/customers/me/browsing-history/:product_id` | removes one product |
+| `DELETE /store/customers/me/browsing-history` | clears the history |
+
+Guests' history is kept in the browser (`localStorage` key `freshshop-history`, storefront `src/lib/store/history.ts`)
+and merged into the account when they sign in or create an account.

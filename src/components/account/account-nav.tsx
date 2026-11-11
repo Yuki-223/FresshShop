@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 const ITEMS = [
   { href: "/account/orders", label: "account.navOrders" },
   { href: "/account/subscriptions", label: "account.navSubscriptions" },
+  { href: "/account/history", label: "account.navHistory" },
   { href: "/account/addresses", label: "account.navAddresses" },
   { href: "/account/profile", label: "account.navProfile" },
 ] as const
