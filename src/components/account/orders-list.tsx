@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useMemo } from "react"
+import { OrderActions } from "@/components/account/order-actions"
 import { OrderStageBadge } from "@/components/account/order-stage-badge"
 import { orderNumber, orderStageKey } from "@/components/account/order-status"
 import { ButtonLink } from "@/components/common/button-link"
@@ -88,9 +89,12 @@ export function OrdersList({ orders }: { orders: OrderSummary[] }) {
               <div className="flex w-28 justify-end">
                 <OrderStageBadge stage={o.stage} />
               </div>
-              <Link href={`/account/orders/${o.id}`} className="w-28 text-right text-sm text-[#276cbc] hover:underline">
-                {t("account.viewOrder")} ›
-              </Link>
+              <div className="flex w-32 flex-col items-stretch gap-2">
+                <OrderActions order={o} />
+                <Link href={`/account/orders/${o.id}`} className="text-center text-sm text-[#276cbc] hover:underline">
+                  {t("account.viewOrder")} ›
+                </Link>
+              </div>
             </li>
           ))}
         </ul>

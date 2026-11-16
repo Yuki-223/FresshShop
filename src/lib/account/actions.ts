@@ -6,6 +6,7 @@
  * (lib/cart/actions.ts transfers the cart before completing it).
  */
 import { cookies } from "next/headers"
+import { addToCart } from "@/lib/cart/actions"
 import { medusa, MedusaError } from "@/lib/medusa/server"
 import { variantImage } from "@/lib/data/metagenics/variant-image"
 import { orderStage } from "./order-stage"
@@ -17,7 +18,7 @@ const MAX_AGE = 60 * 60 * 24
 
 const CUSTOMER_FIELDS = "id,email,first_name,last_name,phone,*addresses"
 const ORDER_FIELDS =
-  "id,display_id,created_at,status,payment_status,fulfillment_status,email,total,item_subtotal,discount_total,shipping_total,tax_total,*items,items.adjustments.code,shipping_methods.name,*shipping_address"
+  "id,display_id,created_at,status,payment_status,fulfillment_status,email,total,item_subtotal,discount_total,shipping_total,tax_total,*items,items.variant_id,items.adjustments.code,shipping_methods.name,*shipping_address"
 
 /** The signed-in customer's token, or undefined. */
 export async function customerToken(): Promise<string | undefined> {
@@ -156,6 +157,7 @@ export async function setDefaultAddress(id: string): Promise<AccountResult> {
 // ---------- orders ----------
 type MedusaOrderItem = {
   id: string
+  variant_id: string | null
   title: string
   product_handle: string | null
   thumbnail: string | null
@@ -187,6 +189,7 @@ type MedusaOrder = {
 
 const toLine = (i: MedusaOrderItem): OrderLine => ({
   id: i.id,
+  variantId: i.variant_id,
   title: i.title,
   handle: i.product_handle,
   thumbnail: variantImage(i.product_handle, i.variant_sku) ?? i.thumbnail,
@@ -209,6 +212,7 @@ const toSummary = (o: MedusaOrder): OrderSummary => ({
   total: Number(o.total),
   itemCount: o.items.reduce((n, i) => n + i.quantity, 0),
   thumbnails: o.items.map((i) => variantImage(i.product_handle, i.variant_sku) ?? i.thumbnail).filter((x): x is string => !!x),
+  firstHandle: o.items.find((i) => i.product_handle)?.product_handle ?? null,
 })
 
 /** All of the customer's orders, newest first. */
@@ -241,6 +245,47 @@ export async function getOrder(id: string): Promise<OrderDetail | null> {
     if (error instanceof MedusaError && (error.status === 404 || error.status === 401)) return null
     throw error
   }
+}
+
+// ---------- order actions (Taobao-style buttons) ----------
+async function orderAction(id: string, action: "cancel" | "confirm-delivery"): Promise<AccountResult> {
+  try {
+    await withToken((token) => medusa(`/store/customers/me/orders/${id}/${action}`, { body: {}, token }))
+    return { ok: true }
+  } catch (error) {
+    return { ok: false, error: message(error) }
+  }
+}
+
+/** 取消订单 — only before anything ships; the backend checks and releases the payment. */
+export async function cancelOrder(id: string): Promise<AccountResult> {
+  return orderAction(id, "cancel")
+}
+
+/** 确认收货 — marks every shipped parcel as delivered; the order then waits for a review. */
+export async function confirmDelivery(id: string): Promise<AccountResult> {
+  return orderAction(id, "confirm-delivery")
+}
+
+/** 再次购买 — puts the order's lines back into the cart (same variant, quantity and purchase mode). */
+export async function reorder(id: string): Promise<AccountResult & { added?: number }> {
+  const order = await getOrder(id)
+  if (!order) return { ok: false, error: "Order not found" }
+  let added = 0
+  for (const line of order.items) {
+    if (!line.variantId) continue
+    try {
+      await addToCart({
+        variantId: line.variantId,
+        quantity: line.quantity,
+        purchase: line.subscriptionMonths ? { type: "subscription", months: line.subscriptionMonths } : { type: "once" },
+      })
+      added++
+    } catch {
+      // out of stock / withdrawn variant: skip it, report what was added
+    }
+  }
+  return added > 0 ? { ok: true, added } : { ok: false, error: "none" }
 }
 
 /**

@@ -36,6 +36,7 @@ export interface AddressInput {
 
 export interface OrderLine {
   id: string
+  variantId: string | null
   title: string
   handle: string | null
   thumbnail: string | null
@@ -61,6 +62,8 @@ export interface OrderSummary {
   total: number
   itemCount: number
   thumbnails: string[]
+  /** handle of the first product still in the catalog — where "write a review" goes */
+  firstHandle: string | null
 }
 
 export interface OrderDetail extends OrderSummary {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound } from "next/navigation"
+import { OrderActions } from "@/components/account/order-actions"
 import { OrderStageBadge } from "@/components/account/order-stage-badge"
 import { orderNumber } from "@/components/account/order-status"
 import { Link } from "@/i18n/navigation"
@@ -36,12 +37,15 @@ export default async function OrderPage({ params }: Props) {
       <Link href="/account/orders" className="text-sm text-[#276cbc] hover:underline">
         ‹ {t("account.backToOrders")}
       </Link>
-      <div className="mt-3 flex items-baseline justify-between">
-        <h2 className="text-2xl font-bold text-[#121212]">{t("account.orderNumber", { number: orderNumber(order.displayId) })}</h2>
-        <p className="flex items-center gap-3 text-sm text-[#121212]/65">
-          {t("account.placedOn", { date: fmt.date(order.createdAt) })}
-          <OrderStageBadge stage={order.stage} />
-        </p>
+      <div className="mt-3 flex items-start justify-between gap-6">
+        <div>
+          <h2 className="text-2xl font-bold text-[#121212]">{t("account.orderNumber", { number: orderNumber(order.displayId) })}</h2>
+          <p className="mt-2 flex items-center gap-3 text-sm text-[#121212]/65">
+            {t("account.placedOn", { date: fmt.date(order.createdAt) })}
+            <OrderStageBadge stage={order.stage} />
+          </p>
+        </div>
+        <OrderActions order={order} className="flex-row" />
       </div>
 
       <table className="mt-6 w-full border-collapse text-sm text-[#121212]">

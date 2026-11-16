@@ -35,6 +35,11 @@ export default defineMiddlewares({
       matcher: "/store/customers/me/password",
       middlewares: [authenticate("customer", ["bearer"]), validateAndTransformBody(StorePostCustomerPassword)],
     },
+    // order actions (cancel / confirm delivery): always the signed-in customer's own
+    {
+      matcher: "/store/customers/me/orders*",
+      middlewares: [authenticate("customer", ["bearer"])],
+    },
     // browsing history: always the signed-in customer's own
     {
       matcher: "/store/customers/me/browsing-history*",
