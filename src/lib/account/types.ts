@@ -1,4 +1,5 @@
 /** Customer account data as the storefront uses it (from the Medusa Store API). */
+import type { OrderStage } from "./order-stage"
 
 export interface CustomerAddress {
   id: string
@@ -51,7 +52,12 @@ export interface OrderSummary {
   id: string
   displayId: number
   createdAt: string
+  /** Medusa's raw fields, kept for debugging; pages should read `stage`. */
   status: string
+  paymentStatus: string
+  fulfillmentStatus: string
+  /** Buyer-facing stage derived from the three raw fields (see order-stage.ts). */
+  stage: OrderStage
   total: number
   itemCount: number
   thumbnails: string[]

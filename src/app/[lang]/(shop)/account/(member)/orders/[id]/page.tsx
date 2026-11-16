@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { orderNumber, orderStatusKey } from "@/components/account/order-status"
+import { OrderStageBadge } from "@/components/account/order-stage-badge"
+import { orderNumber } from "@/components/account/order-status"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
 import { getOrder } from "@/lib/account/actions"
@@ -37,8 +38,9 @@ export default async function OrderPage({ params }: Props) {
       </Link>
       <div className="mt-3 flex items-baseline justify-between">
         <h2 className="text-2xl font-bold text-[#121212]">{t("account.orderNumber", { number: orderNumber(order.displayId) })}</h2>
-        <p className="text-sm text-[#121212]/65">
-          {t("account.placedOn", { date: fmt.date(order.createdAt) })} · {t(orderStatusKey(order.status))}
+        <p className="flex items-center gap-3 text-sm text-[#121212]/65">
+          {t("account.placedOn", { date: fmt.date(order.createdAt) })}
+          <OrderStageBadge stage={order.stage} />
         </p>
       </div>
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import { orderNumber, orderStatusKey } from "@/components/account/order-status"
+import { OrderStageBadge } from "@/components/account/order-stage-badge"
+import { orderNumber } from "@/components/account/order-status"
 import { ButtonLink } from "@/components/common/button-link"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
@@ -37,9 +38,7 @@ export default async function OrdersPage() {
                   {t("account.orderNumber", { number: orderNumber(o.displayId) })}
                 </Link>
                 <p className="mt-1 text-[13px] text-[#121212]/60">{t("account.placedOn", { date: fmt.date(o.createdAt) })}</p>
-                <p className="mt-1 text-[13px] text-[#121212]/60">
-                  {t(orderStatusKey(o.status))} · {t.plural("account.items", o.itemCount)}
-                </p>
+                <p className="mt-1 text-[13px] text-[#121212]/60">{t.plural("account.items", o.itemCount)}</p>
               </div>
               <div className="flex flex-1 gap-2">
                 {o.thumbnails.slice(0, 5).map((src, i) => (
@@ -50,6 +49,9 @@ export default async function OrdersPage() {
                 {o.thumbnails.length > 5 && <span className="self-center text-sm text-[#121212]/60">+{o.thumbnails.length - 5}</span>}
               </div>
               <p className="w-28 text-right text-base font-bold text-[#121212]">{fmt.price(o.total)}</p>
+              <div className="flex w-28 justify-end">
+                <OrderStageBadge stage={o.stage} />
+              </div>
               <Link href={`/account/orders/${o.id}`} className="w-28 text-right text-sm text-[#276cbc] hover:underline">
                 {t("account.viewOrder")} ›
               </Link>

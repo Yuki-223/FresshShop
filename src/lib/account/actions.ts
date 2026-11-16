@@ -8,6 +8,7 @@
 import { cookies } from "next/headers"
 import { medusa, MedusaError } from "@/lib/medusa/server"
 import { variantImage } from "@/lib/data/metagenics/variant-image"
+import { orderStage } from "./order-stage"
 import type { AccountResult, AddressInput, Customer, OrderDetail, OrderLine, OrderSummary, Subscription } from "./types"
 
 const COOKIE = "freshshop_customer_token"
@@ -16,7 +17,7 @@ const MAX_AGE = 60 * 60 * 24
 
 const CUSTOMER_FIELDS = "id,email,first_name,last_name,phone,*addresses"
 const ORDER_FIELDS =
-  "id,display_id,created_at,status,email,total,item_subtotal,discount_total,shipping_total,tax_total,*items,items.adjustments.code,shipping_methods.name,*shipping_address"
+  "id,display_id,created_at,status,payment_status,fulfillment_status,email,total,item_subtotal,discount_total,shipping_total,tax_total,*items,items.adjustments.code,shipping_methods.name,*shipping_address"
 
 /** The signed-in customer's token, or undefined. */
 export async function customerToken(): Promise<string | undefined> {
@@ -171,6 +172,8 @@ type MedusaOrder = {
   display_id: number
   created_at: string
   status: string
+  payment_status: string
+  fulfillment_status: string
   email: string
   total: number
   item_subtotal: number
@@ -200,6 +203,9 @@ const toSummary = (o: MedusaOrder): OrderSummary => ({
   displayId: o.display_id,
   createdAt: o.created_at,
   status: o.status,
+  paymentStatus: o.payment_status,
+  fulfillmentStatus: o.fulfillment_status,
+  stage: orderStage({ status: o.status, paymentStatus: o.payment_status, fulfillmentStatus: o.fulfillment_status }),
   total: Number(o.total),
   itemCount: o.items.reduce((n, i) => n + i.quantity, 0),
   thumbnails: o.items.map((i) => variantImage(i.product_handle, i.variant_sku) ?? i.thumbnail).filter((x): x is string => !!x),
