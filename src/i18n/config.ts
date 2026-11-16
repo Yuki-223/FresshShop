@@ -13,9 +13,9 @@ export type RegionId = "cn" | "intl"
  * Prices are stored in USD (base currency) and converted with `rate` for display.
  */
 export const localeConfig = {
-  zh: { label: "中文", intl: "zh-CN", currency: "CNY", rate: 7.1, region: "cn" },
-  en: { label: "EN", intl: "en-US", currency: "USD", rate: 1, region: "intl" },
-} as const satisfies Record<Locale, { label: string; intl: string; currency: string; rate: number; region: RegionId }>
+  zh: { label: "中文", intl: "zh-CN", currency: "CNY", rate: 7.1, region: "cn", timeZone: "Asia/Shanghai" },
+  en: { label: "EN", intl: "en-US", currency: "USD", rate: 1, region: "intl", timeZone: "America/Los_Angeles" },
+} as const satisfies Record<Locale, { label: string; intl: string; currency: string; rate: number; region: RegionId; timeZone: string }>
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && (locales as readonly string[]).includes(value)

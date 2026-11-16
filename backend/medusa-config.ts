@@ -18,5 +18,7 @@ module.exports = defineConfig({
     { resolve: "./src/modules/review" },
     // "recently viewed" products of signed-in customers (src/modules/browsing-history)
     { resolve: "./src/modules/browsing-history" },
+    // parcels + tracking events, generated when a fulfillment ships (src/modules/shipment-tracking)
+    { resolve: "./src/modules/shipment-tracking" },
   ],
 })

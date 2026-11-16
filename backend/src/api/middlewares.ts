@@ -5,6 +5,7 @@ import {
   validateAndTransformBody,
 } from "@medusajs/framework/http"
 import { AdminPostReviews } from "./admin/reviews/validators"
+import { AdminPostTrackingEvent } from "./admin/shipments/[id]/events/validators"
 import { StorePostPurchaseItem } from "./store/carts/[id]/purchase-items/validators"
 import { StorePostBrowsingHistory } from "./store/customers/me/browsing-history/validators"
 import { StorePostCustomerPassword } from "./store/customers/me/password/validators"
@@ -24,6 +25,11 @@ export default defineMiddlewares({
       method: ["POST"],
       matcher: "/admin/reviews",
       middlewares: [validateAndTransformBody(AdminPostReviews)],
+    },
+    {
+      method: ["POST"],
+      matcher: "/admin/shipments/:id/events",
+      middlewares: [validateAndTransformBody(AdminPostTrackingEvent)],
     },
     {
       method: ["POST"],

@@ -3,10 +3,11 @@ import Image from "next/image"
 import { notFound } from "next/navigation"
 import { OrderActions } from "@/components/account/order-actions"
 import { OrderStageBadge } from "@/components/account/order-stage-badge"
+import { ShipmentsPanel } from "@/components/account/tracking-timeline"
 import { orderNumber } from "@/components/account/order-status"
 import { Link } from "@/i18n/navigation"
 import { getI18n } from "@/i18n/server"
-import { getOrder } from "@/lib/account/actions"
+import { getOrder, getShipments } from "@/lib/account/actions"
 import { requireCustomer } from "@/lib/account/session"
 
 export const instant = false
@@ -24,6 +25,7 @@ export default async function OrderPage({ params }: Props) {
   const { t, fmt } = await getI18n()
   const order = await getOrder(id)
   if (!order) notFound()
+  const shipments = order.fulfillmentStatus === "not_fulfilled" ? [] : await getShipments(id)
   const a = order.shippingAddress
   const rows: [string, string][] = [
     [t("account.subtotal"), fmt.price(order.itemSubtotal)],
@@ -45,8 +47,17 @@ export default async function OrderPage({ params }: Props) {
             <OrderStageBadge stage={order.stage} />
           </p>
         </div>
-        <OrderActions order={order} className="flex-row" />
+        <OrderActions order={order} className="flex-row" tracking={false} />
       </div>
+
+      {shipments.length > 0 && (
+        <section id="shipping" className="mt-6 border border-[#e5e5e5] p-5">
+          <h3 className="text-base font-bold text-[#121212]">{t("tracking.title")}</h3>
+          <div className="mt-4">
+            <ShipmentsPanel shipments={shipments} />
+          </div>
+        </section>
+      )}
 
       <table className="mt-6 w-full border-collapse text-sm text-[#121212]">
         <thead>

@@ -10,7 +10,7 @@ import { addToCart } from "@/lib/cart/actions"
 import { medusa, MedusaError } from "@/lib/medusa/server"
 import { variantImage } from "@/lib/data/metagenics/variant-image"
 import { orderStage } from "./order-stage"
-import type { AccountResult, AddressInput, Customer, OrderDetail, OrderLine, OrderSummary, Subscription } from "./types"
+import type { AccountResult, AddressInput, Customer, OrderDetail, OrderLine, OrderSummary, Shipment, Subscription, TrackingEvent } from "./types"
 
 const COOKIE = "freshshop_customer_token"
 // Medusa's JWTs expire after a day (http.jwtExpiresIn default "1d")
@@ -286,6 +286,41 @@ export async function reorder(id: string): Promise<AccountResult & { added?: num
     }
   }
   return added > 0 ? { ok: true, added } : { ok: false, error: "none" }
+}
+
+type MedusaShipment = {
+  id: string
+  carrier_code: Shipment["carrierCode"]
+  carrier_name: string
+  tracking_number: string
+  origin: string
+  destination: string
+  shipped_at: string
+  delivered_at: string | null
+  status: Shipment["status"]
+  events: { id: string; code: TrackingEvent["code"]; location: string | null; note: string | null; occurred_at: string }[]
+}
+
+/** 查看物流 — the order's parcels and their tracking history (empty until something ships). */
+export async function getShipments(orderId: string): Promise<Shipment[]> {
+  try {
+    const { shipments } = await withToken((token) => medusa<{ shipments: MedusaShipment[] }>(`/store/customers/me/orders/${orderId}/shipments`, { token }))
+    return shipments.map((s) => ({
+      id: s.id,
+      carrierCode: s.carrier_code,
+      carrierName: s.carrier_name,
+      trackingNumber: s.tracking_number,
+      origin: s.origin,
+      destination: s.destination,
+      shippedAt: s.shipped_at,
+      deliveredAt: s.delivered_at,
+      status: s.status,
+      events: s.events.map((e) => ({ id: e.id, code: e.code, location: e.location, note: e.note, occurredAt: e.occurred_at })),
+    }))
+  } catch (error) {
+    if (error instanceof MedusaError && (error.status === 404 || error.status === 401)) return []
+    throw error
+  }
 }
 
 /**

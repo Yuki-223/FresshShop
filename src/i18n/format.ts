@@ -12,6 +12,8 @@ export function createFormatter(locale: Locale) {
   const cfg = localeConfig[locale]
   const money = new Intl.NumberFormat(cfg.intl, { style: "currency", currency: cfg.currency, currencyDisplay: "narrowSymbol" })
   const shortDate = new Intl.DateTimeFormat(cfg.intl, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
+  // fixed zone per locale, so server and browser render the same text (no hydration mismatch)
+  const dateTime = new Intl.DateTimeFormat(cfg.intl, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false, timeZone: cfg.timeZone })
 
   /** Base (USD) unit price → local unit price, rounded to cents. */
   const toLocal = (base: number) => round2(base * cfg.rate)
@@ -49,6 +51,8 @@ export function createFormatter(locale: Locale) {
     },
     /** Long date: "June 17, 2020" / "2020年6月17日". */
     longDate: (iso: string) => shortDate.format(new Date(iso)),
+    /** Date with time, in the locale's home time zone: "Nov 16, 15:59" / "11月16日 23:59". */
+    dateTime: (iso: string) => dateTime.format(new Date(iso)),
   }
 }
 

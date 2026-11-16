@@ -93,3 +93,27 @@ export interface Subscription {
 }
 
 export type AccountResult = { ok: true } | { ok: false; error: string }
+
+export type TrackingCode = "picked_up" | "departed" | "arrived" | "in_transit" | "out_for_delivery" | "delivered" | "exception" | "note"
+
+export interface TrackingEvent {
+  id: string
+  code: TrackingCode
+  location: string | null
+  note: string | null
+  occurredAt: string
+}
+
+/** One parcel of an order, with what has happened to it so far (newest first). */
+export interface Shipment {
+  id: string
+  carrierCode: "fedex" | "dhl" | "sf" | "jd" | "other"
+  carrierName: string
+  trackingNumber: string
+  origin: string
+  destination: string
+  shippedAt: string
+  deliveredAt: string | null
+  status: "shipped" | "in_transit" | "out_for_delivery" | "delivered" | "exception"
+  events: TrackingEvent[]
+}

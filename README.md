@@ -76,6 +76,8 @@ pnpm dev                  # http://localhost:3000
 - 登录后是 `/account/...`：订单（列表和详情）、我的订阅（只显示，订阅为演示功能）、地址（增删改、设默认）、个人资料。头部显示 "Hi, 名字"。
 - 不登录也能结账；登录后结账会自动填邮箱、电话和默认地址，订单归到账户下。登录前下的订单不会出现在账户里。
 - 登录状态存在 httpOnly cookie `freshshop_customer_token` 里（Medusa 的 JWT，一天后过期）。
+- **订单状态（淘宝式）**：后端的三个字段（status / payment_status / fulfillment_status）在 `src/lib/account/order-stage.ts` 折算成 6 种：待付款、待发货、待收货、待评价、交易成功、交易关闭。订单页顶部有标签页（全部 / 待付款 / 待发货 / 待收货 / 待评价，`?stage=`），每单右侧有随状态变化的按钮：取消订单（未发货时，接口 `POST /store/customers/me/orders/:id/cancel`）、确认收货（`.../confirm-delivery`）、查看物流、去评价、再次购买。在后台（Orders → 订单 → Create fulfillment / Mark as shipped / Mark as delivered / Complete / Cancel）改状态，顾客页面跟着变。「待付款」目前产生不了，因为系统默认支付在下单时就已授权。
+- **物流**（`backend/src/modules/shipment-tracking`，表 `shipment` 和 `tracking_event`）：后台标记发货时，订阅者（`src/subscribers/shipment-created.ts`）按快递公司和收货地自动生成一条两天内的演示路线（已揽收 → 转运中心 → 运输中 → 派送中），轨迹按时间逐条"出现"；标记送达或顾客确认收货时补上「已签收」并删掉还没发生的站。运单号由 fulfillment id 推算（FedEx 12 位、DHL 10 位、顺丰 SF+13 位、京东 JD+13 位）。接口：顾客 `GET /store/customers/me/orders/:id/shipments`（只含已发生的事件）；后台 `GET /admin/shipments?order_id=`（含计划中的站）、`POST /admin/shipments/:id/events { code, location?, note?, occurred_at? }` 手动加一条（code 可选 picked_up / departed / arrived / in_transit / out_for_delivery / delivered / exception / note）。模块出现之前已发货的订单在第一次查看时自动补建记录。本地更新后要在 backend 跑一次 `pnpm setup:local`（有新迁移）。
 
 ### 首页轮播和优惠
 

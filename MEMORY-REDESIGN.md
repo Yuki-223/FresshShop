@@ -25,6 +25,7 @@
 | 搜索栏边打字边出商品（下拉框 6 个 + 查看全部） | ✅ | `src/components/layout/vc-header/vc-search.tsx`、`src/lib/search/actions.ts`、`src/lib/api/index.ts`（`suggestProducts`） |
 | 高清商品图（217 张主图）+ 详情页相册（中性图）+ "From the Brand / 图文介绍"（宣传图）+ 换规格换图（74 张） | ✅ | `scripts/build-product-gallery.py`、`public/products/<slug>/`、`product-gallery.json`、`product-hero.tsx`、`product-gallery.tsx`、`product-promo.tsx`、`variant-image.ts` |
 | 浏览记录（2026-11-11）：登录用户存后端（`browsing_history` 表，最多 100 个，同一商品只留最新时间），游客存浏览器、登录/注册时合并；首页底部和商品页底部的"最近看过"（最多 10 个，不含当前商品）；账户里"浏览记录"页（今天/昨天/更早、单条删除、全部清空） | ✅ | `backend/src/modules/browsing-history/`、`backend/src/api/store/customers/me/browsing-history/`、`src/lib/history/`、`src/lib/store/history.ts`、`src/components/history/`、`account/(member)/history/` |
+| 淘宝式订单状态（2026-11-16）：6 种状态徽章（`order-stage.ts` 折算后端三个字段）、订单页标签页（`?stage=`）、随状态变化的按钮（取消订单 / 确认收货 / 查看物流 / 去评价 / 再次购买，后端 `store/customers/me/orders/[id]/{cancel,confirm-delivery,shipments}`）、物流模块（`shipment` + `tracking_event` 表，发货时自动生成演示路线，顾客只看到已发生的站；后台可手动加事件）。「待付款」产生不了（系统默认支付立即授权），要演示需要加"稍后支付"类付款方式。测试账号 `stages@example.com` / `stages-demo-1234`（只在云端数据库里） | ✅ | `src/lib/account/order-stage.ts`、`src/components/account/{orders-list,order-actions,order-stage-badge,tracking-sheet,tracking-timeline}.tsx`、`backend/src/lib/shipments.ts`、`backend/src/modules/shipment-tracking/`、`backend/src/subscribers/`、`backend/src/api/admin/shipments/` |
 
 **已定不改**（2026-11-08 用户决定）：中文界面字体保持思源黑体，排序的 "Most popular" 不改名。
 
